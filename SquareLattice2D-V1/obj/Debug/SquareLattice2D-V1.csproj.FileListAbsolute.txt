@@ -1,0 +1,9 @@
+c:\users\dhruva\documents\visual studio 2015\Projects\QMstuff\SquareLattice2D-V1\bin\Debug\SquareLattice2D-V1.exe.config
+c:\users\dhruva\documents\visual studio 2015\Projects\QMstuff\SquareLattice2D-V1\bin\Debug\SquareLattice2D-V1.exe
+c:\users\dhruva\documents\visual studio 2015\Projects\QMstuff\SquareLattice2D-V1\bin\Debug\SquareLattice2D-V1.pdb
+c:\users\dhruva\documents\visual studio 2015\Projects\QMstuff\SquareLattice2D-V1\obj\Debug\SquareLattice2D-V1.csprojResolveAssemblyReference.cache
+c:\users\dhruva\documents\visual studio 2015\Projects\QMstuff\SquareLattice2D-V1\obj\Debug\SquareLattice2D_V1.Properties.Resources.resources
+c:\users\dhruva\documents\visual studio 2015\Projects\QMstuff\SquareLattice2D-V1\obj\Debug\SquareLattice2D-V1.csproj.GenerateResource.Cache
+c:\users\dhruva\documents\visual studio 2015\Projects\QMstuff\SquareLattice2D-V1\obj\Debug\SquareLattice2D-V1.exe
+c:\users\dhruva\documents\visual studio 2015\Projects\QMstuff\SquareLattice2D-V1\obj\Debug\SquareLattice2D-V1.pdb
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\SquareLattice2D-V1\obj\Debug\SquareLattice2D_V1.Form1.resources
