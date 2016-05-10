@@ -5,6 +5,10 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SquareLattice2D-V1", "SquareLattice2D-V1\SquareLattice2D-V1.csproj", "{EF481978-0264-4CEC-8E0A-BBDA0409581B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QMStuff v2", "QMStuff v2\QMStuff v2.csproj", "{9C6B46DE-068F-4C58-B23B-89958F5CBA97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test1", "Test1\Test1.csproj", "{C2C05DDC-6815-477E-A342-75B24E0C7D31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{EF481978-0264-4CEC-8E0A-BBDA0409581B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF481978-0264-4CEC-8E0A-BBDA0409581B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF481978-0264-4CEC-8E0A-BBDA0409581B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C6B46DE-068F-4C58-B23B-89958F5CBA97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C6B46DE-068F-4C58-B23B-89958F5CBA97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C6B46DE-068F-4C58-B23B-89958F5CBA97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C6B46DE-068F-4C58-B23B-89958F5CBA97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2C05DDC-6815-477E-A342-75B24E0C7D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2C05DDC-6815-477E-A342-75B24E0C7D31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2C05DDC-6815-477E-A342-75B24E0C7D31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2C05DDC-6815-477E-A342-75B24E0C7D31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
