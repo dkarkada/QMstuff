@@ -49,7 +49,16 @@
 			this.probGroup = new System.Windows.Forms.Panel();
 			this.playGroup = new System.Windows.Forms.Panel();
 			this.splitPanel = new System.Windows.Forms.SplitContainer();
+			this.tabControl1 = new System.Windows.Forms.TabControl();
+			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.FlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+			this.zoomGroup = new System.Windows.Forms.Panel();
+			this.zoomLabel = new System.Windows.Forms.Label();
+			this.zoomInButton = new System.Windows.Forms.Button();
+			this.zoomOutButton = new System.Windows.Forms.Button();
+			this.resetZoomButton = new System.Windows.Forms.Button();
+			this.zoomBar = new System.Windows.Forms.TrackBar();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -61,7 +70,10 @@
 			((System.ComponentModel.ISupportInitialize)(this.splitPanel)).BeginInit();
 			this.splitPanel.Panel1.SuspendLayout();
 			this.splitPanel.SuspendLayout();
+			this.tabControl1.SuspendLayout();
 			this.FlowLayout.SuspendLayout();
+			this.zoomGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -266,7 +278,7 @@
 			this.probGroup.Location = new System.Drawing.Point(20, 20);
 			this.probGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.probGroup.Name = "probGroup";
-			this.probGroup.Size = new System.Drawing.Size(399, 137);
+			this.probGroup.Size = new System.Drawing.Size(399, 140);
 			this.probGroup.TabIndex = 0;
 			// 
 			// playGroup
@@ -282,7 +294,7 @@
 			this.playGroup.Location = new System.Drawing.Point(459, 20);
 			this.playGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.playGroup.Name = "playGroup";
-			this.playGroup.Size = new System.Drawing.Size(339, 137);
+			this.playGroup.Size = new System.Drawing.Size(339, 140);
 			this.playGroup.TabIndex = 15;
 			// 
 			// splitPanel
@@ -293,21 +305,126 @@
 			// 
 			// splitPanel.Panel1
 			// 
+			this.splitPanel.Panel1.Controls.Add(this.tabControl1);
 			this.splitPanel.Panel1.Controls.Add(this.FlowLayout);
 			this.splitPanel.Size = new System.Drawing.Size(1424, 761);
 			this.splitPanel.SplitterDistance = 840;
 			this.splitPanel.TabIndex = 10;
+			// 
+			// tabControl1
+			// 
+			this.tabControl1.Controls.Add(this.tabPage1);
+			this.tabControl1.Controls.Add(this.tabPage2);
+			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.tabControl1.Location = new System.Drawing.Point(0, 728);
+			this.tabControl1.Margin = new System.Windows.Forms.Padding(20);
+			this.tabControl1.Name = "tabControl1";
+			this.tabControl1.SelectedIndex = 0;
+			this.tabControl1.Size = new System.Drawing.Size(840, 33);
+			this.tabControl1.TabIndex = 17;
+			// 
+			// tabPage1
+			// 
+			this.tabPage1.BackColor = System.Drawing.Color.SlateGray;
+			this.tabPage1.Location = new System.Drawing.Point(4, 22);
+			this.tabPage1.Name = "tabPage1";
+			this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage1.Size = new System.Drawing.Size(832, 7);
+			this.tabPage1.TabIndex = 0;
+			this.tabPage1.Text = "tabPage1";
+			// 
+			// tabPage2
+			// 
+			this.tabPage2.Location = new System.Drawing.Point(4, 22);
+			this.tabPage2.Name = "tabPage2";
+			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPage2.Size = new System.Drawing.Size(832, 7);
+			this.tabPage2.TabIndex = 1;
+			this.tabPage2.Text = "tabPage2";
+			this.tabPage2.UseVisualStyleBackColor = true;
 			// 
 			// FlowLayout
 			// 
 			this.FlowLayout.AutoScroll = true;
 			this.FlowLayout.Controls.Add(this.probGroup);
 			this.FlowLayout.Controls.Add(this.playGroup);
+			this.FlowLayout.Controls.Add(this.zoomGroup);
 			this.FlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.FlowLayout.Location = new System.Drawing.Point(0, 0);
 			this.FlowLayout.Name = "FlowLayout";
 			this.FlowLayout.Size = new System.Drawing.Size(840, 761);
 			this.FlowLayout.TabIndex = 16;
+			// 
+			// zoomGroup
+			// 
+			this.zoomGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.zoomGroup.Controls.Add(this.zoomLabel);
+			this.zoomGroup.Controls.Add(this.zoomInButton);
+			this.zoomGroup.Controls.Add(this.zoomOutButton);
+			this.zoomGroup.Controls.Add(this.resetZoomButton);
+			this.zoomGroup.Controls.Add(this.zoomBar);
+			this.zoomGroup.Location = new System.Drawing.Point(20, 200);
+			this.zoomGroup.Margin = new System.Windows.Forms.Padding(20);
+			this.zoomGroup.Name = "zoomGroup";
+			this.zoomGroup.Size = new System.Drawing.Size(331, 140);
+			this.zoomGroup.TabIndex = 16;
+			// 
+			// zoomLabel
+			// 
+			this.zoomLabel.AutoSize = true;
+			this.zoomLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomLabel.Location = new System.Drawing.Point(142, 100);
+			this.zoomLabel.Name = "zoomLabel";
+			this.zoomLabel.Size = new System.Drawing.Size(22, 17);
+			this.zoomLabel.TabIndex = 21;
+			this.zoomLabel.Text = "1x";
+			// 
+			// zoomInButton
+			// 
+			this.zoomInButton.BackgroundImage = global::QMStuff_v2.Properties.Resources.zoomInIcon2;
+			this.zoomInButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.zoomInButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomInButton.Location = new System.Drawing.Point(238, 10);
+			this.zoomInButton.Name = "zoomInButton";
+			this.zoomInButton.Size = new System.Drawing.Size(50, 50);
+			this.zoomInButton.TabIndex = 20;
+			this.zoomInButton.UseVisualStyleBackColor = true;
+			this.zoomInButton.Click += new System.EventHandler(this.zoomInButton_Click);
+			// 
+			// zoomOutButton
+			// 
+			this.zoomOutButton.BackgroundImage = global::QMStuff_v2.Properties.Resources.zoomOutIcon2;
+			this.zoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+			this.zoomOutButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomOutButton.Location = new System.Drawing.Point(48, 10);
+			this.zoomOutButton.Name = "zoomOutButton";
+			this.zoomOutButton.Size = new System.Drawing.Size(50, 50);
+			this.zoomOutButton.TabIndex = 19;
+			this.zoomOutButton.UseVisualStyleBackColor = true;
+			this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
+			// 
+			// resetZoomButton
+			// 
+			this.resetZoomButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.resetZoomButton.Location = new System.Drawing.Point(104, 10);
+			this.resetZoomButton.Name = "resetZoomButton";
+			this.resetZoomButton.Size = new System.Drawing.Size(128, 50);
+			this.resetZoomButton.TabIndex = 22;
+			this.resetZoomButton.Text = "Reset Zoom";
+			this.resetZoomButton.UseVisualStyleBackColor = true;
+			this.resetZoomButton.Click += new System.EventHandler(this.resetZoomButton_Click);
+			// 
+			// zoomBar
+			// 
+			this.zoomBar.Location = new System.Drawing.Point(19, 72);
+			this.zoomBar.Maximum = 100;
+			this.zoomBar.Name = "zoomBar";
+			this.zoomBar.Size = new System.Drawing.Size(291, 45);
+			this.zoomBar.TabIndex = 17;
+			this.zoomBar.TickFrequency = 0;
+			this.zoomBar.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.zoomBar.Value = 75;
+			this.zoomBar.Scroll += new System.EventHandler(this.zoomBar_Scroll);
 			// 
 			// Form1
 			// 
@@ -332,7 +449,11 @@
 			this.splitPanel.Panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitPanel)).EndInit();
 			this.splitPanel.ResumeLayout(false);
+			this.tabControl1.ResumeLayout(false);
 			this.FlowLayout.ResumeLayout(false);
+			this.zoomGroup.ResumeLayout(false);
+			this.zoomGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -360,6 +481,15 @@
 		private System.Windows.Forms.Panel probGroup;
 		private System.Windows.Forms.SplitContainer splitPanel;
 		private System.Windows.Forms.FlowLayoutPanel FlowLayout;
+		private System.Windows.Forms.Panel zoomGroup;
+		private System.Windows.Forms.TrackBar zoomBar;
+		private System.Windows.Forms.Button zoomInButton;
+		private System.Windows.Forms.Button zoomOutButton;
+		private System.Windows.Forms.Label zoomLabel;
+		private System.Windows.Forms.TabControl tabControl1;
+		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.TabPage tabPage2;
+		private System.Windows.Forms.Button resetZoomButton;
 	}
 }
 
