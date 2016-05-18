@@ -153,7 +153,7 @@ namespace QMStuff_v2
 
 		public Canvas(Size s) {
 			lat = new Lattice();
-			image = new Bitmap((int)(Math.Sqrt(lat.mat.Length)), (int)(Math.Sqrt(lat.mat.Length)));
+			image = new Bitmap(5*(int)(Math.Sqrt(lat.mat.Length)), 5*(int)(Math.Sqrt(lat.mat.Length)));
 			gs = new GraphicsSettings();
 			sz = s;
 			ind = 0;
@@ -203,7 +203,7 @@ namespace QMStuff_v2
 				foreach(Atom a in lc.on) {
 					g.FillRectangle(br,
 						(float)(image.Width/2 + lat.aSize*(a.x - .5)),
-						(float)(image.Height/2 - lat.aSize*(a.y - .5)),
+						(float)(image.Height/2 - lat.aSize*(a.y + .5)),
 						lat.aSize, lat.aSize);
 				}
 			}
@@ -230,6 +230,8 @@ namespace QMStuff_v2
 		public int aSize { get; set; }
 		public int sz { get; set; }
 		public List<LatticeChange> changes { get; set; }
+		public List<Atom> nextAtomsX { get; set; }
+		public List<Atom> nextAtomsY { get; set; }
 		public Random rnd { get; set; }
 
 		public Lattice(){
@@ -238,28 +240,60 @@ namespace QMStuff_v2
             sz = 200;
 			mat = new Atom[sz, sz];
 			changes = new List<LatticeChange>();
+			nextAtomsX = new List<Atom>();
+			nextAtomsY = new List<Atom>();
 			rnd = new Random();
-
-			for (int i = 0; i < sz; i++)
+			
+			for (int r = 0; r < sz; r++)
             {
-                for (int j = 0; j < sz; j++)
+                for (int c = 0; c < sz; c++)
                 {
-                    mat[j, i] = new Atom(i - sz / 2, j - sz / 2, 0);
-					if(i-sz/2==0 && j-sz/2==0) {
-						LatticeChange lc = new LatticeChange();
-						lc.AddOn(mat[j, i]);
-						changes.Add(lc);
-						mat[j, i].excited = true;
-					}
+                    mat[r, c] = new Atom(c - sz / 2, r - sz / 2, 0);
 				}
             }
+			LatticeChange lc = new LatticeChange();
+			lc.AddOn(mat[sz/2, sz/2]);
+			changes.Add(lc);
+			mat[sz/2, sz/2].excited = true;
+			nextAtomsX.Add(mat[sz/2, sz/2 + 1]);
+			nextAtomsX.Add(mat[sz/2, sz/2 - 1]);
+			nextAtomsY.Add(mat[sz/2 + 1, sz/2]);
+			nextAtomsY.Add(mat[sz/2 - 1, sz/2]);
 
 			GenerateChanges(0);
+		}
+		public List<Atom> GetNeighbors(Atom a) {
+			List<Atom> neighbors = new List<Atom>();
+			int r = a.y + sz/2;
+			int c = a.x + sz/2;
+			if (r>0)
+				neighbors.Add(mat[c, r-1]);
+			if (r<sz)
+				neighbors.Add(mat[c, r+1]);
+			if (c>0)
+				neighbors.Add(mat[c-1, r]);
+			if (r<sz)
+				neighbors.Add(mat[c+1, r]);
+			return neighbors;
+		}
+		public int NumExcitedNeighbors(Atom a) {
+			int count = 0;
+			foreach (Atom at in GetNeighbors(a))
+				if (at.excited)
+					count++;
+			return count;
 		}
 		public void GenerateChanges(int i) {
 			Boolean done = false;
 			LatticeChange lc = new LatticeChange();
-			for(int r = 1; r < sz - 1; r++) {
+			foreach(Atom a in nextAtomsX) {
+				if (rnd.NextDouble() < Xprobability) {
+					a.excited=true;
+
+				}
+			}
+
+/*			for(int r = 1; r < sz - 1; r++) {
 				for(int c = 1; c < sz - 1; c++) {
 					Atom a = mat[r, c];
 					if(!a.excited) {
@@ -297,7 +331,7 @@ namespace QMStuff_v2
 			changes.Add(lc);
 			Console.WriteLine(i);
 			if(!done || i<100) GenerateChanges(++i);
-		}
+*/		}
     }
     public class Atom
     {
