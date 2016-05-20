@@ -59,6 +59,7 @@
 			this.zoomOutButton = new System.Windows.Forms.Button();
 			this.resetZoomButton = new System.Windows.Forms.Button();
 			this.zoomBar = new System.Windows.Forms.TrackBar();
+			this.GenerateButton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -79,7 +80,7 @@
 			// stepCounter
 			// 
 			this.stepCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.stepCounter.Location = new System.Drawing.Point(266, 27);
+			this.stepCounter.Location = new System.Drawing.Point(151, 145);
 			this.stepCounter.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -156,7 +157,7 @@
 			// restartButton
 			// 
 			this.restartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.restartButton.Location = new System.Drawing.Point(257, 74);
+			this.restartButton.Location = new System.Drawing.Point(42, 137);
 			this.restartButton.Name = "restartButton";
 			this.restartButton.Size = new System.Drawing.Size(69, 36);
 			this.restartButton.TabIndex = 7;
@@ -269,6 +270,7 @@
 			// probGroup
 			// 
 			this.probGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.probGroup.Controls.Add(this.GenerateButton);
 			this.probGroup.Controls.Add(this.yProbLabel);
 			this.probGroup.Controls.Add(this.yProbBar);
 			this.probGroup.Controls.Add(this.yProbValue);
@@ -278,7 +280,7 @@
 			this.probGroup.Location = new System.Drawing.Point(20, 20);
 			this.probGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.probGroup.Name = "probGroup";
-			this.probGroup.Size = new System.Drawing.Size(399, 140);
+			this.probGroup.Size = new System.Drawing.Size(399, 187);
 			this.probGroup.TabIndex = 0;
 			// 
 			// playGroup
@@ -291,10 +293,11 @@
 			this.playGroup.Controls.Add(this.restartButton);
 			this.playGroup.Controls.Add(this.playButton);
 			this.playGroup.Controls.Add(this.backButton);
+			this.playGroup.Enabled = false;
 			this.playGroup.Location = new System.Drawing.Point(459, 20);
 			this.playGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.playGroup.Name = "playGroup";
-			this.playGroup.Size = new System.Drawing.Size(339, 140);
+			this.playGroup.Size = new System.Drawing.Size(249, 187);
 			this.playGroup.TabIndex = 15;
 			// 
 			// splitPanel
@@ -363,7 +366,7 @@
 			this.zoomGroup.Controls.Add(this.zoomOutButton);
 			this.zoomGroup.Controls.Add(this.resetZoomButton);
 			this.zoomGroup.Controls.Add(this.zoomBar);
-			this.zoomGroup.Location = new System.Drawing.Point(20, 200);
+			this.zoomGroup.Location = new System.Drawing.Point(20, 247);
 			this.zoomGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.zoomGroup.Name = "zoomGroup";
 			this.zoomGroup.Size = new System.Drawing.Size(331, 140);
@@ -425,6 +428,17 @@
 			this.zoomBar.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.zoomBar.Value = 75;
 			this.zoomBar.Scroll += new System.EventHandler(this.zoomBar_Scroll);
+			// 
+			// GenerateButton
+			// 
+			this.GenerateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.GenerateButton.Location = new System.Drawing.Point(134, 125);
+			this.GenerateButton.Name = "GenerateButton";
+			this.GenerateButton.Size = new System.Drawing.Size(131, 48);
+			this.GenerateButton.TabIndex = 13;
+			this.GenerateButton.Text = "Generate";
+			this.GenerateButton.UseVisualStyleBackColor = true;
+			this.GenerateButton.Click += new System.EventHandler(this.GenerateButton_Click);
 			// 
 			// Form1
 			// 
@@ -490,6 +504,7 @@
 		private System.Windows.Forms.TabPage tabPage1;
 		private System.Windows.Forms.TabPage tabPage2;
 		private System.Windows.Forms.Button resetZoomButton;
+		private System.Windows.Forms.Button GenerateButton;
 	}
 }
 

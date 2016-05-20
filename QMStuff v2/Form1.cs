@@ -12,11 +12,9 @@ using System.Windows.Forms;
 
 namespace QMStuff_v2
 {
-	enum direction { N, E, S, W };
 
 	public partial class Form1 : Form {
 		Canvas c;
-		int step = 1;
 		System.Timers.Timer clock;
 
 		public Form1() {
@@ -57,16 +55,24 @@ namespace QMStuff_v2
 			c.sz = new Size(splitPanel.Panel2.Width, splitPanel.Panel2.Height);
 			c.ReRender();
 		}
-        private void PlayStep(object source, System.Timers.ElapsedEventArgs e)
+		private void GenerateButton_Click(object sender, EventArgs e) {
+			c.lat.GenerateChanges();
+			playGroup.Enabled = true;
+			probGroup.Enabled = false;
+		}
+		private void PlayStep(object source, System.Timers.ElapsedEventArgs e)
         {
             BeginInvoke(new Action(c.RenderNext), null);
-        }
+			Action a = delegate () { stepCounter.Value++; };
+			BeginInvoke(a);
+		}
         private void backButton_Click(object sender, EventArgs e)
         {
             
         }
         private void fwdButton_Click(object sender, EventArgs e) {
 			c.RenderNext();
+			stepCounter.Value++;
 		}
         private void playButton_Click(object sender, EventArgs e)
         {
@@ -124,7 +130,6 @@ namespace QMStuff_v2
 		}
 		private void restartButton_Click(object sender, EventArgs e)
         {
-            step = 1;
             clock.Stop();
 			playButton.Text = "Play";
 			speedBar.Visible = playSpeedLabel.Visible = false;
@@ -133,6 +138,7 @@ namespace QMStuff_v2
             stepCounter.Value = 1;
             c.ReRender();
         }
+
 		private void xProbValue_ValueChanged(object sender, EventArgs e) {
 			xProbBar.Value = (int) xProbValue.Value;
 			c.lat.Xprobability = (double)(xProbBar.Value) / 100;
@@ -141,8 +147,6 @@ namespace QMStuff_v2
 			yProbBar.Value = (int)yProbValue.Value;
 			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
 		}
-
-		
 	}
 	public class Canvas : Panel {
 		public Bitmap image { get; set; }
@@ -153,7 +157,7 @@ namespace QMStuff_v2
 
 		public Canvas(Size s) {
 			lat = new Lattice();
-			image = new Bitmap(5*(int)(Math.Sqrt(lat.mat.Length)), 5*(int)(Math.Sqrt(lat.mat.Length)));
+			image = new Bitmap((int)(Math.Sqrt(lat.mat.Length)), (int)(Math.Sqrt(lat.mat.Length)));
 			gs = new GraphicsSettings();
 			sz = s;
 			ind = 0;
@@ -237,7 +241,7 @@ namespace QMStuff_v2
 		public Lattice(){
             Xprobability = Yprobability = 1;
             aSize = 10;
-            sz = 200;
+            sz = 800;
 			mat = new Atom[sz, sz];
 			changes = new List<LatticeChange>();
 			nextAtomsX = new List<Atom>();
@@ -259,22 +263,33 @@ namespace QMStuff_v2
 			nextAtomsX.Add(mat[sz/2, sz/2 - 1]);
 			nextAtomsY.Add(mat[sz/2 + 1, sz/2]);
 			nextAtomsY.Add(mat[sz/2 - 1, sz/2]);
-
-			GenerateChanges(0);
 		}
 		public List<Atom> GetNeighbors(Atom a) {
 			List<Atom> neighbors = new List<Atom>();
-			int r = a.y + sz/2;
+			neighbors.AddRange(GetXNeighbors(a));
+			neighbors.AddRange(GetYNeighbors(a));
+			return neighbors.ToList();
+		}
+		private List<Atom> GetXNeighbors(Atom a) {
+			List<Atom> Xneighbors = new List<Atom>();
 			int c = a.x + sz/2;
-			if (r>0)
-				neighbors.Add(mat[c, r-1]);
-			if (r<sz)
-				neighbors.Add(mat[c, r+1]);
+			int r = a.y + sz/2;
 			if (c>0)
-				neighbors.Add(mat[c-1, r]);
-			if (r<sz)
-				neighbors.Add(mat[c+1, r]);
-			return neighbors;
+				Xneighbors.Add(mat[r, c-1]);
+			if (c<sz-1)
+				Xneighbors.Add(mat[r, c+1]);
+			return Xneighbors;
+		}
+		private List<Atom> GetYNeighbors(Atom a) {
+			List<Atom> Yneighbors = new List<Atom>();
+			int c = a.x + sz/2;
+			int r = a.y + sz/2;
+			if (r>0)
+				Yneighbors.Add(mat[r-1, c]);
+			if (r<sz-1)
+				Yneighbors.Add(mat[r+1, c]);
+			return Yneighbors;
+
 		}
 		public int NumExcitedNeighbors(Atom a) {
 			int count = 0;
@@ -283,55 +298,49 @@ namespace QMStuff_v2
 					count++;
 			return count;
 		}
-		public void GenerateChanges(int i) {
+		public void GenerateChanges() {
 			Boolean done = false;
 			LatticeChange lc = new LatticeChange();
-			foreach(Atom a in nextAtomsX) {
+			foreach(Atom a in nextAtomsX.ToList()) {
 				if (rnd.NextDouble() < Xprobability) {
 					a.excited=true;
-
+					lc.AddOn(a);
 				}
 			}
-
-/*			for(int r = 1; r < sz - 1; r++) {
-				for(int c = 1; c < sz - 1; c++) {
-					Atom a = mat[r, c];
-					if(!a.excited) {
-						int numActiveNeighbors = 0;
-						int dir = 0;
-						if(mat[r + 1, c].excited) {
-							numActiveNeighbors++;
-							dir = (int)direction.S;
-						}
-						if(mat[r, c + 1].excited) {
-							numActiveNeighbors++;
-							dir = (int)direction.E;
-						}
-						if(mat[r - 1, c].excited) {
-							numActiveNeighbors++;
-							dir = (int)direction.N;
-						}
-						if(mat[r, c - 1].excited) {
-							numActiveNeighbors++;
-							dir = (int)direction.W;
-						}
-						if(numActiveNeighbors == 1) {
-							if((dir == (int)direction.N || dir == (int)direction.S) && rnd.NextDouble() < Yprobability)
-								lc.AddOn(a);
-							if((dir == (int)direction.E || dir == (int)direction.W) && rnd.NextDouble() < Xprobability)
-								lc.AddOn(a);
-							if(r>sz-2 || r<2 || c>sz-2 || c<2)
-								done=true;
-						}
+			foreach (Atom a in nextAtomsY.ToList()) {
+				if (rnd.NextDouble() < Yprobability) {
+					a.excited=true;
+					lc.AddOn(a);
+				}
+			}
+			foreach(Atom a in lc.on) {
+				foreach (Atom neighbor in GetXNeighbors(a)) {
+					if (!neighbor.excited && NumExcitedNeighbors(neighbor)==1) {
+						nextAtomsX.Add(neighbor);
 					}
 				}
+				foreach (Atom neighbor in GetYNeighbors(a))
+					if (!neighbor.excited && NumExcitedNeighbors(neighbor)==1)
+						nextAtomsY.Add(neighbor);
+				if (GetNeighbors(a).Count!=4)
+					done = true;
 			}
-			foreach(Atom a in lc.on)
-				a.excited = true;
+			Console.WriteLine(nextAtomsX.Count + nextAtomsY.Count);
+			for (int k=0; k<nextAtomsX.Count; k++) {
+				if (nextAtomsX[k].excited || NumExcitedNeighbors(nextAtomsX[k])!=1) {
+					nextAtomsX.RemoveAt(k);
+					k--;
+				}
+			}
+			for (int k=0; k<nextAtomsY.Count; k++) {
+				if (nextAtomsY[k].excited || NumExcitedNeighbors(nextAtomsY[k])!=1) {
+					nextAtomsY.RemoveAt(k);
+					k--;
+				}
+			}
 			changes.Add(lc);
-			Console.WriteLine(i);
-			if(!done || i<100) GenerateChanges(++i);
-*/		}
+			if (!done) GenerateChanges();
+		}
     }
     public class Atom
     {
