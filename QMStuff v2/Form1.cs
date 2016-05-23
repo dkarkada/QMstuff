@@ -9,6 +9,7 @@ using System.Text;
 using System.Collections;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Imaging;
 
 namespace QMStuff_v2
 {
@@ -100,7 +101,7 @@ namespace QMStuff_v2
 			else zoomBar.Value = 0;
 			c.gs.zoom = Math.Pow(2, (zoomBar.Value - 75) / 25.0);
 			zoomLabel.Text = Math.Round(c.gs.zoom, 3) + "x";
-			c.lat.aSize = (int)(10 * c.gs.zoom);
+	//		c.lat.aSize = (int)(10 * c.gs.zoom);
 			c.ReRender();
 		}
 		private void zoomInButton_Click(object sender, EventArgs e) {
@@ -108,7 +109,7 @@ namespace QMStuff_v2
 			else zoomBar.Value = 100;
 			c.gs.zoom = Math.Pow(2, (zoomBar.Value - 75) / 25.0);
 			zoomLabel.Text = Math.Round(c.gs.zoom, 3) + "x";
-			c.lat.aSize = (int)(10 * c.gs.zoom);
+	//		c.lat.aSize = (int)(10 * c.gs.zoom);
 			c.ReRender();
 		}
 		private void xProbBar_Scroll(object sender, EventArgs e) {
@@ -133,10 +134,14 @@ namespace QMStuff_v2
             clock.Stop();
 			playButton.Text = "Play";
 			speedBar.Visible = playSpeedLabel.Visible = false;
+			c.Restart();
 			c.lat.Xprobability = (double)(xProbBar.Value) / 100;
 			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
             stepCounter.Value = 1;
             c.ReRender();
+
+			probGroup.Enabled=true;
+			playGroup.Enabled=false;
         }
 
 		private void xProbValue_ValueChanged(object sender, EventArgs e) {
@@ -149,15 +154,15 @@ namespace QMStuff_v2
 		}
 	}
 	public class Canvas : Panel {
-		public Bitmap image { get; set; }
+		public Bitmap bmp { get; set; }
 		public Lattice lat { get; set; }
 		public Size sz { get; set; }
-		public GraphicsSettings gs;
+		public GraphicsSettings gs { get; set; }
 		public int ind { get; set; }
 
 		public Canvas(Size s) {
 			lat = new Lattice();
-			image = new Bitmap((int)(Math.Sqrt(lat.mat.Length)), (int)(Math.Sqrt(lat.mat.Length)));
+			bmp = new Bitmap((int)(Math.Sqrt(lat.mat.Length)), (int)(Math.Sqrt(lat.mat.Length)));
 			gs = new GraphicsSettings();
 			sz = s;
 			ind = 0;
@@ -166,15 +171,27 @@ namespace QMStuff_v2
 		}
 		protected override void OnPaint(PaintEventArgs e) {
 			Graphics g = e.Graphics;
-			Bitmap final = new Bitmap(sz.Width, sz.Height);
-			g.DrawImage(image, 0, 0);
+			Rectangle r = new Rectangle(
+				((int)(bmp.Width-this.Width/gs.zoom)/2),
+				(int)((bmp.Height-this.Height/gs.zoom)/2),
+				(int)(this.Width/gs.zoom),
+				(int)(this.Height/gs.zoom));
+			PixelFormat pf = bmp.PixelFormat;
+			Console.WriteLine(r.Width + " " + bmp.Width);
+			Bitmap asd = bmp.Clone(r, pf);
+	//		Bitmap scaled = new Bitmap(
+	//			bmp.Clone(r,pf),
+	//			new Size(this.Width, this.Height));
+
+			g.DrawImage(bmp, 0, 0);
+//			scaled.Dispose();
 		}
 		public void RenderNext() {
-			Graphics g = Graphics.FromImage(image);
+			Graphics g = Graphics.FromImage(bmp);
 			g.SmoothingMode = SmoothingMode.AntiAlias;
 			if(gs.axes) {
-				int w = image.Width;
-				int h = image.Height;
+				int w = bmp.Width;
+				int h = bmp.Height;
 				g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
 				g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
 			}
@@ -183,8 +200,8 @@ namespace QMStuff_v2
 				SolidBrush br = gs.fgBrush;
 				foreach(Atom a in lc.on) {
 					g.FillRectangle(br,
-						(float) (image.Width/2 + lat.aSize*(a.x - .5)),
-						(float) (image.Height/2 - lat.aSize*(a.y + .5)),
+						(float) (bmp.Width/2 + lat.aSize*(a.x - .5)),
+						(float) (bmp.Height/2 - lat.aSize*(a.y + .5)),
 						lat.aSize, lat.aSize);
 				}
 				ind++;
@@ -192,12 +209,12 @@ namespace QMStuff_v2
 			Invalidate();
 		}
 		public void ReRender() {
-			Graphics g = Graphics.FromImage(image);
+			Graphics g = Graphics.FromImage(bmp);
 			g.Clear(Color.Transparent);
 			g.SmoothingMode = SmoothingMode.AntiAlias;
 			if(gs.axes) {
-				int w = image.Width;
-				int h = image.Height;
+				int w = bmp.Width;
+				int h = bmp.Height;
 				g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
 				g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
 			}
@@ -206,25 +223,17 @@ namespace QMStuff_v2
 				SolidBrush br = gs.fgBrush;
 				foreach(Atom a in lc.on) {
 					g.FillRectangle(br,
-						(float)(image.Width/2 + lat.aSize*(a.x - .5)),
-						(float)(image.Height/2 - lat.aSize*(a.y + .5)),
+						(float)(bmp.Width/2 + lat.aSize*(a.x - .5)),
+						(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
 						lat.aSize, lat.aSize);
 				}
 			}
 			Invalidate();
 		}
 		public void Restart() {
+			ind = 0;
 			lat = new Lattice();
-			lat.aSize = (int)(10 * gs.zoom);
-			lat.changes = new List<LatticeChange>();
-			foreach(Atom a in lat.mat) {
-				if(a.x == 0 && a.y == 0) {
-					LatticeChange lc = new LatticeChange();
-					lc.AddOn(a);
-					lat.changes.Add(lc);
-					a.excited = true;
-				}
-			}
+	//		lat.aSize = (int)(10 * gs.zoom);
 		}
 	}
 	public class Lattice {
@@ -240,7 +249,7 @@ namespace QMStuff_v2
 
 		public Lattice(){
             Xprobability = Yprobability = 1;
-            aSize = 10;
+            aSize = 15;
             sz = 800;
 			mat = new Atom[sz, sz];
 			changes = new List<LatticeChange>();
@@ -325,7 +334,6 @@ namespace QMStuff_v2
 				if (GetNeighbors(a).Count!=4)
 					done = true;
 			}
-			Console.WriteLine(nextAtomsX.Count + nextAtomsY.Count);
 			for (int k=0; k<nextAtomsX.Count; k++) {
 				if (nextAtomsX[k].excited || NumExcitedNeighbors(nextAtomsX[k])!=1) {
 					nextAtomsX.RemoveAt(k);
