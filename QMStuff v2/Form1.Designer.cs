@@ -47,6 +47,7 @@
 			this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
 			this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
 			this.probGroup = new System.Windows.Forms.Panel();
+			this.GenerateButton = new System.Windows.Forms.Button();
 			this.playGroup = new System.Windows.Forms.Panel();
 			this.splitPanel = new System.Windows.Forms.SplitContainer();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -59,7 +60,6 @@
 			this.zoomOutButton = new System.Windows.Forms.Button();
 			this.resetZoomButton = new System.Windows.Forms.Button();
 			this.zoomBar = new System.Windows.Forms.TrackBar();
-			this.GenerateButton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -94,6 +94,7 @@
             0,
             0,
             0});
+			this.stepCounter.ValueChanged += new System.EventHandler(this.stepCounter_ValueChanged);
 			// 
 			// yProbValue
 			// 
@@ -283,6 +284,17 @@
 			this.probGroup.Size = new System.Drawing.Size(399, 187);
 			this.probGroup.TabIndex = 0;
 			// 
+			// GenerateButton
+			// 
+			this.GenerateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.GenerateButton.Location = new System.Drawing.Point(134, 125);
+			this.GenerateButton.Name = "GenerateButton";
+			this.GenerateButton.Size = new System.Drawing.Size(131, 48);
+			this.GenerateButton.TabIndex = 13;
+			this.GenerateButton.Text = "Generate";
+			this.GenerateButton.UseVisualStyleBackColor = true;
+			this.GenerateButton.Click += new System.EventHandler(this.GenerateButton_Click);
+			// 
 			// playGroup
 			// 
 			this.playGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -428,17 +440,6 @@
 			this.zoomBar.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.zoomBar.Value = 75;
 			this.zoomBar.Scroll += new System.EventHandler(this.zoomBar_Scroll);
-			// 
-			// GenerateButton
-			// 
-			this.GenerateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.GenerateButton.Location = new System.Drawing.Point(134, 125);
-			this.GenerateButton.Name = "GenerateButton";
-			this.GenerateButton.Size = new System.Drawing.Size(131, 48);
-			this.GenerateButton.TabIndex = 13;
-			this.GenerateButton.Text = "Generate";
-			this.GenerateButton.UseVisualStyleBackColor = true;
-			this.GenerateButton.Click += new System.EventHandler(this.GenerateButton_Click);
 			// 
 			// Form1
 			// 
