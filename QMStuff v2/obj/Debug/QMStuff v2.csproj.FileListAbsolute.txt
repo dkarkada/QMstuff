@@ -16,3 +16,4 @@ C:\Users\547350\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\obj\Deb
 C:\Users\547350\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\obj\Debug\QMStuff_v2.Form1.resources
 C:\Users\547350\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\obj\Debug\QMStuff_v2.Properties.Resources.resources
 C:\Users\547350\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\obj\Debug\QMStuff v2.csproj.GenerateResource.Cache
+C:\Users\547350\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\obj\Debug\QMStuff_v2.ProgressForm.resources

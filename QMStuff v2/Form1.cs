@@ -58,9 +58,12 @@ namespace QMStuff_v2
 		}
 
 		private void GenerateButton_Click(object sender, EventArgs e) {
-			c.lat.GenerateChanges();
+			ProgressForm pf = new ProgressForm();
+			pf.Show();
+			c.lat.GenerateChanges(pf);
 			playGroup.Enabled = true;
 			probGroup.Enabled = false;
+			pf.Close();
 		}
 		private void PlayStep(object source, System.Timers.ElapsedEventArgs e)
         {
@@ -305,7 +308,7 @@ namespace QMStuff_v2
 					count++;
 			return count;
 		}
-		public void GenerateChanges() {
+		public void GenerateChanges(ProgressForm pf) {
 			Boolean done = false;
 			LatticeChange lc = new LatticeChange();
 			int asd = changes.Count;
@@ -346,7 +349,8 @@ namespace QMStuff_v2
 				}
 			}
 			changes.Add(lc);
-			if (!done) GenerateChanges();
+			pf.Increment();
+			if (!done) GenerateChanges(pf);
 		}
     }
     public class Atom
