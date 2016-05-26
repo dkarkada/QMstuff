@@ -353,7 +353,7 @@
 			this.tabPage2.Location = new System.Drawing.Point(4, 22);
 			this.tabPage2.Name = "tabPage2";
 			this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage2.Size = new System.Drawing.Size(829, 7);
+			this.tabPage2.Size = new System.Drawing.Size(831, 7);
 			this.tabPage2.TabIndex = 1;
 			this.tabPage2.Text = "tabPage2";
 			this.tabPage2.UseVisualStyleBackColor = true;
@@ -440,6 +440,8 @@
 			this.zoomBar.TickStyle = System.Windows.Forms.TickStyle.None;
 			this.zoomBar.Value = 75;
 			this.zoomBar.Scroll += new System.EventHandler(this.zoomBar_Scroll);
+			this.zoomBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.zoomBar_MouseDown);
+			this.zoomBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.zoomBar_MouseUp);
 			// 
 			// Form1
 			// 
@@ -447,10 +449,13 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(1424, 761);
 			this.Controls.Add(this.splitPanel);
+			this.KeyPreview = true;
 			this.Name = "Form1";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Square Lattice 2D v2";
 			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+			this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyUp);
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).EndInit();

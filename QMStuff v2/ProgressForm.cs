@@ -14,9 +14,9 @@ namespace QMStuff_v2 {
 			InitializeComponent();
 			this.ClientSize = new System.Drawing.Size(300, 75);
 		}
-		public void Increment() {
+		public void SetValue(int progress) {
 			if(progressBar1.Value<progressBar1.Maximum)
-			progressBar1.Value += 1;
+				progressBar1.Value = progress;
 			progressBar1.Invalidate();
 		}
 	}

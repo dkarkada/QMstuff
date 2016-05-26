@@ -16,25 +16,32 @@ namespace QMStuff_v2
 
 	public partial class Form1 : Form {
 		Canvas c;
-		System.Timers.Timer clock;
+		ProgressForm pf;
+		System.Timers.Timer clock, redrawClock;
 
 		public Form1() {
 			InitializeComponent();
 			SetSizeAndControls();
 
-			clock = new System.Timers.Timer(500);
+			clock = new System.Timers.Timer(100);
 			clock.AutoReset = true;
 			clock.Elapsed += new System.Timers.ElapsedEventHandler(PlayStep);
+
+			redrawClock = new System.Timers.Timer(500);
+			redrawClock.AutoReset = true;
+			redrawClock.Elapsed += new System.Timers.ElapsedEventHandler(
+				delegate (object source, System.Timers.ElapsedEventArgs ee) {
+					BeginInvoke(new Action(c.ReRender));
+				});
 
 			DoubleBuffered = true;
 			c.RenderNext();
 		}
 		private void SetSizeAndControls() {
 			Size = Screen.FromControl(this).WorkingArea.Size;
-
 			splitPanel.SplitterDistance = ClientSize.Width - splitPanel.Panel2.Height - splitPanel.SplitterWidth;
 
-			c = new Canvas(	new Size(splitPanel.Panel2.Width, splitPanel.Panel2.Height));
+			c = new Canvas(this, new Size(splitPanel.Panel2.Width, splitPanel.Panel2.Height));
 			c.Dock = DockStyle.Fill;
 			splitPanel.Panel2.Controls.Add(c);
 
@@ -45,6 +52,22 @@ namespace QMStuff_v2
 
 			Resize += FrameResizing;
 			splitPanel.SplitterMoved += SplitPanelResized;
+		}
+		public void zoom(int d) {
+			d/=30;
+			if(d>0) {
+				if(zoomBar.Value +d <= 100) zoomBar.Value += d;
+				else zoomBar.Value = 100;
+			}
+			else {
+				if(zoomBar.Value +d >= 0) zoomBar.Value += d;
+				else zoomBar.Value = 0;
+			}
+			c.gs.zoom = Math.Pow(2, (zoomBar.Value - 75) / 25.0);
+			zoomLabel.Text = Math.Round(c.gs.zoom, 3) + "x";
+			c.lat.aSize = 10 * c.gs.zoom;
+			if(c.zooming)
+				c.RenderZoom();
 		}
 		private void FrameResizing(object sender, EventArgs e) {
 			if(WindowState!=FormWindowState.Minimized)
@@ -58,12 +81,42 @@ namespace QMStuff_v2
 		}
 
 		private void GenerateButton_Click(object sender, EventArgs e) {
-			ProgressForm pf = new ProgressForm();
+			BackgroundWorker worker = new BackgroundWorker();
+			worker.WorkerReportsProgress = true;
+			worker.DoWork += Worker_DoWork;
+			worker.ProgressChanged += Worker_ProgressChanged;
+			worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+			pf = new ProgressForm();
 			pf.Show();
-			c.lat.GenerateChanges(pf);
+			worker.RunWorkerAsync();
 			playGroup.Enabled = true;
 			probGroup.Enabled = false;
+		}
+		private void Worker_DoWork(object sender, DoWorkEventArgs e) {
+			BackgroundWorker worker = sender as BackgroundWorker;
+			c.lat.GenerateChanges(worker, 1);
+		}
+		private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
+			pf.SetValue(e.ProgressPercentage);
+		}
+		private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
 			pf.Close();
+		}
+		private void Form1_KeyDown(object sender, KeyEventArgs e) {
+			if(e.KeyCode == Keys.ControlKey) {
+				c.ctrlPressed = true;
+				redrawClock.Start();
+			}
+		}
+		private void Form1_KeyUp(object sender, KeyEventArgs e) {
+			if(e.KeyCode == Keys.ControlKey) {
+				c.ctrlPressed = false;
+				if(c.zooming) {
+					c.zooming = false;
+					redrawClock.Stop();
+					c.ReRender();
+				}
+			}
 		}
 		private void PlayStep(object source, System.Timers.ElapsedEventArgs e)
         {
@@ -138,15 +191,28 @@ namespace QMStuff_v2
 			yProbValue.Value = yProbBar.Value;
 		}
 		private void speedBar_Scroll(object sender, EventArgs e){
-            clock.Interval = 900 - (speedBar.Value * 8);
+            clock.Interval = 140 - (speedBar.Value * 1);
 		}
 		private void zoomBar_Scroll(object sender, EventArgs e) {
+			c.initZoom = c.gs.zoom;
 			c.gs.zoom = Math.Pow(2, (zoomBar.Value-75)/25.0);
 			zoomLabel.Text = Math.Round(c.gs.zoom, 3) + "x";
 			c.lat.aSize = 10 * c.gs.zoom;
+			if(c.zooming) {
+				c.RenderZoom();
+			}
+		}
+		private void zoomBar_MouseDown(object sender, MouseEventArgs e) {
+			c.zooming=true;
+			c.initZoom = c.gs.zoom;
+			redrawClock.Start();
+		}
+		private void zoomBar_MouseUp(object sender, MouseEventArgs e) {
+			c.zooming=false;
+			redrawClock.Stop();
 			c.ReRender();
 		}
-		
+
 		private void xProbValue_ValueChanged(object sender, EventArgs e) {
 			xProbBar.Value = (int) xProbValue.Value;
 			c.lat.Xprobability = (double)(xProbBar.Value) / 100;
@@ -160,26 +226,39 @@ namespace QMStuff_v2
 			stepCounter.Value = Math.Min(
 				(int)stepCounter.Value,
 				c.lat.changes.Count);
-			c.ind = (int) stepCounter.Value;
+			c.ind = (int) stepCounter.Value - 1;
 			if(c.ind - oldInd == 1)
 				c.RenderNext();
-			else if(c.ind != c.lat.changes.Count || c.ind-oldInd!=0)
+			else if(c.ind != c.lat.changes.Count-1)// || c.ind-oldInd!=0)
 				c.ReRender();
+			else {
+				clock.Stop();
+				playButton.Text = "Play";
+				speedBar.Visible = playSpeedLabel.Visible = false;
+			}
 		}
 	}
 	public class Canvas : Panel {
+		private Form1 form;
 		public Bitmap bmp { get; set; }
 		public Lattice lat { get; set; }
 		public GraphicsSettings gs { get; set; }
 		public int ind { get; set; }
+		public bool ctrlPressed { get; set; }
+		public bool zooming { get; set; }
+		public double initZoom { get; set; }
 
-		public Canvas(Size s) {
+		public Canvas(Form1 f, Size s) {
+			form = f;
 			lat = new Lattice();
 			bmp = new Bitmap(s.Width, s.Height);
 			gs = new GraphicsSettings();
 			ind = 0;
 			AutoSize = true;
 			DoubleBuffered = true;
+
+			this.MouseWheel += Canvas_MouseWheel;
+
 		}
 		public void SetSize(Size s) {
 			bmp = new Bitmap(s.Width, s.Height);
@@ -189,52 +268,78 @@ namespace QMStuff_v2
 			g.DrawImage(bmp, 0, 0);
 		}
 		public void RenderNext() {
-			Graphics g = Graphics.FromImage(bmp);
-			g.SmoothingMode = SmoothingMode.AntiAlias;
-			if(gs.axes) {
-				int w = bmp.Width;
-				int h = bmp.Height;
-				g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
-				g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
-			}
-			if(ind < lat.changes.Count) {
-				LatticeChange lc = lat.changes[ind];
-				SolidBrush br = gs.fgBrush;
-				foreach(Atom a in lc.on) {
-					g.FillRectangle(br,
-						(float) (bmp.Width/2 + lat.aSize*(a.x - .5)),
-						(float) (bmp.Height/2 - lat.aSize*(a.y + .5)),
-						(int)lat.aSize, (int)lat.aSize);
+			using(var g = Graphics.FromImage(bmp)) {
+				g.SmoothingMode = SmoothingMode.AntiAlias;
+				if(gs.axes) {
+					int w = bmp.Width;
+					int h = bmp.Height;
+					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
+					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
+				}
+				if(ind < lat.changes.Count) {
+					LatticeChange lc = lat.changes[ind];
+					SolidBrush br = gs.fgBrush;
+					foreach(Atom a in lc.on) {
+						g.FillRectangle(br,
+							(float)(bmp.Width/2 + lat.aSize*(a.x - .5)),
+							(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
+							(int)lat.aSize, (int)lat.aSize);
+					}
 				}
 			}
 			Invalidate();
 		}
 		public void ReRender() {
-			Graphics g = Graphics.FromImage(bmp);
-			g.Clear(Color.Transparent);
-			g.SmoothingMode = SmoothingMode.AntiAlias;
-			if(gs.axes) {
-				int w = bmp.Width;
-				int h = bmp.Height;
-				g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
-				g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
-			}
-			for(int i=0; i<ind; i++) {
-				LatticeChange lc = lat.changes[i];
-				SolidBrush br = gs.fgBrush;
-				foreach(Atom a in lc.on) {
-					g.FillRectangle(br,
-						(float)(bmp.Width/2 + lat.aSize*(a.x - .5)),
-						(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
-						(int)lat.aSize, (int)lat.aSize);
+			using(var g = Graphics.FromImage(bmp)) {
+				g.Clear(Color.Transparent);
+				g.SmoothingMode = SmoothingMode.AntiAlias;
+				if(gs.axes) {
+					int w = bmp.Width;
+					int h = bmp.Height;
+					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
+					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
+				}
+				for(int i = 0; i<=ind; i++) {
+					LatticeChange lc = lat.changes[i];
+					SolidBrush br = gs.fgBrush;
+					foreach(Atom a in lc.on) {
+						g.FillRectangle(br,
+							(float)(bmp.Width/2 + lat.aSize*(a.x - .5)),
+							(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
+							(int)lat.aSize, (int)lat.aSize);
+					}
 				}
 			}
+			Invalidate();
+		}
+		public void RenderZoom() {
+			int w = bmp.Width;
+			int h = bmp.Height;
+			Bitmap img = new Bitmap(w, h);
+			double zoomRatio = gs.zoom / initZoom;
+			Rectangle rect = new Rectangle(
+				(int)((w - zoomRatio*w)/2), (int)((h - zoomRatio*h)/2),
+				(int)(w*zoomRatio), (int)(h*zoomRatio));
+			Console.WriteLine(2* rect.X + rect.Width +" " + w);
+			using(var graphics = Graphics.FromImage(img)) {
+				graphics.DrawImage(bmp, rect);
+			}
+			bmp.Dispose();
+			bmp = img;
 			Invalidate();
 		}
 		public void Restart() {
 			ind = 0;
 			lat = new Lattice();
 			lat.aSize = 10 * gs.zoom;
+		}
+
+		private void Canvas_MouseWheel(object sender, MouseEventArgs e) {
+			if(ctrlPressed) {
+				zooming = true;
+				initZoom = gs.zoom;
+				form.zoom(e.Delta);
+			}
 		}
 	}
 	public class Lattice {
@@ -308,7 +413,7 @@ namespace QMStuff_v2
 					count++;
 			return count;
 		}
-		public void GenerateChanges(ProgressForm pf) {
+		public void GenerateChanges(BackgroundWorker worker, int bound) {
 			Boolean done = false;
 			LatticeChange lc = new LatticeChange();
 			int asd = changes.Count;
@@ -316,12 +421,14 @@ namespace QMStuff_v2
 				if (rnd.NextDouble() < Xprobability) {
 					a.excited=true;
 					lc.AddOn(a);
+					bound = Math.Max(bound, Math.Abs(a.x));
 				}
 			}
 			foreach (Atom a in nextAtomsY.ToList()) {
 				if (rnd.NextDouble() < Yprobability) {
 					a.excited=true;
 					lc.AddOn(a);
+					bound = Math.Max(bound, Math.Abs(a.y));
 				}
 			}
 			foreach(Atom a in lc.on) {
@@ -349,8 +456,8 @@ namespace QMStuff_v2
 				}
 			}
 			changes.Add(lc);
-			pf.Increment();
-			if (!done) GenerateChanges(pf);
+			worker.ReportProgress(100*bound/(sz/2));
+			if (!done) GenerateChanges(worker, bound);
 		}
     }
     public class Atom
@@ -358,7 +465,7 @@ namespace QMStuff_v2
         public int x { get; set; }
         public int y { get; set; }
         public int z { get; set; }
-        public Boolean excited { get; set; }
+        public bool excited { get; set; }
 
         public Atom(int x1, int y1, int z1)
         {
@@ -392,7 +499,7 @@ namespace QMStuff_v2
         public SolidBrush bgBrush { get; set; }
         public SolidBrush fgBrush { get; set; }
         public Pen axisPen { get; set; }
-        public Boolean axes { get; set; }
+        public bool axes { get; set; }
 		public double zoom { get; set; }
 
         public GraphicsSettings()
