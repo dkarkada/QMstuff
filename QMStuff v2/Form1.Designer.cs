@@ -37,7 +37,6 @@
 			this.restartButton = new System.Windows.Forms.Button();
 			this.backButton = new System.Windows.Forms.Button();
 			this.yProbBar = new System.Windows.Forms.TrackBar();
-			this.playSpeedLabel = new System.Windows.Forms.Label();
 			this.playButton = new System.Windows.Forms.Button();
 			this.fwdButton = new System.Windows.Forms.Button();
 			this.speedBar = new System.Windows.Forms.TrackBar();
@@ -49,17 +48,19 @@
 			this.probGroup = new System.Windows.Forms.Panel();
 			this.GenerateButton = new System.Windows.Forms.Button();
 			this.playGroup = new System.Windows.Forms.Panel();
+			this.skipToEndButton = new System.Windows.Forms.Button();
+			this.skipToBeginningButton = new System.Windows.Forms.Button();
 			this.splitPanel = new System.Windows.Forms.SplitContainer();
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.FlowLayout = new System.Windows.Forms.FlowLayoutPanel();
 			this.zoomGroup = new System.Windows.Forms.Panel();
-			this.zoomLabel = new System.Windows.Forms.Label();
-			this.zoomInButton = new System.Windows.Forms.Button();
-			this.zoomOutButton = new System.Windows.Forms.Button();
 			this.resetZoomButton = new System.Windows.Forms.Button();
-			this.zoomBar = new System.Windows.Forms.TrackBar();
+			this.zoomButton1 = new System.Windows.Forms.RadioButton();
+			this.zoomButton2 = new System.Windows.Forms.RadioButton();
+			this.zoomButton3 = new System.Windows.Forms.RadioButton();
+			this.zoomButton4 = new System.Windows.Forms.RadioButton();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -74,13 +75,12 @@
 			this.tabControl1.SuspendLayout();
 			this.FlowLayout.SuspendLayout();
 			this.zoomGroup.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// stepCounter
 			// 
 			this.stepCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.stepCounter.Location = new System.Drawing.Point(151, 145);
+			this.stepCounter.Location = new System.Drawing.Point(223, 19);
 			this.stepCounter.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -99,7 +99,7 @@
 			// yProbValue
 			// 
 			this.yProbValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.yProbValue.Location = new System.Drawing.Point(19, 81);
+			this.yProbValue.Location = new System.Drawing.Point(53, 74);
 			this.yProbValue.Name = "yProbValue";
 			this.yProbValue.Size = new System.Drawing.Size(49, 23);
 			this.yProbValue.TabIndex = 12;
@@ -113,7 +113,7 @@
 			// xProbValue
 			// 
 			this.xProbValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.xProbValue.Location = new System.Drawing.Point(19, 26);
+			this.xProbValue.Location = new System.Drawing.Point(53, 23);
 			this.xProbValue.Name = "xProbValue";
 			this.xProbValue.Size = new System.Drawing.Size(49, 23);
 			this.xProbValue.TabIndex = 11;
@@ -128,28 +128,28 @@
 			// 
 			this.yProbLabel.AutoSize = true;
 			this.yProbLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.yProbLabel.Location = new System.Drawing.Point(336, 83);
+			this.yProbLabel.Location = new System.Drawing.Point(23, 74);
 			this.yProbLabel.Name = "yProbLabel";
-			this.yProbLabel.Size = new System.Drawing.Size(49, 17);
+			this.yProbLabel.Size = new System.Drawing.Size(24, 17);
 			this.yProbLabel.TabIndex = 10;
-			this.yProbLabel.Text = "y Prob";
+			this.yProbLabel.Text = "Py";
 			// 
 			// xProbLabel
 			// 
 			this.xProbLabel.AutoSize = true;
 			this.xProbLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.xProbLabel.Location = new System.Drawing.Point(336, 27);
+			this.xProbLabel.Location = new System.Drawing.Point(23, 23);
 			this.xProbLabel.Name = "xProbLabel";
-			this.xProbLabel.Size = new System.Drawing.Size(48, 17);
+			this.xProbLabel.Size = new System.Drawing.Size(23, 17);
 			this.xProbLabel.TabIndex = 9;
-			this.xProbLabel.Text = "x Prob";
+			this.xProbLabel.Text = "Px";
 			// 
 			// xProbBar
 			// 
-			this.xProbBar.Location = new System.Drawing.Point(80, 27);
+			this.xProbBar.Location = new System.Drawing.Point(108, 23);
 			this.xProbBar.Maximum = 100;
 			this.xProbBar.Name = "xProbBar";
-			this.xProbBar.Size = new System.Drawing.Size(250, 45);
+			this.xProbBar.Size = new System.Drawing.Size(197, 45);
 			this.xProbBar.TabIndex = 8;
 			this.xProbBar.TickFrequency = 10;
 			this.xProbBar.Value = 100;
@@ -158,9 +158,9 @@
 			// restartButton
 			// 
 			this.restartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.restartButton.Location = new System.Drawing.Point(42, 137);
+			this.restartButton.Location = new System.Drawing.Point(114, 9);
 			this.restartButton.Name = "restartButton";
-			this.restartButton.Size = new System.Drawing.Size(69, 36);
+			this.restartButton.Size = new System.Drawing.Size(69, 40);
 			this.restartButton.TabIndex = 7;
 			this.restartButton.Text = "Restart";
 			this.restartButton.UseVisualStyleBackColor = true;
@@ -169,7 +169,7 @@
 			// backButton
 			// 
 			this.backButton.Enabled = false;
-			this.backButton.Location = new System.Drawing.Point(42, 17);
+			this.backButton.Location = new System.Drawing.Point(69, 66);
 			this.backButton.Name = "backButton";
 			this.backButton.Size = new System.Drawing.Size(40, 40);
 			this.backButton.TabIndex = 0;
@@ -179,30 +179,19 @@
 			// 
 			// yProbBar
 			// 
-			this.yProbBar.Location = new System.Drawing.Point(80, 83);
+			this.yProbBar.Location = new System.Drawing.Point(108, 74);
 			this.yProbBar.Maximum = 100;
 			this.yProbBar.Name = "yProbBar";
-			this.yProbBar.Size = new System.Drawing.Size(250, 45);
+			this.yProbBar.Size = new System.Drawing.Size(197, 45);
 			this.yProbBar.TabIndex = 3;
 			this.yProbBar.TickFrequency = 10;
 			this.yProbBar.Value = 100;
 			this.yProbBar.Scroll += new System.EventHandler(this.yProbBar_Scroll);
 			// 
-			// playSpeedLabel
-			// 
-			this.playSpeedLabel.AutoSize = true;
-			this.playSpeedLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.playSpeedLabel.Location = new System.Drawing.Point(81, 107);
-			this.playSpeedLabel.Name = "playSpeedLabel";
-			this.playSpeedLabel.Size = new System.Drawing.Size(80, 17);
-			this.playSpeedLabel.TabIndex = 6;
-			this.playSpeedLabel.Text = "Play Speed";
-			this.playSpeedLabel.Visible = false;
-			// 
 			// playButton
 			// 
 			this.playButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.playButton.Location = new System.Drawing.Point(89, 17);
+			this.playButton.Location = new System.Drawing.Point(115, 66);
 			this.playButton.Name = "playButton";
 			this.playButton.Size = new System.Drawing.Size(69, 40);
 			this.playButton.TabIndex = 1;
@@ -212,7 +201,7 @@
 			// 
 			// fwdButton
 			// 
-			this.fwdButton.Location = new System.Drawing.Point(164, 17);
+			this.fwdButton.Location = new System.Drawing.Point(190, 66);
 			this.fwdButton.Name = "fwdButton";
 			this.fwdButton.Size = new System.Drawing.Size(40, 40);
 			this.fwdButton.TabIndex = 2;
@@ -222,10 +211,11 @@
 			// 
 			// speedBar
 			// 
-			this.speedBar.Location = new System.Drawing.Point(8, 80);
+			this.speedBar.Location = new System.Drawing.Point(23, 125);
+			this.speedBar.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
 			this.speedBar.Maximum = 100;
 			this.speedBar.Name = "speedBar";
-			this.speedBar.Size = new System.Drawing.Size(231, 45);
+			this.speedBar.Size = new System.Drawing.Size(253, 45);
 			this.speedBar.TabIndex = 5;
 			this.speedBar.TickFrequency = 10;
 			this.speedBar.Value = 50;
@@ -278,18 +268,19 @@
 			this.probGroup.Controls.Add(this.xProbBar);
 			this.probGroup.Controls.Add(this.xProbValue);
 			this.probGroup.Controls.Add(this.xProbLabel);
-			this.probGroup.Location = new System.Drawing.Point(20, 20);
+			this.probGroup.Location = new System.Drawing.Point(30, 30);
 			this.probGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.probGroup.Name = "probGroup";
-			this.probGroup.Size = new System.Drawing.Size(399, 187);
+			this.probGroup.Padding = new System.Windows.Forms.Padding(20);
+			this.probGroup.Size = new System.Drawing.Size(643, 214);
 			this.probGroup.TabIndex = 0;
 			// 
 			// GenerateButton
 			// 
 			this.GenerateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.GenerateButton.Location = new System.Drawing.Point(134, 125);
+			this.GenerateButton.Location = new System.Drawing.Point(468, 23);
 			this.GenerateButton.Name = "GenerateButton";
-			this.GenerateButton.Size = new System.Drawing.Size(131, 48);
+			this.GenerateButton.Size = new System.Drawing.Size(131, 40);
 			this.GenerateButton.TabIndex = 13;
 			this.GenerateButton.Text = "Generate";
 			this.GenerateButton.UseVisualStyleBackColor = true;
@@ -298,7 +289,8 @@
 			// playGroup
 			// 
 			this.playGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.playGroup.Controls.Add(this.playSpeedLabel);
+			this.playGroup.Controls.Add(this.skipToEndButton);
+			this.playGroup.Controls.Add(this.skipToBeginningButton);
 			this.playGroup.Controls.Add(this.speedBar);
 			this.playGroup.Controls.Add(this.stepCounter);
 			this.playGroup.Controls.Add(this.fwdButton);
@@ -306,11 +298,31 @@
 			this.playGroup.Controls.Add(this.playButton);
 			this.playGroup.Controls.Add(this.backButton);
 			this.playGroup.Enabled = false;
-			this.playGroup.Location = new System.Drawing.Point(459, 20);
+			this.playGroup.Location = new System.Drawing.Point(30, 284);
 			this.playGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.playGroup.Name = "playGroup";
-			this.playGroup.Size = new System.Drawing.Size(249, 187);
+			this.playGroup.Padding = new System.Windows.Forms.Padding(20);
+			this.playGroup.Size = new System.Drawing.Size(301, 187);
 			this.playGroup.TabIndex = 15;
+			// 
+			// skipToEndButton
+			// 
+			this.skipToEndButton.Location = new System.Drawing.Point(236, 66);
+			this.skipToEndButton.Name = "skipToEndButton";
+			this.skipToEndButton.Size = new System.Drawing.Size(40, 40);
+			this.skipToEndButton.TabIndex = 16;
+			this.skipToEndButton.Text = ">";
+			this.skipToEndButton.UseVisualStyleBackColor = true;
+			// 
+			// skipToBeginningButton
+			// 
+			this.skipToBeginningButton.Enabled = false;
+			this.skipToBeginningButton.Location = new System.Drawing.Point(23, 66);
+			this.skipToBeginningButton.Name = "skipToBeginningButton";
+			this.skipToBeginningButton.Size = new System.Drawing.Size(40, 40);
+			this.skipToBeginningButton.TabIndex = 15;
+			this.skipToBeginningButton.Text = "<";
+			this.skipToBeginningButton.UseVisualStyleBackColor = true;
 			// 
 			// splitPanel
 			// 
@@ -367,81 +379,96 @@
 			this.FlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.FlowLayout.Location = new System.Drawing.Point(0, 0);
 			this.FlowLayout.Name = "FlowLayout";
+			this.FlowLayout.Padding = new System.Windows.Forms.Padding(10);
 			this.FlowLayout.Size = new System.Drawing.Size(839, 761);
 			this.FlowLayout.TabIndex = 16;
 			// 
 			// zoomGroup
 			// 
 			this.zoomGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.zoomGroup.Controls.Add(this.zoomLabel);
-			this.zoomGroup.Controls.Add(this.zoomInButton);
-			this.zoomGroup.Controls.Add(this.zoomOutButton);
+			this.zoomGroup.Controls.Add(this.zoomButton4);
+			this.zoomGroup.Controls.Add(this.zoomButton3);
+			this.zoomGroup.Controls.Add(this.zoomButton2);
+			this.zoomGroup.Controls.Add(this.zoomButton1);
 			this.zoomGroup.Controls.Add(this.resetZoomButton);
-			this.zoomGroup.Controls.Add(this.zoomBar);
-			this.zoomGroup.Location = new System.Drawing.Point(20, 247);
+			this.zoomGroup.Location = new System.Drawing.Point(371, 284);
 			this.zoomGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.zoomGroup.Name = "zoomGroup";
-			this.zoomGroup.Size = new System.Drawing.Size(331, 140);
+			this.zoomGroup.Padding = new System.Windows.Forms.Padding(10);
+			this.zoomGroup.Size = new System.Drawing.Size(302, 187);
 			this.zoomGroup.TabIndex = 16;
-			// 
-			// zoomLabel
-			// 
-			this.zoomLabel.AutoSize = true;
-			this.zoomLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.zoomLabel.Location = new System.Drawing.Point(142, 100);
-			this.zoomLabel.Name = "zoomLabel";
-			this.zoomLabel.Size = new System.Drawing.Size(22, 17);
-			this.zoomLabel.TabIndex = 21;
-			this.zoomLabel.Text = "1x";
-			// 
-			// zoomInButton
-			// 
-			this.zoomInButton.BackgroundImage = global::QMStuff_v2.Properties.Resources.zoomInIcon2;
-			this.zoomInButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.zoomInButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.zoomInButton.Location = new System.Drawing.Point(238, 10);
-			this.zoomInButton.Name = "zoomInButton";
-			this.zoomInButton.Size = new System.Drawing.Size(50, 50);
-			this.zoomInButton.TabIndex = 20;
-			this.zoomInButton.UseVisualStyleBackColor = true;
-			this.zoomInButton.Click += new System.EventHandler(this.zoomInButton_Click);
-			// 
-			// zoomOutButton
-			// 
-			this.zoomOutButton.BackgroundImage = global::QMStuff_v2.Properties.Resources.zoomOutIcon2;
-			this.zoomOutButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-			this.zoomOutButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.zoomOutButton.Location = new System.Drawing.Point(48, 10);
-			this.zoomOutButton.Name = "zoomOutButton";
-			this.zoomOutButton.Size = new System.Drawing.Size(50, 50);
-			this.zoomOutButton.TabIndex = 19;
-			this.zoomOutButton.UseVisualStyleBackColor = true;
-			this.zoomOutButton.Click += new System.EventHandler(this.zoomOutButton_Click);
 			// 
 			// resetZoomButton
 			// 
 			this.resetZoomButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.resetZoomButton.Location = new System.Drawing.Point(104, 10);
+			this.resetZoomButton.Location = new System.Drawing.Point(101, 132);
+			this.resetZoomButton.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
 			this.resetZoomButton.Name = "resetZoomButton";
-			this.resetZoomButton.Size = new System.Drawing.Size(128, 50);
+			this.resetZoomButton.Size = new System.Drawing.Size(98, 40);
 			this.resetZoomButton.TabIndex = 22;
 			this.resetZoomButton.Text = "Reset Zoom";
 			this.resetZoomButton.UseVisualStyleBackColor = true;
 			this.resetZoomButton.Click += new System.EventHandler(this.resetZoomButton_Click);
 			// 
-			// zoomBar
+			// zoomButton1
 			// 
-			this.zoomBar.Location = new System.Drawing.Point(19, 72);
-			this.zoomBar.Maximum = 100;
-			this.zoomBar.Name = "zoomBar";
-			this.zoomBar.Size = new System.Drawing.Size(291, 45);
-			this.zoomBar.TabIndex = 17;
-			this.zoomBar.TickFrequency = 0;
-			this.zoomBar.TickStyle = System.Windows.Forms.TickStyle.None;
-			this.zoomBar.Value = 75;
-			this.zoomBar.Scroll += new System.EventHandler(this.zoomBar_Scroll);
-			this.zoomBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.zoomBar_MouseDown);
-			this.zoomBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.zoomBar_MouseUp);
+			this.zoomButton1.Appearance = System.Windows.Forms.Appearance.Button;
+			this.zoomButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomButton1.Location = new System.Drawing.Point(15, 20);
+			this.zoomButton1.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
+			this.zoomButton1.Name = "zoomButton1";
+			this.zoomButton1.Size = new System.Drawing.Size(60, 60);
+			this.zoomButton1.TabIndex = 23;
+			this.zoomButton1.TabStop = true;
+			this.zoomButton1.Text = "0.125";
+			this.zoomButton1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.zoomButton1.UseVisualStyleBackColor = true;
+			this.zoomButton1.CheckedChanged += new System.EventHandler(this.zoomButton1_CheckedChanged);
+			// 
+			// zoomButton2
+			// 
+			this.zoomButton2.Appearance = System.Windows.Forms.Appearance.Button;
+			this.zoomButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomButton2.Location = new System.Drawing.Point(85, 20);
+			this.zoomButton2.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
+			this.zoomButton2.Name = "zoomButton2";
+			this.zoomButton2.Size = new System.Drawing.Size(60, 60);
+			this.zoomButton2.TabIndex = 24;
+			this.zoomButton2.TabStop = true;
+			this.zoomButton2.Text = "0.25";
+			this.zoomButton2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.zoomButton2.UseVisualStyleBackColor = true;
+			this.zoomButton2.CheckedChanged += new System.EventHandler(this.zoomButton2_CheckedChanged);
+			// 
+			// zoomButton3
+			// 
+			this.zoomButton3.Appearance = System.Windows.Forms.Appearance.Button;
+			this.zoomButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomButton3.Location = new System.Drawing.Point(155, 20);
+			this.zoomButton3.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
+			this.zoomButton3.Name = "zoomButton3";
+			this.zoomButton3.Size = new System.Drawing.Size(60, 60);
+			this.zoomButton3.TabIndex = 25;
+			this.zoomButton3.TabStop = true;
+			this.zoomButton3.Text = "0.5";
+			this.zoomButton3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.zoomButton3.UseVisualStyleBackColor = true;
+			this.zoomButton3.CheckedChanged += new System.EventHandler(this.zoomButton3_CheckedChanged);
+			// 
+			// zoomButton4
+			// 
+			this.zoomButton4.Appearance = System.Windows.Forms.Appearance.Button;
+			this.zoomButton4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomButton4.Location = new System.Drawing.Point(225, 20);
+			this.zoomButton4.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
+			this.zoomButton4.Name = "zoomButton4";
+			this.zoomButton4.Size = new System.Drawing.Size(60, 60);
+			this.zoomButton4.TabIndex = 26;
+			this.zoomButton4.TabStop = true;
+			this.zoomButton4.Text = "1.0";
+			this.zoomButton4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.zoomButton4.UseVisualStyleBackColor = true;
+			this.zoomButton4.CheckedChanged += new System.EventHandler(this.zoomButton4_CheckedChanged);
 			// 
 			// Form1
 			// 
@@ -472,8 +499,6 @@
 			this.tabControl1.ResumeLayout(false);
 			this.FlowLayout.ResumeLayout(false);
 			this.zoomGroup.ResumeLayout(false);
-			this.zoomGroup.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.zoomBar)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -486,7 +511,6 @@
         private System.Windows.Forms.Button fwdButton;
         private System.Windows.Forms.TrackBar speedBar;
         private System.Windows.Forms.TrackBar xProbBar;
-        private System.Windows.Forms.Label playSpeedLabel;
         private System.Windows.Forms.Label xProbLabel;
         private System.Windows.Forms.Label yProbLabel;
 		private System.Windows.Forms.NumericUpDown yProbValue;
@@ -502,15 +526,17 @@
 		private System.Windows.Forms.SplitContainer splitPanel;
 		private System.Windows.Forms.FlowLayoutPanel FlowLayout;
 		private System.Windows.Forms.Panel zoomGroup;
-		private System.Windows.Forms.TrackBar zoomBar;
-		private System.Windows.Forms.Button zoomInButton;
-		private System.Windows.Forms.Button zoomOutButton;
-		private System.Windows.Forms.Label zoomLabel;
 		private System.Windows.Forms.TabControl tabControl1;
 		private System.Windows.Forms.TabPage tabPage1;
 		private System.Windows.Forms.TabPage tabPage2;
 		private System.Windows.Forms.Button resetZoomButton;
 		private System.Windows.Forms.Button GenerateButton;
+		private System.Windows.Forms.Button skipToEndButton;
+		private System.Windows.Forms.Button skipToBeginningButton;
+		private System.Windows.Forms.RadioButton zoomButton4;
+		private System.Windows.Forms.RadioButton zoomButton3;
+		private System.Windows.Forms.RadioButton zoomButton2;
+		private System.Windows.Forms.RadioButton zoomButton1;
 	}
 }
 
