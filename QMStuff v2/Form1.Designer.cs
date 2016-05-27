@@ -56,11 +56,11 @@
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.FlowLayout = new System.Windows.Forms.FlowLayoutPanel();
 			this.zoomGroup = new System.Windows.Forms.Panel();
-			this.resetZoomButton = new System.Windows.Forms.Button();
-			this.zoomButton1 = new System.Windows.Forms.RadioButton();
-			this.zoomButton2 = new System.Windows.Forms.RadioButton();
-			this.zoomButton3 = new System.Windows.Forms.RadioButton();
 			this.zoomButton4 = new System.Windows.Forms.RadioButton();
+			this.zoomButton3 = new System.Windows.Forms.RadioButton();
+			this.zoomButton2 = new System.Windows.Forms.RadioButton();
+			this.zoomButton1 = new System.Windows.Forms.RadioButton();
+			this.zoomTitle = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -168,7 +168,6 @@
 			// 
 			// backButton
 			// 
-			this.backButton.Enabled = false;
 			this.backButton.Location = new System.Drawing.Point(69, 66);
 			this.backButton.Name = "backButton";
 			this.backButton.Size = new System.Drawing.Size(40, 40);
@@ -298,7 +297,7 @@
 			this.playGroup.Controls.Add(this.playButton);
 			this.playGroup.Controls.Add(this.backButton);
 			this.playGroup.Enabled = false;
-			this.playGroup.Location = new System.Drawing.Point(30, 284);
+			this.playGroup.Location = new System.Drawing.Point(372, 284);
 			this.playGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.playGroup.Name = "playGroup";
 			this.playGroup.Padding = new System.Windows.Forms.Padding(20);
@@ -311,18 +310,19 @@
 			this.skipToEndButton.Name = "skipToEndButton";
 			this.skipToEndButton.Size = new System.Drawing.Size(40, 40);
 			this.skipToEndButton.TabIndex = 16;
-			this.skipToEndButton.Text = ">";
+			this.skipToEndButton.Text = ">>";
 			this.skipToEndButton.UseVisualStyleBackColor = true;
+			this.skipToEndButton.Click += new System.EventHandler(this.skipToEndButton_Click);
 			// 
 			// skipToBeginningButton
 			// 
-			this.skipToBeginningButton.Enabled = false;
 			this.skipToBeginningButton.Location = new System.Drawing.Point(23, 66);
 			this.skipToBeginningButton.Name = "skipToBeginningButton";
 			this.skipToBeginningButton.Size = new System.Drawing.Size(40, 40);
 			this.skipToBeginningButton.TabIndex = 15;
-			this.skipToBeginningButton.Text = "<";
+			this.skipToBeginningButton.Text = "<<";
 			this.skipToBeginningButton.UseVisualStyleBackColor = true;
+			this.skipToBeginningButton.Click += new System.EventHandler(this.skipToBeginningButton_Click);
 			// 
 			// splitPanel
 			// 
@@ -374,8 +374,8 @@
 			// 
 			this.FlowLayout.AutoScroll = true;
 			this.FlowLayout.Controls.Add(this.probGroup);
-			this.FlowLayout.Controls.Add(this.playGroup);
 			this.FlowLayout.Controls.Add(this.zoomGroup);
+			this.FlowLayout.Controls.Add(this.playGroup);
 			this.FlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.FlowLayout.Location = new System.Drawing.Point(0, 0);
 			this.FlowLayout.Name = "FlowLayout";
@@ -386,65 +386,39 @@
 			// zoomGroup
 			// 
 			this.zoomGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.zoomGroup.Controls.Add(this.zoomTitle);
 			this.zoomGroup.Controls.Add(this.zoomButton4);
 			this.zoomGroup.Controls.Add(this.zoomButton3);
 			this.zoomGroup.Controls.Add(this.zoomButton2);
 			this.zoomGroup.Controls.Add(this.zoomButton1);
-			this.zoomGroup.Controls.Add(this.resetZoomButton);
-			this.zoomGroup.Location = new System.Drawing.Point(371, 284);
+			this.zoomGroup.Location = new System.Drawing.Point(30, 284);
 			this.zoomGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.zoomGroup.Name = "zoomGroup";
 			this.zoomGroup.Padding = new System.Windows.Forms.Padding(10);
 			this.zoomGroup.Size = new System.Drawing.Size(302, 187);
 			this.zoomGroup.TabIndex = 16;
 			// 
-			// resetZoomButton
+			// zoomButton4
 			// 
-			this.resetZoomButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.resetZoomButton.Location = new System.Drawing.Point(101, 132);
-			this.resetZoomButton.Margin = new System.Windows.Forms.Padding(10, 3, 3, 3);
-			this.resetZoomButton.Name = "resetZoomButton";
-			this.resetZoomButton.Size = new System.Drawing.Size(98, 40);
-			this.resetZoomButton.TabIndex = 22;
-			this.resetZoomButton.Text = "Reset Zoom";
-			this.resetZoomButton.UseVisualStyleBackColor = true;
-			this.resetZoomButton.Click += new System.EventHandler(this.resetZoomButton_Click);
-			// 
-			// zoomButton1
-			// 
-			this.zoomButton1.Appearance = System.Windows.Forms.Appearance.Button;
-			this.zoomButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.zoomButton1.Location = new System.Drawing.Point(15, 20);
-			this.zoomButton1.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
-			this.zoomButton1.Name = "zoomButton1";
-			this.zoomButton1.Size = new System.Drawing.Size(60, 60);
-			this.zoomButton1.TabIndex = 23;
-			this.zoomButton1.TabStop = true;
-			this.zoomButton1.Text = "0.125";
-			this.zoomButton1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.zoomButton1.UseVisualStyleBackColor = true;
-			this.zoomButton1.CheckedChanged += new System.EventHandler(this.zoomButton1_CheckedChanged);
-			// 
-			// zoomButton2
-			// 
-			this.zoomButton2.Appearance = System.Windows.Forms.Appearance.Button;
-			this.zoomButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.zoomButton2.Location = new System.Drawing.Point(85, 20);
-			this.zoomButton2.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
-			this.zoomButton2.Name = "zoomButton2";
-			this.zoomButton2.Size = new System.Drawing.Size(60, 60);
-			this.zoomButton2.TabIndex = 24;
-			this.zoomButton2.TabStop = true;
-			this.zoomButton2.Text = "0.25";
-			this.zoomButton2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.zoomButton2.UseVisualStyleBackColor = true;
-			this.zoomButton2.CheckedChanged += new System.EventHandler(this.zoomButton2_CheckedChanged);
+			this.zoomButton4.Appearance = System.Windows.Forms.Appearance.Button;
+			this.zoomButton4.Checked = true;
+			this.zoomButton4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomButton4.Location = new System.Drawing.Point(225, 66);
+			this.zoomButton4.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
+			this.zoomButton4.Name = "zoomButton4";
+			this.zoomButton4.Size = new System.Drawing.Size(60, 60);
+			this.zoomButton4.TabIndex = 26;
+			this.zoomButton4.TabStop = true;
+			this.zoomButton4.Text = "1.0";
+			this.zoomButton4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.zoomButton4.UseVisualStyleBackColor = true;
+			this.zoomButton4.CheckedChanged += new System.EventHandler(this.zoomButton4_CheckedChanged);
 			// 
 			// zoomButton3
 			// 
 			this.zoomButton3.Appearance = System.Windows.Forms.Appearance.Button;
 			this.zoomButton3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.zoomButton3.Location = new System.Drawing.Point(155, 20);
+			this.zoomButton3.Location = new System.Drawing.Point(155, 66);
 			this.zoomButton3.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
 			this.zoomButton3.Name = "zoomButton3";
 			this.zoomButton3.Size = new System.Drawing.Size(60, 60);
@@ -455,20 +429,45 @@
 			this.zoomButton3.UseVisualStyleBackColor = true;
 			this.zoomButton3.CheckedChanged += new System.EventHandler(this.zoomButton3_CheckedChanged);
 			// 
-			// zoomButton4
+			// zoomButton2
 			// 
-			this.zoomButton4.Appearance = System.Windows.Forms.Appearance.Button;
-			this.zoomButton4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.zoomButton4.Location = new System.Drawing.Point(225, 20);
-			this.zoomButton4.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
-			this.zoomButton4.Name = "zoomButton4";
-			this.zoomButton4.Size = new System.Drawing.Size(60, 60);
-			this.zoomButton4.TabIndex = 26;
-			this.zoomButton4.TabStop = true;
-			this.zoomButton4.Text = "1.0";
-			this.zoomButton4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-			this.zoomButton4.UseVisualStyleBackColor = true;
-			this.zoomButton4.CheckedChanged += new System.EventHandler(this.zoomButton4_CheckedChanged);
+			this.zoomButton2.Appearance = System.Windows.Forms.Appearance.Button;
+			this.zoomButton2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomButton2.Location = new System.Drawing.Point(85, 66);
+			this.zoomButton2.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
+			this.zoomButton2.Name = "zoomButton2";
+			this.zoomButton2.Size = new System.Drawing.Size(60, 60);
+			this.zoomButton2.TabIndex = 24;
+			this.zoomButton2.TabStop = true;
+			this.zoomButton2.Text = "0.25";
+			this.zoomButton2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.zoomButton2.UseVisualStyleBackColor = true;
+			this.zoomButton2.CheckedChanged += new System.EventHandler(this.zoomButton2_CheckedChanged);
+			// 
+			// zoomButton1
+			// 
+			this.zoomButton1.Appearance = System.Windows.Forms.Appearance.Button;
+			this.zoomButton1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomButton1.Location = new System.Drawing.Point(15, 66);
+			this.zoomButton1.Margin = new System.Windows.Forms.Padding(5, 10, 5, 5);
+			this.zoomButton1.Name = "zoomButton1";
+			this.zoomButton1.Size = new System.Drawing.Size(60, 60);
+			this.zoomButton1.TabIndex = 23;
+			this.zoomButton1.TabStop = true;
+			this.zoomButton1.Text = "0.125";
+			this.zoomButton1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.zoomButton1.UseVisualStyleBackColor = true;
+			this.zoomButton1.CheckedChanged += new System.EventHandler(this.zoomButton1_CheckedChanged);
+			// 
+			// zoomTitle
+			// 
+			this.zoomTitle.AutoSize = true;
+			this.zoomTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomTitle.Location = new System.Drawing.Point(105, 21);
+			this.zoomTitle.Name = "zoomTitle";
+			this.zoomTitle.Size = new System.Drawing.Size(93, 17);
+			this.zoomTitle.TabIndex = 27;
+			this.zoomTitle.Text = "Zoom Control";
 			// 
 			// Form1
 			// 
@@ -499,6 +498,7 @@
 			this.tabControl1.ResumeLayout(false);
 			this.FlowLayout.ResumeLayout(false);
 			this.zoomGroup.ResumeLayout(false);
+			this.zoomGroup.PerformLayout();
 			this.ResumeLayout(false);
 
         }
@@ -529,7 +529,6 @@
 		private System.Windows.Forms.TabControl tabControl1;
 		private System.Windows.Forms.TabPage tabPage1;
 		private System.Windows.Forms.TabPage tabPage2;
-		private System.Windows.Forms.Button resetZoomButton;
 		private System.Windows.Forms.Button GenerateButton;
 		private System.Windows.Forms.Button skipToEndButton;
 		private System.Windows.Forms.Button skipToBeginningButton;
@@ -537,6 +536,7 @@
 		private System.Windows.Forms.RadioButton zoomButton3;
 		private System.Windows.Forms.RadioButton zoomButton2;
 		private System.Windows.Forms.RadioButton zoomButton1;
+		private System.Windows.Forms.Label zoomTitle;
 	}
 }
 

@@ -17,15 +17,18 @@ namespace QMStuff_v2
 	public partial class Form1 : Form {
 		Canvas c;
 		ProgressForm pf;
-		System.Timers.Timer clock;
+		System.Timers.Timer clock, backRenderClock;
 
 		public Form1() {
 			InitializeComponent();
 			SetSizeAndControls();
 
 			clock = new System.Timers.Timer(100);
-			clock.AutoReset = true;
 			clock.Elapsed += new System.Timers.ElapsedEventHandler(PlayStep);
+
+			backRenderClock = new System.Timers.Timer(200);
+			backRenderClock.AutoReset = false;
+			backRenderClock.Elapsed += new System.Timers.ElapsedEventHandler(backRender);
 
 			DoubleBuffered = true;
 			c.RenderNext();
@@ -40,17 +43,27 @@ namespace QMStuff_v2
 
 			splitPanel.Panel2.BackColor = c.gs.bgBrush.Color;
 			splitPanel.Panel1.BackColor = Color.FromArgb(60, 60, 75);
-			xProbLabel.ForeColor = yProbLabel.ForeColor = Color.White;
+			xProbLabel.ForeColor = yProbLabel.ForeColor = 
+				zoomTitle.ForeColor = Color.White;
 
 			Resize += FrameResizing;
 			splitPanel.SplitterMoved += SplitPanelResized;
 		}
 		public void zoom(int d) {
-			if(d>0) {
+			if(d>0 && c.gs.zoom!=1) {
+				zoomButton4.Checked = true;
+				zoomButton4.Focus();
+				c.gs.zoom = 1;
+				c.lat.aSize = (int)(10*c.gs.zoom);
+				c.ReRender();
 			}
-			else {
+			else if(d<0 && c.gs.zoom!=0.125) {
+				zoomButton1.Checked = true;
+				zoomButton1.Focus();
+				c.gs.zoom = .125;
+				c.lat.aSize = (int)(10*c.gs.zoom);
+				c.ReRender();
 			}
-			c.ReRender();
 		}
 		private void FrameResizing(object sender, EventArgs e) {
 			if(WindowState!=FormWindowState.Minimized)
@@ -72,8 +85,6 @@ namespace QMStuff_v2
 			pf = new ProgressForm();
 			pf.Show();
 			worker.RunWorkerAsync();
-			playGroup.Enabled = true;
-			probGroup.Enabled = false;
 		}
 		private void Worker_DoWork(object sender, DoWorkEventArgs e) {
 			BackgroundWorker worker = sender as BackgroundWorker;
@@ -84,29 +95,51 @@ namespace QMStuff_v2
 		}
 		private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
 			pf.Close();
+			playGroup.Enabled = true;
+			probGroup.Enabled = false;
 		}
 		private void Form1_KeyDown(object sender, KeyEventArgs e) {
 			if(e.KeyCode == Keys.ControlKey)
 				c.ctrlPressed = true;
+			if(e.KeyCode == Keys.Space && playButton.Enabled) {
+				if(!clock.Enabled) {
+					clock.Start();
+					playButton.Text = "Pause";
+					speedBar.Visible = true;
+				}
+				else {
+					clock.Stop();
+					playButton.Text = "Play";
+					speedBar.Visible = false;
+				}
+			}
 		}
 		private void Form1_KeyUp(object sender, KeyEventArgs e) {
 			if (e.KeyCode == Keys.ControlKey)
 				c.ctrlPressed = false;
 		}
-		private void PlayStep(object source, System.Timers.ElapsedEventArgs e)
-        {
+		private void PlayStep(object source, System.Timers.ElapsedEventArgs e) {
 			Action a = delegate () { stepCounter.Value++; };
 			BeginInvoke(a);
 		}
-        private void backButton_Click(object sender, EventArgs e)
+		private void backRender(object source, System.Timers.ElapsedEventArgs e) {
+			BeginInvoke(new Action(c.ReRender));
+		}
+		private void skipToBeginningButton_Click(object sender, EventArgs e) {
+			stepCounter.Value = 1;
+		}
+		private void backButton_Click(object sender, EventArgs e)
         {
-            
+			stepCounter.Value = Math.Max(1, stepCounter.Value-1);
         }
         private void fwdButton_Click(object sender, EventArgs e) {
 			c.RenderNext();
 			stepCounter.Value++;
 		}
-        private void playButton_Click(object sender, EventArgs e)
+		private void skipToEndButton_Click(object sender, EventArgs e) {
+			stepCounter.Value = c.lat.changes.Count;
+		}
+		private void playButton_Click(object sender, EventArgs e)
         {
             if (!clock.Enabled)
             {
@@ -120,11 +153,6 @@ namespace QMStuff_v2
                 speedBar.Visible = false;
             }
         }
-		private void resetZoomButton_Click(object sender, EventArgs e) {
-			c.gs.zoom = 1;
-			c.lat.aSize = 10;
-			c.ReRender();
-		}
 		private void restartButton_Click(object sender, EventArgs e) {
 			clock.Stop();
 			playButton.Text = "Play";
@@ -157,8 +185,7 @@ namespace QMStuff_v2
 		private void yProbValue_ValueChanged(object sender, EventArgs e) {
 			yProbBar.Value = (int)yProbValue.Value;
 			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
-		}
-		
+		}		
 		private void stepCounter_ValueChanged(object sender, EventArgs e) {
 			int oldInd = c.ind;
 			stepCounter.Value = Math.Min(
@@ -167,29 +194,34 @@ namespace QMStuff_v2
 			c.ind = (int) stepCounter.Value - 1;
 			if(c.ind - oldInd == 1)
 				c.RenderNext();
-			else if(c.ind != c.lat.changes.Count-1)// || c.ind-oldInd!=0)
-				c.ReRender();
+			else if(c.ind != c.lat.changes.Count-1) {
+				backRenderClock.Start();
+			}
 			else {
 				clock.Stop();
 				playButton.Text = "Play";
 				speedBar.Visible = false;
 			}
 		}
-
-		private void zoomButton4_CheckedChanged(object sender, EventArgs e) {
-
-		}
-
-		private void zoomButton3_CheckedChanged(object sender, EventArgs e) {
-
-		}
-
-		private void zoomButton2_CheckedChanged(object sender, EventArgs e) {
-
-		}
-
 		private void zoomButton1_CheckedChanged(object sender, EventArgs e) {
-
+			c.gs.zoom = .125;
+			c.lat.aSize = (int)(10*c.gs.zoom);
+			c.ReRender();
+		}
+		private void zoomButton2_CheckedChanged(object sender, EventArgs e) {
+			c.gs.zoom = .25;
+			c.lat.aSize = (int)(10*c.gs.zoom);
+			c.ReRender();
+		}
+		private void zoomButton3_CheckedChanged(object sender, EventArgs e) {
+			c.gs.zoom = .5;
+			c.lat.aSize = (int)(10*c.gs.zoom);
+			c.ReRender();
+		}
+		private void zoomButton4_CheckedChanged(object sender, EventArgs e) {
+			c.gs.zoom = 1;
+			c.lat.aSize = (int)(10*c.gs.zoom);
+			c.ReRender();
 		}
 	}
 	public class Canvas : Panel {
