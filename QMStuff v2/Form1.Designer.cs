@@ -56,11 +56,14 @@
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.FlowLayout = new System.Windows.Forms.FlowLayoutPanel();
 			this.zoomGroup = new System.Windows.Forms.Panel();
+			this.zoomTitle = new System.Windows.Forms.Label();
 			this.zoomButton4 = new System.Windows.Forms.RadioButton();
 			this.zoomButton3 = new System.Windows.Forms.RadioButton();
 			this.zoomButton2 = new System.Windows.Forms.RadioButton();
 			this.zoomButton1 = new System.Windows.Forms.RadioButton();
-			this.zoomTitle = new System.Windows.Forms.Label();
+			this.gammaBar = new System.Windows.Forms.TrackBar();
+			this.gammaValue = new System.Windows.Forms.NumericUpDown();
+			this.gammaLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -75,6 +78,8 @@
 			this.tabControl1.SuspendLayout();
 			this.FlowLayout.SuspendLayout();
 			this.zoomGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.gammaBar)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.gammaValue)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -260,6 +265,9 @@
 			// probGroup
 			// 
 			this.probGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.probGroup.Controls.Add(this.gammaLabel);
+			this.probGroup.Controls.Add(this.gammaValue);
+			this.probGroup.Controls.Add(this.gammaBar);
 			this.probGroup.Controls.Add(this.GenerateButton);
 			this.probGroup.Controls.Add(this.yProbLabel);
 			this.probGroup.Controls.Add(this.yProbBar);
@@ -277,7 +285,7 @@
 			// GenerateButton
 			// 
 			this.GenerateButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.GenerateButton.Location = new System.Drawing.Point(468, 23);
+			this.GenerateButton.Location = new System.Drawing.Point(487, 13);
 			this.GenerateButton.Name = "GenerateButton";
 			this.GenerateButton.Size = new System.Drawing.Size(131, 40);
 			this.GenerateButton.TabIndex = 13;
@@ -398,6 +406,16 @@
 			this.zoomGroup.Size = new System.Drawing.Size(302, 187);
 			this.zoomGroup.TabIndex = 16;
 			// 
+			// zoomTitle
+			// 
+			this.zoomTitle.AutoSize = true;
+			this.zoomTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomTitle.Location = new System.Drawing.Point(105, 21);
+			this.zoomTitle.Name = "zoomTitle";
+			this.zoomTitle.Size = new System.Drawing.Size(93, 17);
+			this.zoomTitle.TabIndex = 27;
+			this.zoomTitle.Text = "Zoom Control";
+			// 
 			// zoomButton4
 			// 
 			this.zoomButton4.Appearance = System.Windows.Forms.Appearance.Button;
@@ -459,15 +477,34 @@
 			this.zoomButton1.UseVisualStyleBackColor = true;
 			this.zoomButton1.CheckedChanged += new System.EventHandler(this.zoomButton1_CheckedChanged);
 			// 
-			// zoomTitle
+			// gammaBar
 			// 
-			this.zoomTitle.AutoSize = true;
-			this.zoomTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.zoomTitle.Location = new System.Drawing.Point(105, 21);
-			this.zoomTitle.Name = "zoomTitle";
-			this.zoomTitle.Size = new System.Drawing.Size(93, 17);
-			this.zoomTitle.TabIndex = 27;
-			this.zoomTitle.Text = "Zoom Control";
+			this.gammaBar.Location = new System.Drawing.Point(108, 125);
+			this.gammaBar.Maximum = 100;
+			this.gammaBar.Name = "gammaBar";
+			this.gammaBar.Size = new System.Drawing.Size(197, 45);
+			this.gammaBar.TabIndex = 14;
+			this.gammaBar.TickFrequency = 10;
+			this.gammaBar.Scroll += new System.EventHandler(this.gammaBar_Scroll);
+			// 
+			// gammaValue
+			// 
+			this.gammaValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.gammaValue.Location = new System.Drawing.Point(53, 125);
+			this.gammaValue.Name = "gammaValue";
+			this.gammaValue.Size = new System.Drawing.Size(49, 23);
+			this.gammaValue.TabIndex = 15;
+			this.gammaValue.ValueChanged += new System.EventHandler(this.gammaValue_ValueChanged);
+			// 
+			// gammaLabel
+			// 
+			this.gammaLabel.AutoSize = true;
+			this.gammaLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.gammaLabel.Location = new System.Drawing.Point(23, 125);
+			this.gammaLabel.Name = "gammaLabel";
+			this.gammaLabel.Size = new System.Drawing.Size(16, 17);
+			this.gammaLabel.TabIndex = 16;
+			this.gammaLabel.Text = "Γ";
 			// 
 			// Form1
 			// 
@@ -499,6 +536,8 @@
 			this.FlowLayout.ResumeLayout(false);
 			this.zoomGroup.ResumeLayout(false);
 			this.zoomGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.gammaBar)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.gammaValue)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -537,6 +576,9 @@
 		private System.Windows.Forms.RadioButton zoomButton2;
 		private System.Windows.Forms.RadioButton zoomButton1;
 		private System.Windows.Forms.Label zoomTitle;
+		private System.Windows.Forms.Label gammaLabel;
+		private System.Windows.Forms.NumericUpDown gammaValue;
+		private System.Windows.Forms.TrackBar gammaBar;
 	}
 }
 

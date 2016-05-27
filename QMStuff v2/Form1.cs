@@ -43,7 +43,7 @@ namespace QMStuff_v2
 
 			splitPanel.Panel2.BackColor = c.gs.bgBrush.Color;
 			splitPanel.Panel1.BackColor = Color.FromArgb(60, 60, 75);
-			xProbLabel.ForeColor = yProbLabel.ForeColor = 
+			xProbLabel.ForeColor = yProbLabel.ForeColor = gammaLabel.ForeColor =
 				zoomTitle.ForeColor = Color.White;
 
 			Resize += FrameResizing;
@@ -52,14 +52,12 @@ namespace QMStuff_v2
 		public void zoom(int d) {
 			if(d>0 && c.gs.zoom!=1) {
 				zoomButton4.Checked = true;
-				zoomButton4.Focus();
 				c.gs.zoom = 1;
 				c.lat.aSize = (int)(10*c.gs.zoom);
 				c.ReRender();
 			}
 			else if(d<0 && c.gs.zoom!=0.125) {
 				zoomButton1.Checked = true;
-				zoomButton1.Focus();
 				c.gs.zoom = .125;
 				c.lat.aSize = (int)(10*c.gs.zoom);
 				c.ReRender();
@@ -175,6 +173,10 @@ namespace QMStuff_v2
 			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
 			yProbValue.Value = yProbBar.Value;
 		}
+		private void gammaBar_Scroll(object sender, EventArgs e) {
+			c.lat.gamma = (double)(gammaBar.Value) / 100;
+			gammaValue.Value = gammaBar.Value;
+		}
 		private void speedBar_Scroll(object sender, EventArgs e){
             clock.Interval = 140 - (speedBar.Value * 1);
 		}
@@ -185,7 +187,11 @@ namespace QMStuff_v2
 		private void yProbValue_ValueChanged(object sender, EventArgs e) {
 			yProbBar.Value = (int)yProbValue.Value;
 			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
-		}		
+		}
+		private void gammaValue_ValueChanged(object sender, EventArgs e) {
+			gammaBar.Value = (int)gammaValue.Value;
+			c.lat.gamma = (double)(gammaBar.Value) / 100;
+		}
 		private void stepCounter_ValueChanged(object sender, EventArgs e) {
 			int oldInd = c.ind;
 			stepCounter.Value = Math.Min(
@@ -194,10 +200,8 @@ namespace QMStuff_v2
 			c.ind = (int) stepCounter.Value - 1;
 			if(c.ind - oldInd == 1)
 				c.RenderNext();
-			else if(c.ind != c.lat.changes.Count-1) {
+			else{
 				backRenderClock.Start();
-			}
-			else {
 				clock.Stop();
 				playButton.Text = "Play";
 				speedBar.Visible = false;
@@ -242,8 +246,10 @@ namespace QMStuff_v2
 			DoubleBuffered = true;
 
 			this.MouseWheel += Canvas_MouseWheel;
-
+			this.MouseEnter += Canvas_MouseEnter;
+			this.MouseLeave += Canvas_MouseLeave;
 		}
+
 		public void SetSize(Size s) {
 			bmp = new Bitmap(s.Width, s.Height);
 		}
@@ -253,7 +259,7 @@ namespace QMStuff_v2
 		}
 		public void RenderNext() {
 			using(var g = Graphics.FromImage(bmp)) {
-				g.SmoothingMode = SmoothingMode.AntiAlias;
+//				g.SmoothingMode = SmoothingMode.AntiAlias;
 				if(gs.axes) {
 					int w = bmp.Width;
 					int h = bmp.Height;
@@ -276,7 +282,7 @@ namespace QMStuff_v2
 		public void ReRender() {
 			using(var g = Graphics.FromImage(bmp)) {
 				g.Clear(Color.Transparent);
-				g.SmoothingMode = SmoothingMode.AntiAlias;
+//				g.SmoothingMode = SmoothingMode.AntiAlias;
 				if(gs.axes) {
 					int w = bmp.Width;
 					int h = bmp.Height;
@@ -302,6 +308,12 @@ namespace QMStuff_v2
 			lat.aSize = 10 * gs.zoom;
 		}
 
+		private void Canvas_MouseEnter(object sender, EventArgs e) {
+			this.Focus();
+		}
+		private void Canvas_MouseLeave(object sender, EventArgs e) {
+			this.Parent.Focus();
+		}
 		private void Canvas_MouseWheel(object sender, MouseEventArgs e) {
 			if(ctrlPressed) {
 				form.zoom(e.Delta);
@@ -312,21 +324,25 @@ namespace QMStuff_v2
 		public Atom[,] mat { get; set; }
 		public double Xprobability { get; set; }
 		public double Yprobability { get; set; }
+		public double gamma { get; set; }
 		public double aSize { get; set; }
 		public int sz { get; set; }
 		public List<LatticeChange> changes { get; set; }
 		public List<Atom> nextAtomsX { get; set; }
 		public List<Atom> nextAtomsY { get; set; }
+		public List<Atom> allExcited { get; set; }
 		public Random rnd { get; set; }
 
 		public Lattice(){
             Xprobability = Yprobability = 1;
+			gamma = 0;
             aSize = 10;
             sz = 800;
 			mat = new Atom[sz, sz];
 			changes = new List<LatticeChange>();
 			nextAtomsX = new List<Atom>();
 			nextAtomsY = new List<Atom>();
+			allExcited = new List<Atom>();
 			rnd = new Random();
 			
 			for (int r = 0; r < sz; r++)
@@ -384,20 +400,26 @@ namespace QMStuff_v2
 			LatticeChange lc = new LatticeChange();
 			int asd = changes.Count;
 			foreach(Atom a in nextAtomsX.ToList()) {
-				if (rnd.NextDouble() < Xprobability) {
+				if (rnd.NextDouble() < Xprobability && rnd.NextDouble() > gamma) {
 					a.excited=true;
 					lc.AddOn(a);
 					bound = Math.Max(bound, Math.Abs(a.x));
 				}
 			}
 			foreach (Atom a in nextAtomsY.ToList()) {
-				if (rnd.NextDouble() < Yprobability) {
+				if (rnd.NextDouble() < Yprobability && rnd.NextDouble() > gamma) {
 					a.excited=true;
 					lc.AddOn(a);
 					bound = Math.Max(bound, Math.Abs(a.y));
 				}
 			}
-			foreach(Atom a in lc.on) {
+			foreach (Atom a in allExcited) {
+				if(rnd.NextDouble() > gamma) {
+					lc.AddOff(a);
+				}
+			}
+			foreach (Atom a in lc.on) {
+				allExcited.Add(a);
 				foreach (Atom neighbor in GetXNeighbors(a)) {
 					if (!neighbor.excited && NumExcitedNeighbors(neighbor)==1) {
 						nextAtomsX.Add(neighbor);
@@ -423,7 +445,7 @@ namespace QMStuff_v2
 			}
 			changes.Add(lc);
 			worker.ReportProgress(100*bound/(sz/2));
-			if (!done) GenerateChanges(worker, bound);
+			if (!done && changes.Count<1000) GenerateChanges(worker, bound);
 		}
     }
     public class Atom
