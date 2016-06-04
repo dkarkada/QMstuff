@@ -46,6 +46,9 @@
 			this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
 			this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
 			this.probGroup = new System.Windows.Forms.Panel();
+			this.gammaLabel = new System.Windows.Forms.Label();
+			this.gammaValue = new System.Windows.Forms.NumericUpDown();
+			this.gammaBar = new System.Windows.Forms.TrackBar();
 			this.GenerateButton = new System.Windows.Forms.Button();
 			this.playGroup = new System.Windows.Forms.Panel();
 			this.skipToEndButton = new System.Windows.Forms.Button();
@@ -61,9 +64,6 @@
 			this.zoomButton3 = new System.Windows.Forms.RadioButton();
 			this.zoomButton2 = new System.Windows.Forms.RadioButton();
 			this.zoomButton1 = new System.Windows.Forms.RadioButton();
-			this.gammaBar = new System.Windows.Forms.TrackBar();
-			this.gammaValue = new System.Windows.Forms.NumericUpDown();
-			this.gammaLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -71,6 +71,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.yProbBar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.speedBar)).BeginInit();
 			this.probGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.gammaValue)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.gammaBar)).BeginInit();
 			this.playGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.splitPanel)).BeginInit();
 			this.splitPanel.Panel1.SuspendLayout();
@@ -78,8 +80,6 @@
 			this.tabControl1.SuspendLayout();
 			this.FlowLayout.SuspendLayout();
 			this.zoomGroup.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.gammaBar)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.gammaValue)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -88,6 +88,11 @@
 			this.stepCounter.Location = new System.Drawing.Point(223, 19);
 			this.stepCounter.Maximum = new decimal(new int[] {
             1000,
+            0,
+            0,
+            0});
+			this.stepCounter.Minimum = new decimal(new int[] {
+            1,
             0,
             0,
             0});
@@ -281,6 +286,35 @@
 			this.probGroup.Padding = new System.Windows.Forms.Padding(20);
 			this.probGroup.Size = new System.Drawing.Size(643, 214);
 			this.probGroup.TabIndex = 0;
+			// 
+			// gammaLabel
+			// 
+			this.gammaLabel.AutoSize = true;
+			this.gammaLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.gammaLabel.Location = new System.Drawing.Point(23, 125);
+			this.gammaLabel.Name = "gammaLabel";
+			this.gammaLabel.Size = new System.Drawing.Size(16, 17);
+			this.gammaLabel.TabIndex = 16;
+			this.gammaLabel.Text = "Γ";
+			// 
+			// gammaValue
+			// 
+			this.gammaValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.gammaValue.Location = new System.Drawing.Point(53, 125);
+			this.gammaValue.Name = "gammaValue";
+			this.gammaValue.Size = new System.Drawing.Size(49, 23);
+			this.gammaValue.TabIndex = 15;
+			this.gammaValue.ValueChanged += new System.EventHandler(this.gammaValue_ValueChanged);
+			// 
+			// gammaBar
+			// 
+			this.gammaBar.Location = new System.Drawing.Point(108, 125);
+			this.gammaBar.Maximum = 100;
+			this.gammaBar.Name = "gammaBar";
+			this.gammaBar.Size = new System.Drawing.Size(197, 45);
+			this.gammaBar.TabIndex = 14;
+			this.gammaBar.TickFrequency = 10;
+			this.gammaBar.Scroll += new System.EventHandler(this.gammaBar_Scroll);
 			// 
 			// GenerateButton
 			// 
@@ -477,35 +511,6 @@
 			this.zoomButton1.UseVisualStyleBackColor = true;
 			this.zoomButton1.CheckedChanged += new System.EventHandler(this.zoomButton1_CheckedChanged);
 			// 
-			// gammaBar
-			// 
-			this.gammaBar.Location = new System.Drawing.Point(108, 125);
-			this.gammaBar.Maximum = 100;
-			this.gammaBar.Name = "gammaBar";
-			this.gammaBar.Size = new System.Drawing.Size(197, 45);
-			this.gammaBar.TabIndex = 14;
-			this.gammaBar.TickFrequency = 10;
-			this.gammaBar.Scroll += new System.EventHandler(this.gammaBar_Scroll);
-			// 
-			// gammaValue
-			// 
-			this.gammaValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.gammaValue.Location = new System.Drawing.Point(53, 125);
-			this.gammaValue.Name = "gammaValue";
-			this.gammaValue.Size = new System.Drawing.Size(49, 23);
-			this.gammaValue.TabIndex = 15;
-			this.gammaValue.ValueChanged += new System.EventHandler(this.gammaValue_ValueChanged);
-			// 
-			// gammaLabel
-			// 
-			this.gammaLabel.AutoSize = true;
-			this.gammaLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.gammaLabel.Location = new System.Drawing.Point(23, 125);
-			this.gammaLabel.Name = "gammaLabel";
-			this.gammaLabel.Size = new System.Drawing.Size(16, 17);
-			this.gammaLabel.TabIndex = 16;
-			this.gammaLabel.Text = "Γ";
-			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -527,6 +532,8 @@
 			((System.ComponentModel.ISupportInitialize)(this.speedBar)).EndInit();
 			this.probGroup.ResumeLayout(false);
 			this.probGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.gammaValue)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.gammaBar)).EndInit();
 			this.playGroup.ResumeLayout(false);
 			this.playGroup.PerformLayout();
 			this.splitPanel.Panel1.ResumeLayout(false);
@@ -536,8 +543,6 @@
 			this.FlowLayout.ResumeLayout(false);
 			this.zoomGroup.ResumeLayout(false);
 			this.zoomGroup.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.gammaBar)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.gammaValue)).EndInit();
 			this.ResumeLayout(false);
 
         }

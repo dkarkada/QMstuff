@@ -17,7 +17,7 @@ namespace QMStuff_v2
 	public partial class Form1 : Form {
 		Canvas c;
 		ProgressForm pf;
-		System.Timers.Timer clock, backRenderClock;
+		System.Timers.Timer clock;
 
 		public Form1() {
 			InitializeComponent();
@@ -25,10 +25,6 @@ namespace QMStuff_v2
 
 			clock = new System.Timers.Timer(100);
 			clock.Elapsed += new System.Timers.ElapsedEventHandler(PlayStep);
-
-			backRenderClock = new System.Timers.Timer(200);
-			backRenderClock.AutoReset = false;
-			backRenderClock.Elapsed += new System.Timers.ElapsedEventHandler(backRender);
 
 			DoubleBuffered = true;
 			c.RenderNext();
@@ -93,6 +89,7 @@ namespace QMStuff_v2
 		}
 		private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
 			pf.Close();
+			Console.WriteLine(c.lat.stopwatch.ElapsedMilliseconds/1000);
 			playGroup.Enabled = true;
 			probGroup.Enabled = false;
 		}
@@ -117,11 +114,16 @@ namespace QMStuff_v2
 				c.ctrlPressed = false;
 		}
 		private void PlayStep(object source, System.Timers.ElapsedEventArgs e) {
-			Action a = delegate () { stepCounter.Value++; };
+			Action a = delegate () {
+				if(stepCounter.Value!= stepCounter.Maximum)
+					stepCounter.Value++;
+				else {
+					clock.Stop();
+					playButton.Text = "Play";
+					speedBar.Visible = false;
+				}
+			};
 			BeginInvoke(a);
-		}
-		private void backRender(object source, System.Timers.ElapsedEventArgs e) {
-			BeginInvoke(new Action(c.ReRender));
 		}
 		private void skipToBeginningButton_Click(object sender, EventArgs e) {
 			stepCounter.Value = 1;
@@ -131,8 +133,8 @@ namespace QMStuff_v2
 			stepCounter.Value = Math.Max(1, stepCounter.Value-1);
         }
         private void fwdButton_Click(object sender, EventArgs e) {
-			c.RenderNext();
-			stepCounter.Value++;
+			if(stepCounter.Value!= stepCounter.Maximum)
+				stepCounter.Value++;
 		}
 		private void skipToEndButton_Click(object sender, EventArgs e) {
 			stepCounter.Value = c.lat.changes.Count;
@@ -198,13 +200,18 @@ namespace QMStuff_v2
 				(int)stepCounter.Value,
 				c.lat.changes.Count);
 			c.ind = (int) stepCounter.Value - 1;
-			if(c.ind - oldInd == 1)
+			int diff = c.ind - oldInd;
+			if(diff == 1)
 				c.RenderNext();
-			else{
-				backRenderClock.Start();
+			else if(diff == -1)
+				c.RenderPrev();
+			else if (diff == 0){
 				clock.Stop();
 				playButton.Text = "Play";
 				speedBar.Visible = false;
+			}
+			else {
+				c.ReRender();
 			}
 		}
 		private void zoomButton1_CheckedChanged(object sender, EventArgs e) {
@@ -259,13 +266,6 @@ namespace QMStuff_v2
 		}
 		public void RenderNext() {
 			using(var g = Graphics.FromImage(bmp)) {
-//				g.SmoothingMode = SmoothingMode.AntiAlias;
-				if(gs.axes) {
-					int w = bmp.Width;
-					int h = bmp.Height;
-					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
-					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
-				}
 				if(ind < lat.changes.Count) {
 					LatticeChange lc = lat.changes[ind];
 					SolidBrush br = gs.fgBrush;
@@ -275,6 +275,41 @@ namespace QMStuff_v2
 							(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
 							(int)lat.aSize, (int)lat.aSize);
 					}
+					br = gs.bgBrush;
+					foreach(Atom a in lc.off) {
+						g.FillRectangle(br,
+							(float)(bmp.Width/2 + lat.aSize*(a.x - .5)),
+							(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
+							(int)lat.aSize, (int)lat.aSize);
+					}
+				}
+			}
+			Invalidate();
+		}
+		public void RenderPrev() {
+			using(var g = Graphics.FromImage(bmp)) {
+				if(ind+1 < lat.changes.Count) {
+					LatticeChange lc = lat.changes[ind+1];
+					SolidBrush br = gs.bgBrush;
+					foreach(Atom a in lc.on) {
+						g.FillRectangle(br,
+							(float)(bmp.Width/2 + lat.aSize*(a.x - .5)),
+							(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
+							(int)lat.aSize, (int)lat.aSize);
+					}
+					br = gs.fgBrush;
+					foreach(Atom a in lc.off) {
+						g.FillRectangle(br,
+							(float)(bmp.Width/2 + lat.aSize*(a.x - .5)),
+							(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
+							(int)lat.aSize, (int)lat.aSize);
+					}
+				}
+				if(gs.axes) {
+					int w = bmp.Width;
+					int h = bmp.Height;
+					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
+					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
 				}
 			}
 			Invalidate();
@@ -282,7 +317,6 @@ namespace QMStuff_v2
 		public void ReRender() {
 			using(var g = Graphics.FromImage(bmp)) {
 				g.Clear(Color.Transparent);
-//				g.SmoothingMode = SmoothingMode.AntiAlias;
 				if(gs.axes) {
 					int w = bmp.Width;
 					int h = bmp.Height;
@@ -332,12 +366,13 @@ namespace QMStuff_v2
 		public List<Atom> nextAtomsY { get; set; }
 		public List<Atom> allExcited { get; set; }
 		public Random rnd { get; set; }
+		public System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
 		public Lattice(){
             Xprobability = Yprobability = 1;
 			gamma = 0;
             aSize = 10;
-            sz = 800;
+            sz = 400;
 			mat = new Atom[sz, sz];
 			changes = new List<LatticeChange>();
 			nextAtomsX = new List<Atom>();
@@ -398,32 +433,42 @@ namespace QMStuff_v2
 		public void GenerateChanges(BackgroundWorker worker, int bound) {
 			Boolean done = false;
 			LatticeChange lc = new LatticeChange();
-			int asd = changes.Count;
+			int cnt = 0;
 			foreach(Atom a in nextAtomsX.ToList()) {
-				if (rnd.NextDouble() < Xprobability && rnd.NextDouble() > gamma) {
+				if (rnd.NextDouble() < Xprobability) {
+					stopwatch.Start();
+					nextAtomsX.Remove(a);
+					stopwatch.Stop();
 					a.excited=true;
 					lc.AddOn(a);
 					bound = Math.Max(bound, Math.Abs(a.x));
+					cnt++;
 				}
 			}
-			foreach (Atom a in nextAtomsY.ToList()) {
-				if (rnd.NextDouble() < Yprobability && rnd.NextDouble() > gamma) {
+			foreach(Atom a in nextAtomsY.ToList()) {
+				if(rnd.NextDouble() < Yprobability) {
+					stopwatch.Start();
+					nextAtomsY.Remove(a);
+					stopwatch.Stop();
 					a.excited=true;
 					lc.AddOn(a);
 					bound = Math.Max(bound, Math.Abs(a.y));
 				}
 			}
-			foreach (Atom a in allExcited) {
-				if(rnd.NextDouble() > gamma) {
-					lc.AddOff(a);
-				}
+			stopwatch.Start();
+			for(int i = 0; i<gamma*allExcited.Count; i++) {
+				int tempInd = (int)(rnd.NextDouble()*allExcited.Count);
+				Atom a = allExcited[tempInd];
+				allExcited.RemoveAt(tempInd);
+				a.excited=false;
+				lc.AddOff(a);
 			}
+			stopwatch.Stop();
 			foreach (Atom a in lc.on) {
 				allExcited.Add(a);
 				foreach (Atom neighbor in GetXNeighbors(a)) {
-					if (!neighbor.excited && NumExcitedNeighbors(neighbor)==1) {
+					if (!neighbor.excited && NumExcitedNeighbors(neighbor)==1)
 						nextAtomsX.Add(neighbor);
-					}
 				}
 				foreach (Atom neighbor in GetYNeighbors(a))
 					if (!neighbor.excited && NumExcitedNeighbors(neighbor)==1)
@@ -431,6 +476,7 @@ namespace QMStuff_v2
 				if (GetNeighbors(a).Count!=4)
 					done = true;
 			}
+			stopwatch.Start();
 			for (int k=0; k<nextAtomsX.Count; k++) {
 				if (nextAtomsX[k].excited || NumExcitedNeighbors(nextAtomsX[k])!=1) {
 					nextAtomsX.RemoveAt(k);
@@ -443,6 +489,7 @@ namespace QMStuff_v2
 					k--;
 				}
 			}
+			stopwatch.Stop();
 			changes.Add(lc);
 			worker.ReportProgress(100*bound/(sz/2));
 			if (!done && changes.Count<1000) GenerateChanges(worker, bound);
