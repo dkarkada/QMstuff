@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
-using System.Collections;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Drawing.Imaging;
 
 namespace QMStuff_v2
 {
@@ -40,7 +40,7 @@ namespace QMStuff_v2
 			splitPanel.Panel2.BackColor = c.gs.bgBrush.Color;
 			splitPanel.Panel1.BackColor = Color.FromArgb(60, 60, 75);
 			xProbLabel.ForeColor = yProbLabel.ForeColor = gammaLabel.ForeColor =
-				zoomTitle.ForeColor = Color.White;
+				zoomTitle.ForeColor = initTitle.ForeColor = Color.White;
 
 			Resize += FrameResizing;
 			splitPanel.SplitterMoved += SplitPanelResized;
@@ -125,7 +125,11 @@ namespace QMStuff_v2
 			};
 			BeginInvoke(a);
 		}
-		private void skipToBeginningButton_Click(object sender, EventArgs e) {
+        private void helpButton_Click(object sender, EventArgs e){
+            String msg = QMStuff_v2.Properties.Resources.helpmsg;
+            MessageBox.Show(msg, "Help");
+        }
+        private void skipToBeginningButton_Click(object sender, EventArgs e) {
 			stepCounter.Value = 1;
 		}
 		private void backButton_Click(object sender, EventArgs e)
@@ -165,7 +169,8 @@ namespace QMStuff_v2
 			c.RenderNext();
 
 			probGroup.Enabled=true;
-			playGroup.Enabled=false;
+            GenerateButton.Focus();
+            playGroup.Enabled=false;
 		}
 		private void xProbBar_Scroll(object sender, EventArgs e) {
             c.lat.Xprobability = (double)(xProbBar.Value) / 100;
@@ -218,7 +223,7 @@ namespace QMStuff_v2
 			c.gs.zoom = .125;
 			c.lat.aSize = (int)(10*c.gs.zoom);
 			c.ReRender();
-		}
+        }
 		private void zoomButton2_CheckedChanged(object sender, EventArgs e) {
 			c.gs.zoom = .25;
 			c.lat.aSize = (int)(10*c.gs.zoom);
@@ -234,8 +239,8 @@ namespace QMStuff_v2
 			c.lat.aSize = (int)(10*c.gs.zoom);
 			c.ReRender();
 		}
-	}
-	public class Canvas : Panel {
+    }
+    public class Canvas : Panel {
 		private Form1 form;
 		public Bitmap bmp { get; set; }
 		public Lattice lat { get; set; }
@@ -372,7 +377,7 @@ namespace QMStuff_v2
             Xprobability = Yprobability = 1;
 			gamma = 0;
             aSize = 10;
-            sz = 400;
+            sz = 800;
 			mat = new Atom[sz, sz];
 			changes = new List<LatticeChange>();
 			nextAtomsX = new List<Atom>();
@@ -433,29 +438,21 @@ namespace QMStuff_v2
 		public void GenerateChanges(BackgroundWorker worker, int bound) {
 			Boolean done = false;
 			LatticeChange lc = new LatticeChange();
-			int cnt = 0;
 			foreach(Atom a in nextAtomsX.ToList()) {
-				if (rnd.NextDouble() < Xprobability) {
-					stopwatch.Start();
-					nextAtomsX.Remove(a);
-					stopwatch.Stop();
+				if (rnd.NextDouble() < Xprobability && rnd.NextDouble() > gamma) {
 					a.excited=true;
 					lc.AddOn(a);
 					bound = Math.Max(bound, Math.Abs(a.x));
-					cnt++;
 				}
 			}
 			foreach(Atom a in nextAtomsY.ToList()) {
-				if(rnd.NextDouble() < Yprobability) {
-					stopwatch.Start();
+				if(rnd.NextDouble() < Yprobability && rnd.NextDouble() > gamma) {
 					nextAtomsY.Remove(a);
-					stopwatch.Stop();
 					a.excited=true;
 					lc.AddOn(a);
 					bound = Math.Max(bound, Math.Abs(a.y));
 				}
 			}
-			stopwatch.Start();
 			for(int i = 0; i<gamma*allExcited.Count; i++) {
 				int tempInd = (int)(rnd.NextDouble()*allExcited.Count);
 				Atom a = allExcited[tempInd];
@@ -463,7 +460,6 @@ namespace QMStuff_v2
 				a.excited=false;
 				lc.AddOff(a);
 			}
-			stopwatch.Stop();
 			foreach (Atom a in lc.on) {
 				allExcited.Add(a);
 				foreach (Atom neighbor in GetXNeighbors(a)) {
@@ -476,7 +472,6 @@ namespace QMStuff_v2
 				if (GetNeighbors(a).Count!=4)
 					done = true;
 			}
-			stopwatch.Start();
 			for (int k=0; k<nextAtomsX.Count; k++) {
 				if (nextAtomsX[k].excited || NumExcitedNeighbors(nextAtomsX[k])!=1) {
 					nextAtomsX.RemoveAt(k);
@@ -489,7 +484,6 @@ namespace QMStuff_v2
 					k--;
 				}
 			}
-			stopwatch.Stop();
 			changes.Add(lc);
 			worker.ReportProgress(100*bound/(sz/2));
 			if (!done && changes.Count<1000) GenerateChanges(worker, bound);

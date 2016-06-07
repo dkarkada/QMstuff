@@ -61,6 +61,22 @@ namespace QMStuff_v2.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to INSTRUCTIONS 
+        ///
+        ///   -Set the initial lattice parameters (Probability of neighbor excitation, gamma de-excitation rate)
+        ///   -Click &quot;Generate&quot; and wait for the process to finish
+        ///   -Use the zoom buttons to change the zoom
+        ///   -Use the play controls to move the lattice through time. You can skip to the beginning and end, move one step forward or backward, or go forward continuously.
+        ///   -You can also modify the step counter to move to a time of your choosing.
+        ///   -Press restart when you want to regenerate a n [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string helpmsg {
+            get {
+                return ResourceManager.GetString("helpmsg", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap zoomIn {

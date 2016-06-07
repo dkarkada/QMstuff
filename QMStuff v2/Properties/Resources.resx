@@ -139,4 +139,14 @@
   <data name="zoomOutIcon2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\zoomOutIcon2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="helpmsg" xml:space="preserve">
+    <value>INSTRUCTIONS 
+
+   -Set the initial lattice parameters (Probability of neighbor excitation, gamma de-excitation rate)
+   -Click "Generate" and wait for the process to finish
+   -Use the zoom buttons to change the zoom
+   -Use the play controls to move the lattice through time. You can skip to the beginning and end, move one step forward or backward, or go forward continuously.
+   -You can also modify the step counter to move to a time of your choosing.
+   -Press restart when you want to regenerate a new lattice with different initial parameters.</value>
+  </data>
 </root>
