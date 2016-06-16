@@ -164,6 +164,7 @@ namespace QMStuff_v2
 			c.Restart();
 			c.lat.Xprobability = (double)(xProbBar.Value) / 100;
 			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
+			c.lat.gamma = (double)(gammaBar.Value) / 100;
 			stepCounter.Value = 1;
 			c.ReRender();
 			c.RenderNext();
@@ -274,18 +275,19 @@ namespace QMStuff_v2
 				if(ind < lat.changes.Count) {
 					LatticeChange lc = lat.changes[ind];
 					SolidBrush br = gs.fgBrush;
-					if(ind!=0)
+		/*			if(ind>1)
 						foreach (Atom a in lat.changes[ind - 1].on) {
 							g.FillRectangle(br,
 								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
 								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
 								(int)lat.aSize, (int)lat.aSize);
 						}
-					br = new SolidBrush(Color.Red);
+		*/			if (ind == 0)
+						br = new SolidBrush(Color.MediumPurple);
 					foreach (Atom a in lc.on) {
 						g.FillRectangle(br,
-							(float)(bmp.Width/2 + lat.aSize*(a.x - .5)),
-							(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
+							(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
+							(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
 							(int)lat.aSize, (int)lat.aSize);
 					}
 					br = gs.bgBrush;
@@ -385,7 +387,7 @@ namespace QMStuff_v2
             Xprobability = Yprobability = 1;
 			gamma = 0;
             aSize = 10;
-            sz = 100;
+            sz = 400;
 			mat = new Atom[sz, sz];
 			changes = new List<LatticeChange>();
 			nextAtomsX = new AtomsLinkedList();
@@ -422,7 +424,6 @@ namespace QMStuff_v2
 			HashSet<Atom> maybeNext = new HashSet<Atom>();
 			HashSet<Atom> maybeRemoveXNext = new HashSet<Atom>();
 			HashSet<Atom> maybeRemoveYNext = new HashSet<Atom>();
-			int count = 0;
 			foreach (AtomNode node in allExcited) {
 				if (rnd.NextDouble() < gamma) {
 					allExcited.Remove(node);
@@ -431,6 +432,12 @@ namespace QMStuff_v2
 					foreach(Atom a in node.atom.locale) {
 						if (a!=null && a.node==null) //means that it is not excited and not next; will check neighbor's neighbors later
 							maybeNext.Add(a);
+						if (a!=null && !a.Equals(node.atom)) {
+							if (a.IsXNext())
+								maybeRemoveXNext.Add(a);
+							else if (a.IsYNext())
+								maybeRemoveYNext.Add(a);
+						}
 					}
 				}
 			}
@@ -481,8 +488,9 @@ namespace QMStuff_v2
 				}
 			}
 			foreach (Atom a in maybeRemoveXNext) {
-				if (!a.excited && !a.IsValid() && a.IsXNext())
+				if (!a.excited && !a.IsValid() && a.IsXNext()) {
 					nextAtomsX.Remove(a.node);
+				}
 			}
 			foreach (Atom a in maybeRemoveYNext) {
 				if (!a.excited && !a.IsValid() && a.IsYNext())
@@ -504,55 +512,6 @@ namespace QMStuff_v2
 			worker.ReportProgress(100*bound/(sz/2));
 			if (!done && changes.Count<1000) GenerateChanges(worker, bound);
 		}
-		public void blaghcode() {
-			/*
-			foreach(Atom a in nextAtomsX.ToList()) {
-				if (rnd.NextDouble() < Xprobability && rnd.NextDouble() > gamma) {
-					a.excited=true;
-					lc.AddOn(a);
-					bound = Math.Max(bound, Math.Abs(a.x));
-				}
-			}
-			foreach(Atom a in nextAtomsY.ToList()) {
-				if(rnd.NextDouble() < Yprobability && rnd.NextDouble() > gamma) {
-					a.excited=true;
-					lc.AddOn(a);
-					bound = Math.Max(bound, Math.Abs(a.y));
-				}
-			}
-			for(int i = 0; i<gamma*allExcited.Count; i++) {
-				int tempInd = (int)(rnd.NextDouble()*allExcited.Count);
-				Atom a = allExcited[tempInd];
-				allExcited.RemoveAt(tempInd);
-				a.excited=false;
-				lc.AddOff(a);
-			}
-			foreach (Atom a in lc.on) {
-				allExcited.Add(a);
-				foreach (Atom neighbor in GetXNeighbors(a)) {
-					if (!neighbor.excited && NumExcitedNeighbors(neighbor)==1)
-						nextAtomsX.Add(neighbor);
-				}
-				foreach (Atom neighbor in GetYNeighbors(a))
-					if (!neighbor.excited && NumExcitedNeighbors(neighbor)==1)
-						nextAtomsY.Add(neighbor);
-				if (GetNeighbors(a).Count!=4)
-					done = true;
-			}
-			for (int k=0; k<nextAtomsX.Count; k++) {
-				if (nextAtomsX[k].excited || NumExcitedNeighbors(nextAtomsX[k])!=1) {
-					nextAtomsX.RemoveAt(k);
-					k--;
-				}
-			}
-			for (int k=0; k<nextAtomsY.Count; k++) {
-				if (nextAtomsY[k].excited || NumExcitedNeighbors(nextAtomsY[k])!=1) {
-					nextAtomsY.RemoveAt(k);
-					k--;
-				}
-			}
-			*/
-		}
 	}
 	public class AtomsLinkedList : IEnumerable, IEnumerator {
 		AtomNode head, tail, current;
@@ -560,7 +519,7 @@ namespace QMStuff_v2
 
 		public AtomsLinkedList() {
 			count = 0;
-			head = tail = current = new AtomNode(null);
+			head = tail = current = new AtomNode(null	);
 		}
 		public void Add(Atom at) {
 			if (at.node == null) {
