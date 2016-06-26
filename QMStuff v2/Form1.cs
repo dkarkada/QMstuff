@@ -18,6 +18,7 @@ namespace QMStuff_v2
 		Canvas c;
 		ProgressForm pf;
 		System.Timers.Timer clock;
+		System.Diagnostics.Stopwatch stopwatch;
 
 		public Form1() {
 			InitializeComponent();
@@ -25,6 +26,8 @@ namespace QMStuff_v2
 
 			clock = new System.Timers.Timer(100);
 			clock.Elapsed += new System.Timers.ElapsedEventHandler(PlayStep);
+
+			stopwatch = new System.Diagnostics.Stopwatch();
 
 			DoubleBuffered = true;
 			c.RenderNext();
@@ -40,7 +43,7 @@ namespace QMStuff_v2
 			splitPanel.Panel2.BackColor = c.gs.bgBrush.Color;
 			splitPanel.Panel1.BackColor = Color.FromArgb(60, 60, 75);
 			xProbLabel.ForeColor = yProbLabel.ForeColor = gammaLabel.ForeColor =
-				zoomTitle.ForeColor = initTitle.ForeColor = Color.White;
+				zoomTitle.ForeColor = initTitle.ForeColor = LatSizeLabel.ForeColor = Color.White;
 
 			Resize += FrameResizing;
 			splitPanel.SplitterMoved += SplitPanelResized;
@@ -71,6 +74,12 @@ namespace QMStuff_v2
 		}
 
 		private void GenerateButton_Click(object sender, EventArgs e) {
+			c.lat = new Lattice((int)(LatSizeValue.Value));
+			c.lat.aSize = 10 * c.gs.zoom;
+			c.lat.Xprobability = (double)(xProbBar.Value) / 100;
+			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
+			c.lat.gamma = (double)(gammaBar.Value) / 100;
+
 			BackgroundWorker worker = new BackgroundWorker();
 			worker.WorkerReportsProgress = true;
 			worker.DoWork += Worker_DoWork;
@@ -82,14 +91,13 @@ namespace QMStuff_v2
 		}
 		private void Worker_DoWork(object sender, DoWorkEventArgs e) {
 			BackgroundWorker worker = sender as BackgroundWorker;
-			c.lat.GenerateChanges(worker, 1);
+			c.lat.GenerateChanges(worker, 1, 1);
 		}
 		private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
 			pf.SetValue(e.ProgressPercentage);
 		}
 		private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
 			pf.Close();
-	//		Console.WriteLine(c.lat.stopwatch.ElapsedMilliseconds/1000);
 			playGroup.Enabled = true;
 			probGroup.Enabled = false;
 		}
@@ -115,15 +123,26 @@ namespace QMStuff_v2
 		}
 		private void PlayStep(object source, System.Timers.ElapsedEventArgs e) {
 			Action a = delegate () {
-				if(stepCounter.Value!= stepCounter.Maximum)
+				stopwatch.Start();
+				if (stepCounter.Value!= stepCounter.Maximum)
 					stepCounter.Value++;
 				else {
 					clock.Stop();
 					playButton.Text = "Play";
 					speedBar.Visible = false;
 				}
+				stopwatch.Stop();
 			};
+			Action updateSpeedBar = delegate () {
+				speedBar.Value = Math.Max(0, (int)(140 - clock.Interval));
+			};
+
 			BeginInvoke(a);
+			if (stopwatch.ElapsedMilliseconds + 10 > clock.Interval) {
+				clock.Interval += 15;
+				BeginInvoke(updateSpeedBar);
+			}
+			stopwatch.Reset();
 		}
         private void helpButton_Click(object sender, EventArgs e){
             String msg = QMStuff_v2.Properties.Resources.helpmsg;
@@ -161,10 +180,7 @@ namespace QMStuff_v2
 			clock.Stop();
 			playButton.Text = "Play";
 			speedBar.Visible = false;
-			c.Restart();
-			c.lat.Xprobability = (double)(xProbBar.Value) / 100;
-			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
-			c.lat.gamma = (double)(gammaBar.Value) / 100;
+			c.ind = 0;
 			stepCounter.Value = 1;
 			c.ReRender();
 			c.RenderNext();
@@ -251,7 +267,7 @@ namespace QMStuff_v2
 
 		public Canvas(Form1 f, Size s) {
 			form = f;
-			lat = new Lattice();
+			lat = new Lattice(400);
 			bmp = new Bitmap(s.Width, s.Height);
 			gs = new GraphicsSettings();
 			ind = 0;
@@ -275,16 +291,9 @@ namespace QMStuff_v2
 				if(ind < lat.changes.Count) {
 					LatticeChange lc = lat.changes[ind];
 					SolidBrush br = gs.fgBrush;
-		/*			if(ind>1)
-						foreach (Atom a in lat.changes[ind - 1].on) {
-							g.FillRectangle(br,
-								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
-								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
-								(int)lat.aSize, (int)lat.aSize);
-						}
-		*/			if (ind == 0)
-						br = new SolidBrush(Color.MediumPurple);
 					foreach (Atom a in lc.on) {
+						if(a.isSource)
+							br = new SolidBrush(Color.MediumPurple);
 						g.FillRectangle(br,
 							(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
 							(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
@@ -338,23 +347,63 @@ namespace QMStuff_v2
 					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
 					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
 				}
-				for(int i = 0; i<=ind; i++) {
-					LatticeChange lc = lat.changes[i];
-					SolidBrush br = gs.fgBrush;
-					foreach(Atom a in lc.on) {
-						g.FillRectangle(br,
-							(float)(bmp.Width/2 + lat.aSize*(a.x - .5)),
-							(float)(bmp.Height/2 - lat.aSize*(a.y + .5)),
-							(int)lat.aSize, (int)lat.aSize);
+				SolidBrush br = gs.fgBrush;
+				Tuple<List<Atom>, int> result = lat.latFrameList.GetNearestFrame(ind);
+				foreach (Atom a in result.Item1) {
+					g.FillRectangle(br,
+						(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
+						(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
+						(int)lat.aSize, (int)lat.aSize);
+				}
+				if (result.Item2 < ind) {
+					for (int i = result.Item2; i <= ind; i++) {
+						LatticeChange lc = lat.changes[i];
+						br = gs.fgBrush;
+						foreach (Atom a in lc.on) {
+							g.FillRectangle(br,
+								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
+								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
+								(int)lat.aSize, (int)lat.aSize);
+						}
+						br = gs.bgBrush;
+						foreach (Atom a in lc.off) {
+							g.FillRectangle(br,
+								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
+								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
+								(int)lat.aSize, (int)lat.aSize);
+						}
 					}
 				}
+				else {
+					for (int i = result.Item2; i > ind; i--) {
+						LatticeChange lc = lat.changes[i];
+						br = gs.fgBrush;
+						foreach (Atom a in lc.off) {
+							g.FillRectangle(br,
+								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
+								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
+								(int)lat.aSize, (int)lat.aSize);
+						}
+						br = gs.bgBrush;
+						foreach (Atom a in lc.on) {
+							g.FillRectangle(br,
+								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
+								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
+								(int)lat.aSize, (int)lat.aSize);
+						}
+					}
+				}
+				br = new SolidBrush(Color.MediumPurple);
+				g.FillRectangle(br,
+						(float)(bmp.Width / 2 + lat.aSize * (0 - .5)),
+						(float)(bmp.Height / 2 - lat.aSize * (0 + .5)),
+						(int)lat.aSize, (int)lat.aSize);
 			}
 			Invalidate();
 		}
 		public void Restart() {
 			ind = 0;
-			lat = new Lattice();
-			lat.aSize = 10 * gs.zoom;
+			lat.clearChanges();
 		}
 
 		private void Canvas_MouseEnter(object sender, EventArgs e) {
@@ -371,6 +420,7 @@ namespace QMStuff_v2
 	}
 	public class Lattice {
 		public Atom[,] mat { get; set; }
+		public LatticeFrameList latFrameList { get; set; }
 		public double Xprobability { get; set; }
 		public double Yprobability { get; set; }
 		public double gamma { get; set; }
@@ -381,14 +431,14 @@ namespace QMStuff_v2
 		public AtomsLinkedList nextAtomsY { get; set; }
 		public AtomsLinkedList allExcited { get; set; }
 		public Random rnd { get; set; }
-		public System.Diagnostics.Stopwatch stopwatch = new System.Diagnostics.Stopwatch();
 
-		public Lattice(){
+		public Lattice(int s){
             Xprobability = Yprobability = 1;
 			gamma = 0;
             aSize = 10;
-            sz = 400;
+            sz = s;
 			mat = new Atom[sz, sz];
+			latFrameList = new LatticeFrameList();
 			changes = new List<LatticeChange>();
 			nextAtomsX = new AtomsLinkedList();
 			nextAtomsY = new AtomsLinkedList();
@@ -413,12 +463,18 @@ namespace QMStuff_v2
 			lc.AddOn(mat[sz/2, sz/2]);
 			changes.Add(lc);
 			mat[sz/2, sz/2].excited = true;
+			mat[sz/2, sz/2].isSource = true;
 			nextAtomsX.Add(mat[sz/2, sz/2 + 1]);
+			mat[sz/2, sz/2 + 1].node.isNextX = true;
 			nextAtomsX.Add(mat[sz/2, sz/2 - 1]);
-			nextAtomsY.Add(mat[sz/2 + 1, sz/2]);
+			mat[sz/2, sz/2 - 1].node.isNextX = true;
+			nextAtomsY.Add(mat[sz / 2 + 1, sz / 2]);
+			mat[sz/2 + 1, sz/2].node.isNextY = true;
 			nextAtomsY.Add(mat[sz/2 - 1, sz/2]);
+			mat[sz/2 - 1, sz/2].node.isNextY = true;
+			latFrameList.Add(mat, 0);
 		}
-		public void GenerateChanges(BackgroundWorker worker, int bound) {
+		public void GenerateChanges(BackgroundWorker worker, int bound, int step) {
 			Boolean done = false;
 			LatticeChange lc = new LatticeChange();
 			HashSet<Atom> maybeNext = new HashSet<Atom>();
@@ -448,7 +504,6 @@ namespace QMStuff_v2
 					node.atom.excited = true;
 					allExcited.Add(node.atom);
 					lc.AddOn(node.atom);
-					;
 					bound = Math.Max(bound, Math.Abs(node.atom.x));
 					for (int i = 1; i < 5; i++) {
 						Atom neighbor = node.atom.locale[i];
@@ -482,8 +537,10 @@ namespace QMStuff_v2
 							else if (neighbor.IsValid())
 								maybeNext.Add(neighbor);
 						}
-						else
+						else {
 							done = true;
+							latFrameList.Add(mat, step);
+						}
 					}
 				}
 			}
@@ -509,9 +566,118 @@ namespace QMStuff_v2
 				}
 			}	
 			changes.Add(lc);
+			if (step % 50 == 0)
+				latFrameList.Add(mat, step);
 			worker.ReportProgress(100*bound/(sz/2));
-			if (!done && changes.Count<1000) GenerateChanges(worker, bound);
+			if (!done && changes.Count<1000) GenerateChanges(worker, bound, ++step);
 		}
+		public void clearChanges() {
+			changes = new List<LatticeChange>();
+		}
+	}
+	public class LatticeChange
+    {
+        public List<Atom> on { get; set; }
+        public List<Atom> off { get; set; }
+
+        public LatticeChange()
+        {
+            on = new List<Atom>();
+            off = new List<Atom>();
+        }
+        public void AddOn(Atom a)
+        {
+            on.Add(a);
+        }
+        public void AddOff(Atom a)
+        {
+            off.Add(a);
+        }
+    }
+	public class LatticeFrameList {
+		public List<List<Atom>> latFrames { get; set; }
+		public List<int> inds { get; set; }
+
+		public LatticeFrameList() {
+			latFrames = new List<List<Atom>>();
+			inds = new List<int>();
+		}
+		public void Add(Atom[,] mat, int ind) {
+			List<Atom> frame = new List<Atom>();
+			foreach(Atom a in mat) {
+				if (a.excited)
+					frame.Add(a);
+			}
+			latFrames.Add(frame);
+			inds.Add(ind);
+		}
+		public Tuple<List<Atom>,int> GetNearestFrame(int ind) {
+			for(int i=0; i<inds.Count-1; i++) {
+				int curInd = inds[i];
+				int nextInd = inds[i + 1];
+				if(curInd<=ind && ind<=nextInd) {
+					if (nextInd - ind < ind - curInd)
+						return Tuple.Create(latFrames[i+1], nextInd);
+					else
+						return Tuple.Create(latFrames[i], curInd);
+				}
+			}
+			return Tuple.Create(latFrames[0], 0);
+		}
+	}
+    public class Atom {
+        public int x { get; set; }
+        public int y { get; set; }
+        public int z { get; set; }
+		public bool isSource { get; set; }
+        public bool excited { get; set; }
+        public AtomNode node { get; set; }
+		public Atom[] locale { get; set; }
+
+        public Atom(int x1, int y1, int z1) {
+            x = x1;
+            y = y1;
+            z = z1;
+            excited = false;
+			isSource = false;
+        }
+		public void SetLocale(Atom left, Atom right, Atom top, Atom bottom) {
+			locale = new Atom[5];
+			locale[0] = this;
+			if (left != null)
+				locale[1] = left;
+			if (right != null)
+				locale[2] = right;
+			if (top != null)
+				locale[3] = top;
+			if (bottom != null)
+				locale[4] = bottom;
+		}
+		public bool IsXNext() {
+			return node != null && node.isNextX;
+		}
+		public bool IsYNext() {
+			return node != null && node.isNextY;
+		}
+		public bool IsValid() {
+			int cnt = 0;
+			foreach (Atom a in locale)
+				if (a!=null && a.excited)
+					cnt++;
+			return cnt==1 && !excited;
+		}
+    }
+    public class AtomNode {
+        public AtomNode next { get; set; }
+        public AtomNode prev { get; set; }
+		public bool isNextX { get; set; }
+		public bool isNextY { get; set; }
+		public Atom atom { get; set; }
+
+        public AtomNode(Atom a) {
+            atom = a;
+			isNextX = isNextY = false;
+        }
 	}
 	public class AtomsLinkedList : IEnumerable, IEnumerator {
 		AtomNode head, tail, current;
@@ -519,7 +685,7 @@ namespace QMStuff_v2
 
 		public AtomsLinkedList() {
 			count = 0;
-			head = tail = current = new AtomNode(null	);
+			head = tail = current = new AtomNode(null);
 		}
 		public void Add(Atom at) {
 			if (at.node == null) {
@@ -578,78 +744,7 @@ namespace QMStuff_v2
 			return (IEnumerator)this;
 		}
 	}
-	public class LatticeChange
-    {
-        public List<Atom> on { get; set; }
-        public List<Atom> off { get; set; }
-
-        public LatticeChange()
-        {
-            on = new List<Atom>();
-            off = new List<Atom>();
-        }
-        public void AddOn(Atom a)
-        {
-            on.Add(a);
-        }
-        public void AddOff(Atom a)
-        {
-            off.Add(a);
-        }
-    }
-    public class Atom {
-        public int x { get; set; }
-        public int y { get; set; }
-        public int z { get; set; }
-        public bool excited { get; set; }
-        public AtomNode node { get; set; }
-		public Atom[] locale { get; set; }
-
-        public Atom(int x1, int y1, int z1) {
-            x = x1;
-            y = y1;
-            z = z1;
-            excited = false;
-        }
-		public void SetLocale(Atom left, Atom right, Atom top, Atom bottom) {
-			locale = new Atom[5];
-			locale[0] = this;
-			if (left != null)
-				locale[1] = left;
-			if (right != null)
-				locale[2] = right;
-			if (top != null)
-				locale[3] = top;
-			if (bottom != null)
-				locale[4] = bottom;
-		}
-		public bool IsXNext() {
-			return node != null && node.isNextX;
-		}
-		public bool IsYNext() {
-			return node != null && node.isNextY;
-		}
-		public bool IsValid() {
-			int cnt = 0;
-			foreach (Atom a in locale)
-				if (a!=null && a.excited)
-					cnt++;
-			return cnt==1 && !excited;
-		}
-    }
-    public class AtomNode {
-        public AtomNode next { get; set; }
-        public AtomNode prev { get; set; }
-		public bool isNextX { get; set; }
-		public bool isNextY { get; set; }
-		public Atom atom { get; set; }
-
-        public AtomNode(Atom a) {
-            atom = a;
-			isNextX = isNextY = false;
-        }
-    }
-    public class GraphicsSettings
+	public class GraphicsSettings
     {
         public SolidBrush bgBrush { get; set; }
         public SolidBrush fgBrush { get; set; }
