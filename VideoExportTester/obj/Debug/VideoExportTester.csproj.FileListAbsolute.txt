@@ -1,0 +1,8 @@
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\VideoExportTester\bin\Debug\VideoExportTester.exe.config
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\VideoExportTester\bin\Debug\VideoExportTester.exe
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\VideoExportTester\bin\Debug\VideoExportTester.pdb
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\VideoExportTester\obj\Debug\VideoExportTester.csprojResolveAssemblyReference.cache
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\VideoExportTester\obj\Debug\VideoExportTester.Properties.Resources.resources
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\VideoExportTester\obj\Debug\VideoExportTester.csproj.GenerateResource.Cache
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\VideoExportTester\obj\Debug\VideoExportTester.exe
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\VideoExportTester\obj\Debug\VideoExportTester.pdb
