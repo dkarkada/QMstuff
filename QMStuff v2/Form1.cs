@@ -6,7 +6,9 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -42,8 +44,9 @@ namespace QMStuff_v2
 
 			splitPanel.Panel2.BackColor = c.gs.bgBrush.Color;
 			splitPanel.Panel1.BackColor = Color.FromArgb(60, 60, 75);
-			xProbLabel.ForeColor = yProbLabel.ForeColor = gammaLabel.ForeColor =
-				zoomTitle.ForeColor = initTitle.ForeColor = LatSizeLabel.ForeColor = Color.White;
+
+			FpsChooser.SelectedIndex = 0;
+			ResChooser.SelectedIndex = 0;
 
 			Resize += FrameResizing;
 			splitPanel.SplitterMoved += SplitPanelResized;
@@ -99,6 +102,7 @@ namespace QMStuff_v2
 		private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
 			pf.Close();
 			playGroup.Enabled = true;
+			ExportButton.Enabled = true;
 			probGroup.Enabled = false;
 		}
 		private void Form1_KeyDown(object sender, KeyEventArgs e) {
@@ -188,6 +192,37 @@ namespace QMStuff_v2
 			probGroup.Enabled=true;
             GenerateButton.Focus();
             playGroup.Enabled=false;
+			ExportButton.Enabled = false;
+		}
+		private void ExportButton_Click(object sender, EventArgs e) {
+			int res = 800;
+			switch(ResChooser.SelectedIndex) {
+				case 0:
+					res = 800;
+					break;
+				case 1:
+					res = 600;
+					break;
+				case 2:
+					res = 400;
+					break;
+			}
+			int fps = 24;
+			switch(FpsChooser.SelectedIndex) {
+				case 0:
+					fps = 24;
+					break;
+				case 1:
+					fps = 10;
+					break;
+				case 2:
+					fps = 5;
+					break;
+				case 3:
+					fps = 2;
+					break;
+			}
+			c.ExportVideo(res, fps);
 		}
 		private void xProbBar_Scroll(object sender, EventArgs e) {
             c.lat.Xprobability = (double)(xProbBar.Value) / 100;
@@ -264,6 +299,8 @@ namespace QMStuff_v2
 		public GraphicsSettings gs { get; set; }
 		public int ind { get; set; }
 		public bool ctrlPressed { get; set; }
+		ProgressForm exportPF;
+		SaveFileDialog saver;
 
 		public Canvas(Form1 f, Size s) {
 			form = f;
@@ -275,8 +312,7 @@ namespace QMStuff_v2
 			DoubleBuffered = true;
 
 			this.MouseWheel += Canvas_MouseWheel;
-			this.MouseEnter += Canvas_MouseEnter;
-			this.MouseLeave += Canvas_MouseLeave;
+			this.MouseClick += Canvas_MouseClick;
 		}
 
 		public void SetSize(Size s) {
@@ -406,11 +442,109 @@ namespace QMStuff_v2
 			lat.clearChanges();
 		}
 
-		private void Canvas_MouseEnter(object sender, EventArgs e) {
-			this.Focus();
+		public void ExportVideo(int bmpSz, int fps) {
+			//Create save dialog
+			saver = new SaveFileDialog();
+			saver.Filter = "AVI video|*.avi";
+			saver.Title = "Save Your Video";
+			saver.ShowDialog();
+			
+			BackgroundWorker worker = new BackgroundWorker();
+			worker.WorkerReportsProgress = true;
+			worker.DoWork += Worker_DoWork;
+			worker.ProgressChanged += Worker_ProgressChanged;
+			worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+			exportPF = new ProgressForm();
+			exportPF.Text = "Exporting Video...";
+			exportPF.Show();
+			worker.RunWorkerAsync(new Tuple<int,int>(bmpSz, fps));
+			
 		}
-		private void Canvas_MouseLeave(object sender, EventArgs e) {
-			this.Parent.Focus();
+		private void Worker_DoWork(object sender, DoWorkEventArgs e) {
+			BackgroundWorker worker = sender as BackgroundWorker;
+
+			//INIT
+			int bmpSz = ((Tuple<int, int>)(e.Argument)).Item1;
+			int fps = ((Tuple<int, int>)(e.Argument)).Item2;
+			String path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\RENDER-TEMP\\";
+			Directory.CreateDirectory(path);
+			var qualityEncoder = System.Drawing.Imaging.Encoder.Quality;
+			long quality = 30;
+			var ratio = new EncoderParameter(qualityEncoder, quality);
+			var codecParams = new EncoderParameters(1);
+			codecParams.Param[0] = ratio;
+			var jpegCodecInfo = ImageCodecInfo.GetImageEncoders()[0];
+			foreach(ImageCodecInfo ici in ImageCodecInfo.GetImageEncoders()) {
+				if(ici.MimeType == "image/jpeg")
+					jpegCodecInfo = ici;
+			}
+			Bitmap VBmp = new Bitmap(bmpSz, bmpSz);
+
+			//Draw and save all frames
+			using(var g = Graphics.FromImage(VBmp)) {
+				if(gs.axes) {
+					int w = VBmp.Width;
+					int h = VBmp.Height;
+					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
+					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
+				}
+				SolidBrush br = gs.fgBrush;
+				br = new SolidBrush(Color.MediumPurple);
+				g.FillRectangle(br,
+						(float)(VBmp.Width / 2 + lat.aSize * (0 - .5)),
+						(float)(VBmp.Height / 2 - lat.aSize * (0 + .5)),
+						(int)lat.aSize, (int)lat.aSize);
+
+				int cnt = 0;
+				foreach(LatticeChange lc in lat.changes) {
+					cnt++;
+					br = gs.fgBrush;
+					foreach(Atom a in lc.on) {
+						if(a.isSource)
+							br = new SolidBrush(Color.MediumPurple);
+						g.FillRectangle(br,
+							(float)(VBmp.Width / 2 + lat.aSize * (a.x - .5)),
+							(float)(VBmp.Height / 2 - lat.aSize * (a.y + .5)),
+							(int)lat.aSize, (int)lat.aSize);
+					}
+					br = gs.bgBrush;
+					foreach(Atom a in lc.off) {
+						g.FillRectangle(br,
+							(float)(VBmp.Width/2 + lat.aSize*(a.x - .5)),
+							(float)(VBmp.Height/2 - lat.aSize*(a.y + .5)),
+							(int)lat.aSize, (int)lat.aSize);
+					}
+					worker.ReportProgress(100*cnt/(lat.changes.Count));
+					VBmp.Save(path + cnt + ".jpg", jpegCodecInfo, codecParams);
+				}
+			}
+
+			//Stitch videos from frames
+			if(saver.FileName != "") {
+				DotImaging.ImageStreamWriter vwriter = new DotImaging.VideoWriter(saver.FileName,
+				new DotImaging.Primitives2D.Size(bmpSz, bmpSz), fps, true);
+				DotImaging.ImageStreamReader ir =
+					new DotImaging.ImageDirectoryCapture(path, "*.jpg");
+				while(ir.Position < ir.Length) {
+					DotImaging.IImage i = ir.Read();
+					vwriter.Write(i);
+					worker.ReportProgress((int)(95*ir.Position/(ir.Length)));
+				}
+				vwriter.Close();
+			}
+
+			//Delete frames
+			Directory.Delete(path, true);
+		}
+		private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
+			exportPF.SetValue(e.ProgressPercentage);
+		}
+		private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+			exportPF.Close();
+		}
+
+		private void Canvas_MouseClick(object sender, EventArgs e) {
+			this.Focus();
 		}
 		private void Canvas_MouseWheel(object sender, MouseEventArgs e) {
 			if(ctrlPressed) {

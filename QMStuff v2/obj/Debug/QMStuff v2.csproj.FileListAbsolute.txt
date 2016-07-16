@@ -28,3 +28,9 @@ C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\obj\D
 C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\obj\Debug\QMStuff_v2.ProgressForm.resources
 C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\obj\Debug\QMStuff_v2.Properties.Resources.resources
 C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\obj\Debug\QMStuff v2.csproj.GenerateResource.Cache
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.GenericImage.dll
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.IO.dll
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.Primitives2D.dll
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.GenericImage.xml
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.IO.xml
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.Primitives2D.xml

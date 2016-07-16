@@ -1,0 +1,262 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DotImaging.UI</name>
+    </assembly>
+    <members>
+        <member name="T:DotImaging.FormCollection">
+            <summary>
+            Form collection management.
+            </summary>
+        </member>
+        <member name="F:DotImaging.FormCollection.ApplicationTimeout">
+            <summary>
+            Timeout for application initialization
+            </summary>
+        </member>
+        <member name="M:DotImaging.FormCollection.Initialize">
+            <summary>
+            Initializes the UI application.
+            </summary>
+        </member>
+        <member name="M:DotImaging.FormCollection.CreateAndShowDialog``2(System.Func{``0},System.Func{``0,``1})">
+            <summary>
+            Creates and show a new dialog form.
+            </summary>
+            <typeparam name="TForm">Form type.</typeparam>
+            <typeparam name="TResult">Result type.</typeparam>
+            <param name="creator">Form creator function.</param>
+            <param name="getResult">Result getter function.</param>
+            <returns>Result, available after the form is closed.</returns>
+        </member>
+        <member name="M:DotImaging.FormCollection.CreateOrUpdate``1(System.Func{``0},System.Action{``0},System.String)">
+            <summary>
+            Creates a new form or updates the existing one based on window title used as ID.
+            </summary>
+            <typeparam name="TForm">Form type.</typeparam>
+            <param name="creator">Form creator function.</param>
+            <param name="update">Form update function.</param>
+            <param name="windowTitle">Window title (ID).</param>
+        </member>
+        <member name="M:DotImaging.FormCollection.CloseAll">
+            <summary>
+            Closes all form windows if displayed.
+            </summary>
+        </member>
+        <member name="T:DotImaging.DrawingRectangleForm">
+            <summary>
+             Image display form supporting mask creation.
+            </summary>
+        </member>
+        <member name="M:DotImaging.DrawingRectangleForm.#ctor(System.String,System.Boolean)">
+            <summary>
+            Creates new image display form supporting rectangle creation.
+            </summary>
+            <param name="title">Window title.</param>
+            <param name="setPassingResetEvent">True to set the reset event to passing state, false otherwise.</param>
+        </member>
+        <member name="T:DotImaging.DrawingPenForm">
+            <summary>
+             Image display form supporting mask creation.
+            </summary>
+        </member>
+        <member name="M:DotImaging.DrawingPenForm.#ctor(System.String)">
+            <summary>
+            Creates new image display form supporting mask creation.
+            </summary>
+            <param name="title">Window title.</param>
+        </member>
+        <member name="P:DotImaging.DrawingPenForm.Mask">
+            <summary>
+            Gets the created mask.
+            </summary>
+        </member>
+        <member name="T:DotImaging.MenuForm">
+            <summary>
+            Menu form.
+            </summary>
+        </member>
+        <member name="M:DotImaging.MenuForm.#ctor(System.String)">
+            <summary>
+            Creates a new menu form.
+            </summary>
+            <param name="title">Window title.</param>
+        </member>
+        <member name="M:DotImaging.MenuForm.#ctor(System.String,System.String[],System.Action[])">
+            <summary>
+            Creates a new menu form.
+            </summary>
+            <param name="title">Window title.</param>
+            <param name="itemNames">Item names.</param>
+            <param name="actions">Actions.</param>
+        </member>
+        <member name="P:DotImaging.MenuForm.SelectedIndex">
+            <summary>
+            Gets the selected menu item index or returns -1 in case the form is closed.
+            </summary>
+        </member>
+        <member name="T:DotImaging.ImageForm">
+            <summary>
+            Image display form.
+            </summary>
+        </member>
+        <member name="M:DotImaging.ImageForm.SetImage(DotImaging.Bgr{System.Byte}[0:,0:])">
+            <summary>
+            Sets the specified image.
+            </summary>
+            <param name="image">Image to display.</param>
+        </member>
+        <member name="M:DotImaging.ImageForm.#ctor(System.String)">
+            <summary>
+            Creates new image display form.
+            </summary>
+            <param name="title">Window title.</param>
+        </member>
+        <member name="P:DotImaging.ImageForm.ScaleForm">
+            <summary>
+            Gets or sets whether to rescale the form to the image size.
+            </summary>
+        </member>
+        <member name="P:DotImaging.ImageForm.PictureBox">
+            <summary>
+            Gets the underlying picture box control.
+            </summary>
+        </member>
+        <member name="T:DotImaging.ProgressForm">
+            <summary>
+            Progress bar form.
+            </summary>
+        </member>
+        <member name="M:DotImaging.ProgressForm.#ctor(System.String)">
+            <summary>
+            Creates new progress bar window.
+            </summary>
+            <param name="title">Window title.</param>
+        </member>
+        <member name="M:DotImaging.ProgressForm.Set(System.Double,System.String)">
+            <summary>
+            Sets the progress value and mesage.
+            </summary>
+            <param name="value">Value [0..1].</param>
+            <param name="message">Message.</param>
+        </member>
+        <member name="T:DotImaging.UI">
+            <summary>
+            Provides simple standalone UI elements throughout static methods or extensions.
+            </summary>
+        </member>
+        <member name="M:DotImaging.UI.CloseAll">
+            <summary>
+            Closes all UI controls if displayed.
+            </summary>
+        </member>
+        <member name="M:DotImaging.UI.Progress(System.Double,System.String,System.String)">
+            <summary>
+            Shows the progress bar in the specified window.
+            <para>Values are in [0..1] range. Progress bar will automatically close if vale is &gt; 1.</para>
+            <para>For indeterminate bar pass values &lt; 0.</para>
+            </summary>
+            <param name="value">Value in [0..1] range.</param>
+            <param name="windowTitle">Window title (ID).</param>
+            <param name="message">Optional message to display along with the progress bar.</param>
+        </member>
+        <member name="M:DotImaging.UI.PickColor(DotImaging.Bgr{System.Byte})">
+            <summary>
+            Displays an color picker dialog.
+            <para>REQUIREMENT: calling thread must be STAThread.</para>
+            </summary>
+            <param name="defaultColor">Default color.</param>
+            <returns>Picked or default color in case the selection is cancelled.</returns>
+        </member>
+        <member name="M:DotImaging.UI.ShowMenu(System.String,System.String[],System.Action[])">
+            <summary>
+            Displays a menu dialog specified by user defined menu items. 
+            <para>If no items are specified, or in case of a error, the dialog will not be shown.</para>
+            </summary>
+            <param name="windowTitle">Window title (ID).</param>
+            <param name="itemNames">Names of the menu items.</param>
+            <param name="actions">Item actions.</param>
+            <returns>Selected menu index or -1 in case the form is closed.</returns>
+        </member>
+        <member name="M:DotImaging.UI.OpenFile(System.String,System.String[])">
+            <summary>
+            Display an open file dialog and returns the selected file name, null otherwise.
+            </summary>
+            <param name="windowTitle">Window title.</param>
+            <param name="extensions">File extension mask.</param>
+            <returns>Selected file name, null otherwise</returns>
+        </member>
+        <member name="M:DotImaging.UI.SaveFile(System.String,System.String[])">
+            <summary>
+            Display an save file dialog and returns the selected (specified) file name, null otherwise.
+            </summary>
+            <param name="windowTitle">Window title.</param>
+            <param name="extensions">File extension mask.</param>
+            <returns>Selected (specified) file name, null otherwise</returns>
+        </member>
+        <member name="M:DotImaging.UI.OpenImage(System.String)">
+            <summary>
+            Display an open file dialog and returns the selected image file name, null otherwise.
+            </summary>
+            <param name="windowTitle">Window title.</param>
+            <returns>Selected file name, null otherwise</returns>
+        </member>
+        <member name="M:DotImaging.UI.SaveImage(System.String)">
+            <summary>
+            Display an save file dialog and returns the selected (specified) image file name, null otherwise.
+            </summary>
+            <param name="windowTitle">Window title.</param>
+            <returns>Selected (specified) file name, null otherwise</returns>
+        </member>
+        <member name="M:DotImaging.UI.SelectFolder(System.String)">
+            <summary>
+            Display an folder selection dialog and returns the selected folder name, null otherwise.
+            </summary>
+            <param name="windowTitle">Window title.</param>
+            <returns>Selected folder name, null otherwise</returns>
+        </member>
+        <member name="M:DotImaging.UI.Show(DotImaging.Bgr{System.Byte}[0:,0:],System.String,System.Boolean)">
+            <summary>
+            Displays the specified image in a window.
+            <para>Press and hold shift + mouse (track-pad) to translate and zoom an image.</para>
+            </summary>
+            <param name="image">Image to show.</param>
+            <param name="windowTitle">Window title (ID).</param>
+            <param name="scaleForm">True to adjust form to the image size, false otherwise.</param>
+        </member>
+        <member name="M:DotImaging.UI.GetMask(DotImaging.Bgr{System.Byte}[0:,0:],System.String,System.Boolean)">
+            <summary>
+            Displays the specified image in a window and waits the user to create a mask by drawing.
+            <para>Press and hold shift + mouse (track-pad) to translate and zoom an image.</para>
+            </summary>
+            <param name="image">Image to display.</param>
+            <param name="windowTitle">Window title (ID).</param>
+            <param name="scaleForm">True to adjust form to the image size, false otherwise.</param>
+            <returns>Drawn mask.</returns>
+        </member>
+        <member name="M:DotImaging.UI.GetRectangle(DotImaging.Bgr{System.Byte}[0:,0:],System.String,System.Boolean)">
+            <summary>
+            Displays the specified image in a window and waits the user to create a rectangle by drawing.
+            <para>Press and hold shift + mouse (track-pad) to translate and zoom an image.</para>
+            </summary>
+            <param name="image">Image to display.</param>
+            <param name="windowTitle">Window title (ID).</param>
+            <param name="scaleForm">True to adjust form to the image size, false otherwise.</param>
+            <returns>Drawn rectangle.</returns>
+        </member>
+        <member name="M:DotImaging.UI.GetRectangle(DotImaging.Bgr{System.Byte}[0:,0:],System.String,System.Action{DotImaging.Primitives2D.RectangleF},System.Boolean,System.Boolean)">
+            <summary>
+            Displays the image and enables the user selects an area.
+            <para>Press and hold any key to temporary block the calling thread (useful when used with video sequence stream).</para>
+            </summary>
+            <param name="image">Image to display.</param>
+            <param name="windowTitle">Window title (ID).</param>
+            <param name="onDrawn">Action executed when a rectangle is drawn (when mouse is released).</param>
+            <param name="scaleForm">True to adjust form to the image size, false otherwise.</param>
+            <param name="startBlocked">
+            Used only when a form is first initialized. True to start as a dialog, false to show the form in non-blocking way.
+            <para>When form is the blocking state (dialog) user is required to press and release a key to enable non-blocking mode.</para>
+            </param>
+        </member>
+    </members>
+</doc>

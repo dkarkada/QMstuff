@@ -68,6 +68,13 @@
 			this.zoomButton3 = new System.Windows.Forms.RadioButton();
 			this.zoomButton2 = new System.Windows.Forms.RadioButton();
 			this.zoomButton1 = new System.Windows.Forms.RadioButton();
+			this.ExportGroup = new System.Windows.Forms.Panel();
+			this.ResChooser = new System.Windows.Forms.ComboBox();
+			this.ResolutionLabel = new System.Windows.Forms.Label();
+			this.FpsChooser = new System.Windows.Forms.ComboBox();
+			this.FpsLabel = new System.Windows.Forms.Label();
+			this.ExportLabel = new System.Windows.Forms.Label();
+			this.ExportButton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -85,6 +92,7 @@
 			this.tabControl1.SuspendLayout();
 			this.FlowLayout.SuspendLayout();
 			this.zoomGroup.SuspendLayout();
+			this.ExportGroup.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -143,6 +151,7 @@
 			// 
 			this.yProbLabel.AutoSize = true;
 			this.yProbLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.yProbLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
 			this.yProbLabel.Location = new System.Drawing.Point(23, 108);
 			this.yProbLabel.Name = "yProbLabel";
 			this.yProbLabel.Size = new System.Drawing.Size(24, 17);
@@ -153,6 +162,7 @@
 			// 
 			this.xProbLabel.AutoSize = true;
 			this.xProbLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.xProbLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
 			this.xProbLabel.Location = new System.Drawing.Point(23, 57);
 			this.xProbLabel.Name = "xProbLabel";
 			this.xProbLabel.Size = new System.Drawing.Size(23, 17);
@@ -300,6 +310,7 @@
 			// LatSizeLabel
 			// 
 			this.LatSizeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.LatSizeLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
 			this.LatSizeLabel.Location = new System.Drawing.Point(342, 57);
 			this.LatSizeLabel.Name = "LatSizeLabel";
 			this.LatSizeLabel.Size = new System.Drawing.Size(54, 40);
@@ -339,6 +350,7 @@
 			// 
 			this.initTitle.AutoSize = true;
 			this.initTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.initTitle.ForeColor = System.Drawing.SystemColors.ControlLightLight;
 			this.initTitle.Location = new System.Drawing.Point(266, 20);
 			this.initTitle.Name = "initTitle";
 			this.initTitle.Size = new System.Drawing.Size(117, 17);
@@ -361,6 +373,7 @@
 			// 
 			this.gammaLabel.AutoSize = true;
 			this.gammaLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.gammaLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
 			this.gammaLabel.Location = new System.Drawing.Point(23, 159);
 			this.gammaLabel.Name = "gammaLabel";
 			this.gammaLabel.Size = new System.Drawing.Size(16, 17);
@@ -488,6 +501,7 @@
 			this.FlowLayout.Controls.Add(this.probGroup);
 			this.FlowLayout.Controls.Add(this.zoomGroup);
 			this.FlowLayout.Controls.Add(this.playGroup);
+			this.FlowLayout.Controls.Add(this.ExportGroup);
 			this.FlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.FlowLayout.Location = new System.Drawing.Point(0, 0);
 			this.FlowLayout.Name = "FlowLayout";
@@ -514,6 +528,7 @@
 			// 
 			this.zoomTitle.AutoSize = true;
 			this.zoomTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.zoomTitle.ForeColor = System.Drawing.SystemColors.ControlLightLight;
 			this.zoomTitle.Location = new System.Drawing.Point(105, 21);
 			this.zoomTitle.Name = "zoomTitle";
 			this.zoomTitle.Size = new System.Drawing.Size(93, 17);
@@ -581,6 +596,94 @@
 			this.zoomButton1.UseVisualStyleBackColor = true;
 			this.zoomButton1.CheckedChanged += new System.EventHandler(this.zoomButton1_CheckedChanged);
 			// 
+			// ExportGroup
+			// 
+			this.ExportGroup.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
+			this.ExportGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.ExportGroup.Controls.Add(this.ResChooser);
+			this.ExportGroup.Controls.Add(this.ResolutionLabel);
+			this.ExportGroup.Controls.Add(this.FpsChooser);
+			this.ExportGroup.Controls.Add(this.FpsLabel);
+			this.ExportGroup.Controls.Add(this.ExportLabel);
+			this.ExportGroup.Controls.Add(this.ExportButton);
+			this.ExportGroup.Location = new System.Drawing.Point(30, 511);
+			this.ExportGroup.Margin = new System.Windows.Forms.Padding(20);
+			this.ExportGroup.Name = "ExportGroup";
+			this.ExportGroup.Padding = new System.Windows.Forms.Padding(20);
+			this.ExportGroup.Size = new System.Drawing.Size(243, 214);
+			this.ExportGroup.TabIndex = 31;
+			// 
+			// ResChooser
+			// 
+			this.ResChooser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.ResChooser.FormattingEnabled = true;
+			this.ResChooser.Items.AddRange(new object[] {
+            "800 x 800",
+            "600 x 600",
+            "400 x 400"});
+			this.ResChooser.Location = new System.Drawing.Point(114, 104);
+			this.ResChooser.Name = "ResChooser";
+			this.ResChooser.Size = new System.Drawing.Size(101, 21);
+			this.ResChooser.TabIndex = 33;
+			// 
+			// ResolutionLabel
+			// 
+			this.ResolutionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.ResolutionLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.ResolutionLabel.Location = new System.Drawing.Point(21, 105);
+			this.ResolutionLabel.Name = "ResolutionLabel";
+			this.ResolutionLabel.Size = new System.Drawing.Size(81, 21);
+			this.ResolutionLabel.TabIndex = 32;
+			this.ResolutionLabel.Text = "Resolution";
+			// 
+			// FpsChooser
+			// 
+			this.FpsChooser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.FpsChooser.FormattingEnabled = true;
+			this.FpsChooser.Items.AddRange(new object[] {
+            "24 Hz (fastest video)",
+            "10 Hz",
+            "5 Hz",
+            "2 Hz (slowest video)"});
+			this.FpsChooser.Location = new System.Drawing.Point(69, 61);
+			this.FpsChooser.Name = "FpsChooser";
+			this.FpsChooser.Size = new System.Drawing.Size(146, 21);
+			this.FpsChooser.TabIndex = 31;
+			// 
+			// FpsLabel
+			// 
+			this.FpsLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.FpsLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.FpsLabel.Location = new System.Drawing.Point(21, 61);
+			this.FpsLabel.Name = "FpsLabel";
+			this.FpsLabel.Size = new System.Drawing.Size(54, 21);
+			this.FpsLabel.TabIndex = 30;
+			this.FpsLabel.Text = "FPS";
+			// 
+			// ExportLabel
+			// 
+			this.ExportLabel.AutoSize = true;
+			this.ExportLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.ExportLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.ExportLabel.Location = new System.Drawing.Point(73, 20);
+			this.ExportLabel.Name = "ExportLabel";
+			this.ExportLabel.Size = new System.Drawing.Size(88, 17);
+			this.ExportLabel.TabIndex = 28;
+			this.ExportLabel.Text = "Export Video";
+			this.ExportLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// ExportButton
+			// 
+			this.ExportButton.Enabled = false;
+			this.ExportButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.ExportButton.Location = new System.Drawing.Point(53, 150);
+			this.ExportButton.Name = "ExportButton";
+			this.ExportButton.Size = new System.Drawing.Size(131, 40);
+			this.ExportButton.TabIndex = 13;
+			this.ExportButton.Text = "Export";
+			this.ExportButton.UseVisualStyleBackColor = true;
+			this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -614,6 +717,8 @@
 			this.FlowLayout.ResumeLayout(false);
 			this.zoomGroup.ResumeLayout(false);
 			this.zoomGroup.PerformLayout();
+			this.ExportGroup.ResumeLayout(false);
+			this.ExportGroup.PerformLayout();
 			this.ResumeLayout(false);
 
         }
@@ -659,6 +764,13 @@
         private System.Windows.Forms.Label initTitle;
 		private System.Windows.Forms.Label LatSizeLabel;
 		private System.Windows.Forms.NumericUpDown LatSizeValue;
+		private System.Windows.Forms.Panel ExportGroup;
+		private System.Windows.Forms.ComboBox FpsChooser;
+		private System.Windows.Forms.Label FpsLabel;
+		private System.Windows.Forms.Label ExportLabel;
+		private System.Windows.Forms.Button ExportButton;
+		private System.Windows.Forms.ComboBox ResChooser;
+		private System.Windows.Forms.Label ResolutionLabel;
 	}
 }
 
