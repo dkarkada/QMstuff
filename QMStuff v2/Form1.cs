@@ -2,20 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace QMStuff_v2
-{
-
+namespace QMStuff_v2{
 	public partial class Form1 : Form {
 		Canvas c;
 		ProgressForm pf;
@@ -104,6 +97,7 @@ namespace QMStuff_v2
 			playGroup.Enabled = true;
 			ExportButton.Enabled = true;
 			probGroup.Enabled = false;
+			PerimeterGroup.Enabled = true;
 		}
 		private void Form1_KeyDown(object sender, KeyEventArgs e) {
 			if(e.KeyCode == Keys.ControlKey)
@@ -173,11 +167,13 @@ namespace QMStuff_v2
                 clock.Start();
                 playButton.Text = "Pause";
                 speedBar.Visible = true;
+				PerimeterGroup.Enabled = false;
             }
             else {
                 clock.Stop();
                 playButton.Text = "Play";
                 speedBar.Visible = false;
+				PerimeterGroup.Enabled = true;
             }
         }
 		private void restartButton_Click(object sender, EventArgs e) {
@@ -193,6 +189,7 @@ namespace QMStuff_v2
             GenerateButton.Focus();
             playGroup.Enabled=false;
 			ExportButton.Enabled = false;
+			PerimeterGroup.Enabled = false;
 		}
 		private void ExportButton_Click(object sender, EventArgs e) {
 			int res = 800;
@@ -291,8 +288,17 @@ namespace QMStuff_v2
 			c.lat.aSize = (int)(10*c.gs.zoom);
 			c.ReRender();
 		}
-    }
-    public class Canvas : Panel {
+
+		private void AnalysisStartButton_Click(object sender, EventArgs e) {
+			c.RenderPerim((int)(BoxFitSizeValue.Value), (int)(stepCounter.Value));
+	//		c.startAnalysisRender((int) (BoxFitSizeValue.Value), (int) (stepCounter.Value));
+		}
+
+		private void BoxFitNextButton_Click(object sender, EventArgs e) {
+			c.PerimNextRender();
+		}
+	}
+	public class Canvas : Panel {
 		private Form1 form;
 		public Bitmap bmp { get; set; }
 		public Lattice lat { get; set; }
@@ -439,7 +445,7 @@ namespace QMStuff_v2
 		}
 		public void Restart() {
 			ind = 0;
-			lat.clearChanges();
+			lat.ClearChanges();
 		}
 
 		public void ExportVideo(int bmpSz, int fps) {
@@ -542,6 +548,56 @@ namespace QMStuff_v2
 		private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
 			exportPF.Close();
 		}
+		
+		public void startAnalysisRender(int boxSz, int ind) {
+			lat.startAnalysis(boxSz, ind);
+			using (var g = Graphics.FromImage(bmp)) {
+				SolidBrush br = new SolidBrush(Color.IndianRed);
+				g.FillRectangle(br,
+							(float)(bmp.Width / 2 + lat.aSize * (lat.box.x - .5)),
+							(float)(bmp.Height / 2 - lat.aSize * (lat.box.y + .5)),
+							(int)lat.aSize * boxSz, (int)lat.aSize * boxSz);
+			}
+			Invalidate();
+		}
+		public void PerimNextRender() {
+			using (var g = Graphics.FromImage(bmp)) {
+				int boxSz = lat.box.size;
+				SolidBrush br = new SolidBrush(Color.Black);
+				g.FillRectangle(br,
+							(float)(bmp.Width / 2 + lat.aSize * (lat.box.x - .5)),
+							(float)(bmp.Height / 2 - lat.aSize * (lat.box.y + .5)),
+							(int)lat.aSize * boxSz, (int)lat.aSize * boxSz);
+				lat.box.Next();
+				br = new SolidBrush(Color.IndianRed);
+				g.FillRectangle(br,
+							(float)(bmp.Width / 2 + lat.aSize * (lat.box.x - .5)),
+							(float)(bmp.Height / 2 - lat.aSize * (lat.box.y + .5)),
+							(int)lat.aSize * boxSz, (int)lat.aSize * boxSz);
+				br = new SolidBrush(Color.Magenta);
+				foreach (Point p in lat.box.vertices) {
+					g.FillRectangle(br,
+							(float)(bmp.Width / 2 + lat.aSize * (p.X - .5)),
+							(float)(bmp.Height / 2 - lat.aSize * (p.Y + .5)),
+							(int)lat.aSize, (int)lat.aSize);
+				}
+			}
+			Invalidate();
+		}
+		public void RenderPerim(int boxSz, int ind) {
+			lat.PerimAnalysis(boxSz, ind);
+			Pen perimPen = new Pen(Color.Red, (float)lat.aSize/2);
+			using (Graphics g = Graphics.FromImage(bmp)) {
+				Point[] points = new Point[lat.box.vertices.Count];
+				for(int i=0; i<points.GetLength(0); i++) { 
+					Point p = lat.box.vertices[i];
+					points[i] = new Point((int)(bmp.Width / 2 + lat.aSize * (p.X)),
+							(int)(bmp.Height / 2 - lat.aSize * (p.Y)));
+				}
+				g.DrawPolygon(perimPen, points);
+			}
+			Invalidate();
+	}
 
 		private void Canvas_MouseClick(object sender, EventArgs e) {
 			this.Focus();
@@ -565,12 +621,13 @@ namespace QMStuff_v2
 		public AtomsLinkedList nextAtomsY { get; set; }
 		public AtomsLinkedList allExcited { get; set; }
 		public Random rnd { get; set; }
+		public FitBox box { get; set; }
 
-		public Lattice(int s){
-            Xprobability = Yprobability = 1;
+		public Lattice(int s) {
+			Xprobability = Yprobability = 1;
 			gamma = 0;
-            aSize = 10;
-            sz = s;
+			aSize = 10;
+			sz = s;
 			mat = new Atom[sz, sz];
 			latFrameList = new LatticeFrameList();
 			changes = new List<LatticeChange>();
@@ -578,12 +635,12 @@ namespace QMStuff_v2
 			nextAtomsY = new AtomsLinkedList();
 			allExcited = new AtomsLinkedList();
 			rnd = new Random();
-			
-			for (int r = 0; r < sz; r++){
-                for (int c = 0; c < sz; c++) {
-                    mat[r, c] = new Atom(c - sz / 2, sz / 2 - r, 0);
+
+			for (int r = 0; r < sz; r++) {
+				for (int c = 0; c < sz; c++) {
+					mat[r, c] = new Atom(c - sz / 2, sz / 2 - r, 0);
 				}
-            }
+			}
 			for (int r = 0; r < sz; r++) {
 				for (int c = 0; c < sz; c++) {
 					mat[r, c].SetLocale(
@@ -594,18 +651,18 @@ namespace QMStuff_v2
 				}
 			}
 			LatticeChange lc = new LatticeChange();
-			lc.AddOn(mat[sz/2, sz/2]);
+			lc.AddOn(mat[sz / 2, sz / 2]);
 			changes.Add(lc);
-			mat[sz/2, sz/2].excited = true;
-			mat[sz/2, sz/2].isSource = true;
-			nextAtomsX.Add(mat[sz/2, sz/2 + 1]);
-			mat[sz/2, sz/2 + 1].node.isNextX = true;
-			nextAtomsX.Add(mat[sz/2, sz/2 - 1]);
-			mat[sz/2, sz/2 - 1].node.isNextX = true;
+			mat[sz / 2, sz / 2].excited = true;
+			mat[sz / 2, sz / 2].isSource = true;
+			nextAtomsX.Add(mat[sz / 2, sz / 2 + 1]);
+			mat[sz / 2, sz / 2 + 1].node.isNextX = true;
+			nextAtomsX.Add(mat[sz / 2, sz / 2 - 1]);
+			mat[sz / 2, sz / 2 - 1].node.isNextX = true;
 			nextAtomsY.Add(mat[sz / 2 + 1, sz / 2]);
-			mat[sz/2 + 1, sz/2].node.isNextY = true;
-			nextAtomsY.Add(mat[sz/2 - 1, sz/2]);
-			mat[sz/2 - 1, sz/2].node.isNextY = true;
+			mat[sz / 2 + 1, sz / 2].node.isNextY = true;
+			nextAtomsY.Add(mat[sz / 2 - 1, sz / 2]);
+			mat[sz / 2 - 1, sz / 2].node.isNextY = true;
 			latFrameList.Add(mat, 0);
 		}
 		public void GenerateChanges(BackgroundWorker worker, int bound, int step) {
@@ -619,10 +676,10 @@ namespace QMStuff_v2
 					allExcited.Remove(node);
 					node.atom.excited = false;
 					lc.AddOff(node.atom);
-					foreach(Atom a in node.atom.locale) {
-						if (a!=null && a.node==null) //means that it is not excited and not next; will check neighbor's neighbors later
+					foreach (Atom a in node.atom.locale) {
+						if (a != null && a.node == null) //means that it is not excited and not next; will check neighbor's neighbors later
 							maybeNext.Add(a);
-						if (a!=null && !a.Equals(node.atom)) {
+						if (a != null && !a.Equals(node.atom)) {
 							if (a.IsXNext())
 								maybeRemoveXNext.Add(a);
 							else if (a.IsYNext())
@@ -649,8 +706,10 @@ namespace QMStuff_v2
 							else if (neighbor.IsValid())
 								maybeNext.Add(neighbor);
 						}
-						else
+						else {
 							done = true;
+							latFrameList.Add(mat, step);
+						}
 					}
 				}
 			}
@@ -698,16 +757,205 @@ namespace QMStuff_v2
 						a.node.isNextY = true;
 					}
 				}
-			}	
+			}
 			changes.Add(lc);
 			if (step % 50 == 0)
 				latFrameList.Add(mat, step);
-			worker.ReportProgress(100*bound/(sz/2));
-			if (!done && changes.Count<1000) GenerateChanges(worker, bound, ++step);
+			worker.ReportProgress(100 * bound / (sz / 2));
+			if (!done && changes.Count < 1000)
+				GenerateChanges(worker, bound, ++step);
 		}
-		public void clearChanges() {
+		public void ClearChanges() {
 			changes = new List<LatticeChange>();
 		}
+		public int ConvertX(int x) { return x + sz / 2; }
+		public int ConvertY(int y) { return sz / 2 - y; }
+
+		public void startAnalysis(int boxSz, int ind) {
+			int[,] boxMat = new int[sz + 2 * boxSz, sz + 2 * boxSz];
+			Tuple<List<Atom>, int> result = latFrameList.GetNearestFrame(ind);
+			foreach (Atom a in result.Item1) {
+				int r = ConvertY(a.y);
+				int c = ConvertX(a.x);
+				boxMat[r + boxSz, c + boxSz] = 1;
+			}
+			if (result.Item2 < ind) {
+				for (int i = result.Item2; i < ind; i++) {
+					LatticeChange lc = changes[i];
+					foreach (Atom a in lc.on) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + boxSz, c + boxSz] = 1;
+					}
+					foreach (Atom a in lc.off) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + boxSz, c + boxSz] = 0;
+					}
+				}
+			}
+			else {
+				for (int i = result.Item2; i >= ind; i--) {
+					LatticeChange lc = changes[i];
+					foreach (Atom a in lc.off) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + boxSz, c + boxSz] = 1;
+					}
+					foreach (Atom a in lc.on) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + boxSz, c + boxSz] = 0;
+					}
+				}
+			}
+			box = new FitBox(boxSz, boxMat);
+		}
+		public void PerimAnalysis(int boxSz, int ind) {
+			int[,] boxMat = new int[sz + 2 * boxSz, sz + 2 * boxSz];
+			Tuple<List<Atom>, int> result = latFrameList.GetNearestFrame(ind);
+			foreach (Atom a in result.Item1) {
+				int r = ConvertY(a.y);
+				int c = ConvertX(a.x);
+				boxMat[r + boxSz, c + boxSz] = 1;
+			}
+			if (result.Item2 < ind) {
+				for (int i = result.Item2; i < ind; i++) {
+					LatticeChange lc = changes[i];
+					foreach (Atom a in lc.on) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + boxSz, c + boxSz] = 1;
+					}
+					foreach (Atom a in lc.off) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + boxSz, c + boxSz] = 0;
+					}
+				}
+			}
+			else {
+				for (int i = result.Item2; i >= ind; i--) {
+					LatticeChange lc = changes[i];
+					foreach (Atom a in lc.off) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + boxSz, c + boxSz] = 1;
+					}
+					foreach (Atom a in lc.on) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + boxSz, c + boxSz] = 0;
+					}
+				}
+			}
+			box = new FitBox(boxSz, boxMat);
+			box.CalcPerim();
+		}
+	}
+	public class FitBox {
+		public int size, x, y, dir, edge;
+		public int[,] latState;
+		public List<Point> vertices;
+		Point start;
+
+		public FitBox(int s, int[,] mat) {
+			size = s;
+			latState = mat;
+			dir = 3;
+			edge = 2;
+			vertices = new List<Point>();
+			int r = 0;
+			int c = 0;
+			int mSz = latState.GetLength(0);
+			while ((latState[r, c])==0) {
+				c++;
+				if (c >= mSz) {
+					c = 0;
+					r++;
+				}
+			}
+			x = ConvertCol(c);
+			y = ConvertRow(r) + this.size;
+			start = new Point(x, y);
+		}
+		public void CalcPerim() {
+			do {
+				Next();
+			} while (!(x == start.X && y == start.Y));
+			
+			for(int i=0; i<vertices.Count-1; i++) {
+				while(i<vertices.Count-1 && vertices[i].Equals(vertices[i+1]))
+					vertices.RemoveAt(i+1);
+			}
+		}
+		public void Next() {
+			bool turnedConvex = false;
+			if (traverseEdge(edge, dir) == null) {
+				int temp = dir;
+				dir = edge;
+				edge = (temp + 2) % 4;
+				turnedConvex = true;
+			}
+			else {
+				while (traverseEdge(dir, edge) != null) {
+					Tuple<int, int> t = traverseEdge(edge, dir);
+					vertices.Add(new Point(ConvertCol(t.Item1), ConvertRow(t.Item2)));
+					int temp = edge;
+					edge = dir;
+					dir = (temp + 2) % 4;
+					t = traverseEdge(edge, (dir+2)%4);
+					vertices.Add(new Point(ConvertCol(t.Item1), ConvertRow(t.Item2)));
+				}
+			}
+			move();
+			if (turnedConvex) {
+				Tuple<int,int> t = GetIndexVals(edge, dir, 0);
+				vertices.Add(new Point(ConvertCol(t.Item1), ConvertRow(t.Item2)));
+			}
+		}
+		private Tuple<int,int> traverseEdge(int edgeNum, int dirNum) {
+			for (int i = 0; i < size; i++) {
+				Tuple<int, int> indexVals = GetIndexVals(edgeNum, dirNum, i);
+				if (latState[indexVals.Item2, indexVals.Item1] == 1)
+					return indexVals;
+			}
+			return null;
+		}
+		private void move() {
+			switch (dir) {
+				case 0:
+					y += 1;
+					break;
+				case 1:
+					x += 1;
+					break;
+				case 2:
+					y -= 1;
+					break;
+				case 3:
+					x -= 1;
+					break;
+			}
+		}
+		public Tuple<int, int> GetIndexVals(int edgeNum, int dirNum, int traverseInd) {
+			int[] XOffsets = { 0, size, 0, -1 };
+			int[] YOffsets = { -1, 0, size, 0 };
+			int[] dampOffsets = { size - 1, size - 1, 0, 0 };
+			int dampInd = edgeNum;
+			if (dirNum == (edgeNum + 3) % 4)
+				dampInd = (edgeNum + 2) % 4;
+			if (dampOffsets[dampInd] == size - 1)
+				traverseInd *= -1;
+			int px = ConvertX(x) + (XOffsets[edgeNum] == 0 ? dampOffsets[dampInd] + traverseInd : XOffsets[edgeNum]);
+			int py = ConvertY(y) + (YOffsets[edgeNum] == 0 ? dampOffsets[dampInd] + traverseInd : YOffsets[edgeNum]);
+			return new Tuple<int,int>(px, py);
+		}
+		public int ConvertX(int x) { return x + latState.GetLength(0) / 2; }
+		public int ConvertY(int y) { return latState.GetLength(0) / 2 - y; }
+		public int ConvertRow(int r) { return latState.GetLength(0) / 2 - r; }
+		public int ConvertCol(int c) { return c - latState.GetLength(0) / 2; }
+
 	}
 	public class LatticeChange
     {

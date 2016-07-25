@@ -75,6 +75,12 @@
 			this.FpsLabel = new System.Windows.Forms.Label();
 			this.ExportLabel = new System.Windows.Forms.Label();
 			this.ExportButton = new System.Windows.Forms.Button();
+			this.PerimeterGroup = new System.Windows.Forms.Panel();
+			this.AnalysisStartButton = new System.Windows.Forms.Button();
+			this.BoxFitSizeValue = new System.Windows.Forms.NumericUpDown();
+			this.BoxFitNextButton = new System.Windows.Forms.Button();
+			this.PerimeterLabel = new System.Windows.Forms.Label();
+			this.pbeforebutton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -93,6 +99,8 @@
 			this.FlowLayout.SuspendLayout();
 			this.zoomGroup.SuspendLayout();
 			this.ExportGroup.SuspendLayout();
+			this.PerimeterGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.BoxFitSizeValue)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -341,7 +349,7 @@
 			this.LatSizeValue.Size = new System.Drawing.Size(49, 23);
 			this.LatSizeValue.TabIndex = 29;
 			this.LatSizeValue.Value = new decimal(new int[] {
-            400,
+            100,
             0,
             0,
             0});
@@ -459,7 +467,7 @@
 			// 
 			this.splitPanel.Panel1.Controls.Add(this.tabControl1);
 			this.splitPanel.Panel1.Controls.Add(this.FlowLayout);
-			this.splitPanel.Size = new System.Drawing.Size(1362, 741);
+			this.splitPanel.Size = new System.Drawing.Size(1362, 775);
 			this.splitPanel.SplitterDistance = 802;
 			this.splitPanel.TabIndex = 10;
 			// 
@@ -468,7 +476,7 @@
 			this.tabControl1.Controls.Add(this.tabPage1);
 			this.tabControl1.Controls.Add(this.tabPage2);
 			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Bottom;
-			this.tabControl1.Location = new System.Drawing.Point(0, 708);
+			this.tabControl1.Location = new System.Drawing.Point(0, 742);
 			this.tabControl1.Margin = new System.Windows.Forms.Padding(20);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
@@ -502,11 +510,12 @@
 			this.FlowLayout.Controls.Add(this.zoomGroup);
 			this.FlowLayout.Controls.Add(this.playGroup);
 			this.FlowLayout.Controls.Add(this.ExportGroup);
+			this.FlowLayout.Controls.Add(this.PerimeterGroup);
 			this.FlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.FlowLayout.Location = new System.Drawing.Point(0, 0);
 			this.FlowLayout.Name = "FlowLayout";
 			this.FlowLayout.Padding = new System.Windows.Forms.Padding(10);
-			this.FlowLayout.Size = new System.Drawing.Size(802, 741);
+			this.FlowLayout.Size = new System.Drawing.Size(802, 775);
 			this.FlowLayout.TabIndex = 16;
 			// 
 			// zoomGroup
@@ -684,11 +693,83 @@
 			this.ExportButton.UseVisualStyleBackColor = true;
 			this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
 			// 
+			// PerimeterGroup
+			// 
+			this.PerimeterGroup.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
+			this.PerimeterGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.PerimeterGroup.Controls.Add(this.AnalysisStartButton);
+			this.PerimeterGroup.Controls.Add(this.BoxFitSizeValue);
+			this.PerimeterGroup.Controls.Add(this.BoxFitNextButton);
+			this.PerimeterGroup.Controls.Add(this.PerimeterLabel);
+			this.PerimeterGroup.Controls.Add(this.pbeforebutton);
+			this.PerimeterGroup.Location = new System.Drawing.Point(313, 511);
+			this.PerimeterGroup.Margin = new System.Windows.Forms.Padding(20);
+			this.PerimeterGroup.Name = "PerimeterGroup";
+			this.PerimeterGroup.Padding = new System.Windows.Forms.Padding(20);
+			this.PerimeterGroup.Size = new System.Drawing.Size(243, 214);
+			this.PerimeterGroup.TabIndex = 34;
+			// 
+			// AnalysisStartButton
+			// 
+			this.AnalysisStartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.AnalysisStartButton.Location = new System.Drawing.Point(58, 128);
+			this.AnalysisStartButton.Name = "AnalysisStartButton";
+			this.AnalysisStartButton.Size = new System.Drawing.Size(131, 40);
+			this.AnalysisStartButton.TabIndex = 34;
+			this.AnalysisStartButton.Text = "Start";
+			this.AnalysisStartButton.UseVisualStyleBackColor = true;
+			this.AnalysisStartButton.Click += new System.EventHandler(this.AnalysisStartButton_Click);
+			// 
+			// BoxFitSizeValue
+			// 
+			this.BoxFitSizeValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.BoxFitSizeValue.Location = new System.Drawing.Point(152, 71);
+			this.BoxFitSizeValue.Name = "BoxFitSizeValue";
+			this.BoxFitSizeValue.Size = new System.Drawing.Size(42, 23);
+			this.BoxFitSizeValue.TabIndex = 29;
+			this.BoxFitSizeValue.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+			// 
+			// BoxFitNextButton
+			// 
+			this.BoxFitNextButton.Location = new System.Drawing.Point(82, 61);
+			this.BoxFitNextButton.Name = "BoxFitNextButton";
+			this.BoxFitNextButton.Size = new System.Drawing.Size(40, 40);
+			this.BoxFitNextButton.TabIndex = 19;
+			this.BoxFitNextButton.Text = ">";
+			this.BoxFitNextButton.UseVisualStyleBackColor = true;
+			this.BoxFitNextButton.Click += new System.EventHandler(this.BoxFitNextButton_Click);
+			// 
+			// PerimeterLabel
+			// 
+			this.PerimeterLabel.AutoSize = true;
+			this.PerimeterLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.PerimeterLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.PerimeterLabel.Location = new System.Drawing.Point(55, 20);
+			this.PerimeterLabel.Name = "PerimeterLabel";
+			this.PerimeterLabel.Size = new System.Drawing.Size(125, 17);
+			this.PerimeterLabel.TabIndex = 28;
+			this.PerimeterLabel.Text = "Perimeter Analysis";
+			this.PerimeterLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// pbeforebutton
+			// 
+			this.pbeforebutton.Enabled = false;
+			this.pbeforebutton.Location = new System.Drawing.Point(36, 61);
+			this.pbeforebutton.Name = "pbeforebutton";
+			this.pbeforebutton.Size = new System.Drawing.Size(40, 40);
+			this.pbeforebutton.TabIndex = 17;
+			this.pbeforebutton.Text = "<";
+			this.pbeforebutton.UseVisualStyleBackColor = true;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1362, 741);
+			this.ClientSize = new System.Drawing.Size(1362, 775);
 			this.Controls.Add(this.splitPanel);
 			this.KeyPreview = true;
 			this.Name = "Form1";
@@ -719,6 +800,9 @@
 			this.zoomGroup.PerformLayout();
 			this.ExportGroup.ResumeLayout(false);
 			this.ExportGroup.PerformLayout();
+			this.PerimeterGroup.ResumeLayout(false);
+			this.PerimeterGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.BoxFitSizeValue)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -771,6 +855,12 @@
 		private System.Windows.Forms.Button ExportButton;
 		private System.Windows.Forms.ComboBox ResChooser;
 		private System.Windows.Forms.Label ResolutionLabel;
+		private System.Windows.Forms.Panel PerimeterGroup;
+		private System.Windows.Forms.Button AnalysisStartButton;
+		private System.Windows.Forms.NumericUpDown BoxFitSizeValue;
+		private System.Windows.Forms.Button BoxFitNextButton;
+		private System.Windows.Forms.Label PerimeterLabel;
+		private System.Windows.Forms.Button pbeforebutton;
 	}
 }
 

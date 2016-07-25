@@ -34,3 +34,9 @@ C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Deb
 C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.GenericImage.xml
 C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.IO.xml
 C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.Primitives2D.xml
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.GenericImage.dll
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.IO.dll
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.Primitives2D.dll
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.GenericImage.xml
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.IO.xml
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\QMStuff v2\bin\Debug\DotImaging.Primitives2D.xml
