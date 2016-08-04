@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace QMStuff_v2{
 	public partial class Form1 : Form {
@@ -34,12 +35,14 @@ namespace QMStuff_v2{
 			c = new Canvas(this, new Size(splitPanel.Panel2.Width, splitPanel.Panel2.Height));
 			c.Dock = DockStyle.Fill;
 			splitPanel.Panel2.Controls.Add(c);
-
 			splitPanel.Panel2.BackColor = c.gs.bgBrush.Color;
-			FlowLayout.BackColor = Color.FromArgb(60, 60, 75);
 
 			FpsChooser.SelectedIndex = 0;
 			ResChooser.SelectedIndex = 0;
+			IndVarChooser.SelectedIndex = 0;
+			TimePeriodChooser.SelectedIndex = 1;
+			TightnessChooser.SelectedIndex = 3;
+			DepVarChooser.SelectedIndex = 0;
 
 			Resize += FrameResizing;
 			splitPanel.SplitterMoved += SplitPanelResized;
@@ -71,16 +74,13 @@ namespace QMStuff_v2{
 		public void UpdateMousePos(double x, double y) {
 			String xs = x.ToString("F0");
 			String ys = y.ToString("F0");
-			MouseLabel.Text = String.Format("( {0}, {1} )", xs, ys);
+			MouseLabel.Text = String.Format("({0}, {1})", xs, ys);
 			MouseLabel.Invalidate();
 		}
 
 		private void GenerateButton_Click(object sender, EventArgs e) {
 			c.lat = new Lattice((int)(LatSizeValue.Value));
 			c.lat.aSize = 10 * c.gs.zoom;
-			c.lat.Xprobability = (double)(xProbBar.Value) / 100;
-			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
-			c.lat.gamma = (double)(gammaBar.Value) / 100;
 
 			BackgroundWorker worker = new BackgroundWorker();
 			worker.WorkerReportsProgress = true;
@@ -89,17 +89,21 @@ namespace QMStuff_v2{
 			worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
 			pf = new ProgressForm();
 			pf.Show();
-			worker.RunWorkerAsync();
+			double[] args = { (double)(xProbBar.Value)/100, (double)(yProbBar.Value)/100, (double)(gammaBar.Value)/100 };
+			worker.RunWorkerAsync(args);
 		}
 		private void Worker_DoWork(object sender, DoWorkEventArgs e) {
 			BackgroundWorker worker = sender as BackgroundWorker;
-			c.lat.GenerateChanges(worker, 1, 1);
+			double[] args = (double[]) e.Argument;
+			c.lat.GenerateChanges(worker, (int) stepCounter.Maximum,
+				args[0], args[1], args[2]);
 		}
 		private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
 			pf.SetValue(e.ProgressPercentage);
 		}
 		private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
 			pf.Close();
+			c.ReRender();
 			playGroup.Enabled = true;
 			ExportButton.Enabled = true;
 			probGroup.Enabled = false;
@@ -228,15 +232,12 @@ namespace QMStuff_v2{
 			c.ExportVideo(res, fps);
 		}
 		private void xProbBar_Scroll(object sender, EventArgs e) {
-            c.lat.Xprobability = (double)(xProbBar.Value) / 100;
 			xProbValue.Value = xProbBar.Value;
 		}
 		private void yProbBar_Scroll(object sender, EventArgs e) {
-			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
 			yProbValue.Value = yProbBar.Value;
 		}
 		private void gammaBar_Scroll(object sender, EventArgs e) {
-			c.lat.gamma = (double)(gammaBar.Value) / 100;
 			gammaValue.Value = gammaBar.Value;
 		}
 		private void speedBar_Scroll(object sender, EventArgs e){
@@ -244,15 +245,12 @@ namespace QMStuff_v2{
 		}
 		private void xProbValue_ValueChanged(object sender, EventArgs e) {
 			xProbBar.Value = (int) xProbValue.Value;
-			c.lat.Xprobability = (double)(xProbBar.Value) / 100;
 		}
 		private void yProbValue_ValueChanged(object sender, EventArgs e) {
 			yProbBar.Value = (int)yProbValue.Value;
-			c.lat.Yprobability = (double)(yProbBar.Value) / 100;
 		}
 		private void gammaValue_ValueChanged(object sender, EventArgs e) {
 			gammaBar.Value = (int)gammaValue.Value;
-			c.lat.gamma = (double)(gammaBar.Value) / 100;
 		}
 		private void stepCounter_ValueChanged(object sender, EventArgs e) {
 			int oldInd = c.ind;
@@ -296,17 +294,48 @@ namespace QMStuff_v2{
 		}
 
 		private void AnalysisStartButton_Click(object sender, EventArgs e) {
-			c.lat.StartAnalysis((int)(BoxFitSizeValue.Value), (int)(stepCounter.Value));
-			AreaLabel.Text = "Area: " + c.lat.analytics.area;
-			PerimeterLabel.Text = "Perimeter: " + c.lat.analytics.perim.ToString("F");
-			AnalyticsTab.Invalidate();
-			c.RenderPerim();
+			switch (IndVarChooser.SelectedIndex) {
+				case 0:
+					c.lat.StartSpatialAnalysis((int)(stepCounter.Value));
+					Graph.ChartAreas[0].AxisX.Title = "Tightness";
+					break;
+				case 1:
+					int[] periods = { 10, 20, 50, 100 };
+					int[] boxSizes = { 1, 2, 3, 4, 5, 6, 8, 10, 20, 50 };
+					c.lat.StartTemporalAnalysis(periods[TimePeriodChooser.SelectedIndex],
+						boxSizes[TightnessChooser.SelectedIndex]);
+					Graph.ChartAreas[0].AxisX.Title = "Time";
+					break;
+			}
+			Graph.ChartAreas[0].AxisY.Title = (string) DepVarChooser.Items[DepVarChooser.SelectedIndex];
+			int depVarInd = DepVarChooser.SelectedIndex;
+			Graph.Series[0].Points.Clear();
+			foreach(Tuple<int,double[]> info in c.lat.data) {
+				DataPoint dp = new DataPoint(info.Item1, info.Item2[depVarInd]);
+				Graph.Series[0].Points.Add(dp);
+			}
+			Graph.Invalidate();
 		}
-
-		private void BoxFitNextButton_Click(object sender, EventArgs e) {
-			c.PerimNextRender();
+		private void IndVarChooser_SelectedIndexChanged(object sender, EventArgs e) {
+			if (IndVarChooser.SelectedIndex == 0)
+				TimePeriodChooser.Visible = SampPeriodLabel.Visible = TightnessChooser.Visible =
+					TightnessLabel.Visible = false;
+			else
+				TimePeriodChooser.Visible = SampPeriodLabel.Visible = TightnessChooser.Visible =
+					TightnessLabel.Visible = true;
 		}
-		
+		private void DepVarChooser_SelectedIndexChanged(object sender, EventArgs e) {
+			if (c.lat.data != null) {
+				Graph.ChartAreas[0].AxisY.Title = (string)DepVarChooser.Items[DepVarChooser.SelectedIndex];
+				int depVarInd = DepVarChooser.SelectedIndex;
+				Graph.Series[0].Points.Clear();
+				foreach (Tuple<int, double[]> info in c.lat.data) {
+					DataPoint dp = new DataPoint(info.Item1, info.Item2[depVarInd]);
+					Graph.Series[0].Points.Add(dp);
+				}
+				Graph.Invalidate();
+			}
+		}
 	}
 	public class Canvas : Panel {
 		private Form1 form;
@@ -345,8 +374,6 @@ namespace QMStuff_v2{
 					LatticeChange lc = lat.changes[ind];
 					SolidBrush br = gs.fgBrush;
 					foreach (Atom a in lc.on) {
-						if(a.isSource)
-							br = new SolidBrush(Color.MediumPurple);
 						g.FillRectangle(br,
 							(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
 							(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
@@ -446,13 +473,21 @@ namespace QMStuff_v2{
 						}
 					}
 				}
-				br = new SolidBrush(Color.MediumPurple);
-				g.FillRectangle(br,
-						(float)(bmp.Width / 2 + lat.aSize * (0 - .5)),
-						(float)(bmp.Height / 2 - lat.aSize * (0 + .5)),
-						(int)lat.aSize, (int)lat.aSize);
 			}
 			Invalidate();
+		}
+		public void RenderPerim() {
+			//Pen perimPen = new Pen(Color.Red, (float)lat.aSize / 2);
+			//using (Graphics g = Graphics.FromImage(bmp)) {
+			//	Point[] points = new Point[lat.analytics.vertices.Count];
+			//	for (int i = 0; i < points.GetLength(0); i++) {
+			//		Point p = lat.analytics.vertices[i];
+			//		points[i] = new Point((int)(bmp.Width / 2 + lat.aSize * (p.X)),
+			//				(int)(bmp.Height / 2 - lat.aSize * (p.Y)));
+			//	}
+			//	g.DrawPolygon(perimPen, points);
+			//}
+			//Invalidate();
 		}
 		public void Restart() {
 			ind = 0;
@@ -505,20 +540,13 @@ namespace QMStuff_v2{
 					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
 					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
 				}
-				SolidBrush br = gs.fgBrush;
-				br = new SolidBrush(Color.MediumPurple);
-				g.FillRectangle(br,
-						(float)(VBmp.Width / 2 + lat.aSize * (0 - .5)),
-						(float)(VBmp.Height / 2 - lat.aSize * (0 + .5)),
-						(int)lat.aSize, (int)lat.aSize);
 
+				SolidBrush br = gs.fgBrush;
 				int cnt = 0;
 				foreach(LatticeChange lc in lat.changes) {
 					cnt++;
 					br = gs.fgBrush;
 					foreach(Atom a in lc.on) {
-						if(a.isSource)
-							br = new SolidBrush(Color.MediumPurple);
 						g.FillRectangle(br,
 							(float)(VBmp.Width / 2 + lat.aSize * (a.x - .5)),
 							(float)(VBmp.Height / 2 - lat.aSize * (a.y + .5)),
@@ -560,44 +588,6 @@ namespace QMStuff_v2{
 			exportPF.Close();
 		}
 		
-		public void PerimNextRender() {
-			using (var g = Graphics.FromImage(bmp)) {
-				int boxSz = lat.analytics.box.size;
-				SolidBrush br = new SolidBrush(Color.Black);
-				g.FillRectangle(br,
-							(float)(bmp.Width / 2 + lat.aSize * (lat.analytics.box.x - .5)),
-							(float)(bmp.Height / 2 - lat.aSize * (lat.analytics.box.y + .5)),
-							(int)lat.aSize * boxSz, (int)lat.aSize * boxSz);
-				lat.analytics.box.Next();
-				br = new SolidBrush(Color.IndianRed);
-				g.FillRectangle(br,
-							(float)(bmp.Width / 2 + lat.aSize * (lat.analytics.box.x - .5)),
-							(float)(bmp.Height / 2 - lat.aSize * (lat.analytics.box.y + .5)),
-							(int)lat.aSize * boxSz, (int)lat.aSize * boxSz);
-				br = new SolidBrush(Color.Magenta);
-				foreach (Point p in lat.analytics.box.vertices) {
-					g.FillRectangle(br,
-							(float)(bmp.Width / 2 + lat.aSize * (p.X - .5)),
-							(float)(bmp.Height / 2 - lat.aSize * (p.Y + .5)),
-							(int)lat.aSize, (int)lat.aSize);
-				}
-			}
-			Invalidate();
-		}
-		public void RenderPerim() {
-			Pen perimPen = new Pen(Color.Red, (float)lat.aSize/2);
-			using (Graphics g = Graphics.FromImage(bmp)) {
-				Point[] points = new Point[lat.analytics.vertices.Count];
-				for(int i=0; i<points.GetLength(0); i++) { 
-					Point p = lat.analytics.vertices[i];
-					points[i] = new Point((int)(bmp.Width/2 + lat.aSize*(p.X)),
-							(int)(bmp.Height/2 - lat.aSize*(p.Y)));
-				}
-				g.DrawPolygon(perimPen, points);
-			}
-			Invalidate();
-	}
-
 		private void Canvas_MouseClick(object sender, EventArgs e) {
 			this.Focus();
 		}

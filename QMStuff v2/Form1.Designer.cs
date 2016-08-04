@@ -28,6 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			this.stepCounter = new System.Windows.Forms.NumericUpDown();
 			this.yProbValue = new System.Windows.Forms.NumericUpDown();
 			this.xProbValue = new System.Windows.Forms.NumericUpDown();
@@ -58,8 +61,9 @@
 			this.skipToEndButton = new System.Windows.Forms.Button();
 			this.skipToBeginningButton = new System.Windows.Forms.Button();
 			this.splitPanel = new System.Windows.Forms.SplitContainer();
-			this.ControlsSplitContainer = new System.Windows.Forms.SplitContainer();
-			this.FlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+			this.tabControl1 = new System.Windows.Forms.TabControl();
+			this.ParamsTab = new System.Windows.Forms.TabPage();
+			this.ParamsFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
 			this.zoomGroup = new System.Windows.Forms.Panel();
 			this.zoomTitle = new System.Windows.Forms.Label();
 			this.zoomButton4 = new System.Windows.Forms.RadioButton();
@@ -73,16 +77,25 @@
 			this.FpsLabel = new System.Windows.Forms.Label();
 			this.ExportLabel = new System.Windows.Forms.Label();
 			this.ExportButton = new System.Windows.Forms.Button();
-			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.AnalyticsTab = new System.Windows.Forms.TabPage();
-			this.AreaLabel = new System.Windows.Forms.Label();
-			this.BoxFitNextButton = new System.Windows.Forms.Button();
-			this.BoxFitSizeValue = new System.Windows.Forms.NumericUpDown();
+			this.AnalyticsFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+			this.IndVarPanel = new System.Windows.Forms.Panel();
 			this.AnalysisStartButton = new System.Windows.Forms.Button();
-			this.GraphsTab = new System.Windows.Forms.TabPage();
-			this.PerimeterLabel = new System.Windows.Forms.Label();
-			this.DensityLabel = new System.Windows.Forms.Label();
+			this.TightnessChooser = new System.Windows.Forms.ComboBox();
+			this.TimePeriodChooser = new System.Windows.Forms.ComboBox();
+			this.SampPeriodLabel = new System.Windows.Forms.Label();
+			this.IndVarChooser = new System.Windows.Forms.ComboBox();
+			this.TightnessLabel = new System.Windows.Forms.Label();
+			this.IndVarLabel = new System.Windows.Forms.Label();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.DepVarChooser = new System.Windows.Forms.ComboBox();
+			this.DepVarLabel = new System.Windows.Forms.Label();
 			this.MouseLabel = new System.Windows.Forms.Label();
+			this.AreaLabel = new System.Windows.Forms.Label();
+			this.AvgRadLabel = new System.Windows.Forms.Label();
+			this.DensityLabel = new System.Windows.Forms.Label();
+			this.PerimeterLabel = new System.Windows.Forms.Label();
+			this.Graph = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -97,16 +110,16 @@
 			((System.ComponentModel.ISupportInitialize)(this.splitPanel)).BeginInit();
 			this.splitPanel.Panel1.SuspendLayout();
 			this.splitPanel.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.ControlsSplitContainer)).BeginInit();
-			this.ControlsSplitContainer.Panel1.SuspendLayout();
-			this.ControlsSplitContainer.Panel2.SuspendLayout();
-			this.ControlsSplitContainer.SuspendLayout();
-			this.FlowLayout.SuspendLayout();
+			this.tabControl1.SuspendLayout();
+			this.ParamsTab.SuspendLayout();
+			this.ParamsFlowLayout.SuspendLayout();
 			this.zoomGroup.SuspendLayout();
 			this.ExportGroup.SuspendLayout();
-			this.tabControl1.SuspendLayout();
 			this.AnalyticsTab.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.BoxFitSizeValue)).BeginInit();
+			this.AnalyticsFlowLayout.SuspendLayout();
+			this.IndVarPanel.SuspendLayout();
+			this.panel1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.Graph)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -114,7 +127,7 @@
 			this.stepCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
 			this.stepCounter.Location = new System.Drawing.Point(223, 19);
 			this.stepCounter.Maximum = new decimal(new int[] {
-            1000,
+            2000,
             0,
             0,
             0});
@@ -465,50 +478,58 @@
 			// 
 			// splitPanel
 			// 
+			this.splitPanel.BackColor = System.Drawing.Color.Black;
 			this.splitPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.splitPanel.Location = new System.Drawing.Point(0, 0);
 			this.splitPanel.Name = "splitPanel";
 			// 
 			// splitPanel.Panel1
 			// 
-			this.splitPanel.Panel1.Controls.Add(this.ControlsSplitContainer);
-			this.splitPanel.Size = new System.Drawing.Size(1362, 775);
-			this.splitPanel.SplitterDistance = 802;
+			this.splitPanel.Panel1.BackColor = System.Drawing.Color.Black;
+			this.splitPanel.Panel1.Controls.Add(this.tabControl1);
+			this.splitPanel.Panel1.Padding = new System.Windows.Forms.Padding(10, 10, 0, 10);
+			this.splitPanel.Size = new System.Drawing.Size(1904, 1041);
+			this.splitPanel.SplitterDistance = 873;
+			this.splitPanel.SplitterWidth = 8;
 			this.splitPanel.TabIndex = 10;
 			// 
-			// ControlsSplitContainer
+			// tabControl1
 			// 
-			this.ControlsSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.ControlsSplitContainer.Location = new System.Drawing.Point(0, 0);
-			this.ControlsSplitContainer.Name = "ControlsSplitContainer";
-			this.ControlsSplitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			this.tabControl1.Controls.Add(this.ParamsTab);
+			this.tabControl1.Controls.Add(this.AnalyticsTab);
+			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.tabControl1.Location = new System.Drawing.Point(10, 10);
+			this.tabControl1.Name = "tabControl1";
+			this.tabControl1.SelectedIndex = 0;
+			this.tabControl1.Size = new System.Drawing.Size(863, 1021);
+			this.tabControl1.TabIndex = 17;
 			// 
-			// ControlsSplitContainer.Panel1
+			// ParamsTab
 			// 
-			this.ControlsSplitContainer.Panel1.Controls.Add(this.FlowLayout);
+			this.ParamsTab.BackColor = System.Drawing.SystemColors.Control;
+			this.ParamsTab.Controls.Add(this.ParamsFlowLayout);
+			this.ParamsTab.Location = new System.Drawing.Point(4, 25);
+			this.ParamsTab.Name = "ParamsTab";
+			this.ParamsTab.Padding = new System.Windows.Forms.Padding(3);
+			this.ParamsTab.Size = new System.Drawing.Size(855, 992);
+			this.ParamsTab.TabIndex = 1;
+			this.ParamsTab.Text = "Parameters";
 			// 
-			// ControlsSplitContainer.Panel2
+			// ParamsFlowLayout
 			// 
-			this.ControlsSplitContainer.Panel2.BackColor = System.Drawing.Color.SlateGray;
-			this.ControlsSplitContainer.Panel2.Controls.Add(this.tabControl1);
-			this.ControlsSplitContainer.Panel2.Padding = new System.Windows.Forms.Padding(15);
-			this.ControlsSplitContainer.Size = new System.Drawing.Size(802, 775);
-			this.ControlsSplitContainer.SplitterDistance = 540;
-			this.ControlsSplitContainer.TabIndex = 35;
-			// 
-			// FlowLayout
-			// 
-			this.FlowLayout.AutoScroll = true;
-			this.FlowLayout.Controls.Add(this.probGroup);
-			this.FlowLayout.Controls.Add(this.zoomGroup);
-			this.FlowLayout.Controls.Add(this.playGroup);
-			this.FlowLayout.Controls.Add(this.ExportGroup);
-			this.FlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.FlowLayout.Location = new System.Drawing.Point(0, 0);
-			this.FlowLayout.Name = "FlowLayout";
-			this.FlowLayout.Padding = new System.Windows.Forms.Padding(10);
-			this.FlowLayout.Size = new System.Drawing.Size(802, 540);
-			this.FlowLayout.TabIndex = 16;
+			this.ParamsFlowLayout.AutoScroll = true;
+			this.ParamsFlowLayout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(75)))));
+			this.ParamsFlowLayout.Controls.Add(this.probGroup);
+			this.ParamsFlowLayout.Controls.Add(this.zoomGroup);
+			this.ParamsFlowLayout.Controls.Add(this.playGroup);
+			this.ParamsFlowLayout.Controls.Add(this.ExportGroup);
+			this.ParamsFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ParamsFlowLayout.Location = new System.Drawing.Point(3, 3);
+			this.ParamsFlowLayout.Name = "ParamsFlowLayout";
+			this.ParamsFlowLayout.Padding = new System.Windows.Forms.Padding(10);
+			this.ParamsFlowLayout.Size = new System.Drawing.Size(849, 986);
+			this.ParamsFlowLayout.TabIndex = 16;
 			// 
 			// zoomGroup
 			// 
@@ -624,7 +645,7 @@
             "400 x 400"});
 			this.ResChooser.Location = new System.Drawing.Point(114, 104);
 			this.ResChooser.Name = "ResChooser";
-			this.ResChooser.Size = new System.Drawing.Size(101, 21);
+			this.ResChooser.Size = new System.Drawing.Size(101, 24);
 			this.ResChooser.TabIndex = 33;
 			// 
 			// ResolutionLabel
@@ -648,7 +669,7 @@
             "2 Hz (slowest video)"});
 			this.FpsChooser.Location = new System.Drawing.Point(69, 61);
 			this.FpsChooser.Name = "FpsChooser";
-			this.FpsChooser.Size = new System.Drawing.Size(146, 21);
+			this.FpsChooser.Size = new System.Drawing.Size(146, 24);
 			this.FpsChooser.TabIndex = 31;
 			// 
 			// FpsLabel
@@ -685,120 +706,278 @@
 			this.ExportButton.UseVisualStyleBackColor = true;
 			this.ExportButton.Click += new System.EventHandler(this.ExportButton_Click);
 			// 
-			// tabControl1
-			// 
-			this.tabControl1.Controls.Add(this.AnalyticsTab);
-			this.tabControl1.Controls.Add(this.GraphsTab);
-			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.tabControl1.Location = new System.Drawing.Point(15, 15);
-			this.tabControl1.Name = "tabControl1";
-			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(772, 201);
-			this.tabControl1.TabIndex = 17;
-			// 
 			// AnalyticsTab
 			// 
-			this.AnalyticsTab.BackColor = System.Drawing.SystemColors.ControlLight;
-			this.AnalyticsTab.Controls.Add(this.MouseLabel);
-			this.AnalyticsTab.Controls.Add(this.DensityLabel);
-			this.AnalyticsTab.Controls.Add(this.PerimeterLabel);
-			this.AnalyticsTab.Controls.Add(this.AreaLabel);
-			this.AnalyticsTab.Controls.Add(this.BoxFitNextButton);
-			this.AnalyticsTab.Controls.Add(this.BoxFitSizeValue);
-			this.AnalyticsTab.Controls.Add(this.AnalysisStartButton);
+			this.AnalyticsTab.AutoScroll = true;
+			this.AnalyticsTab.Controls.Add(this.AnalyticsFlowLayout);
+			this.AnalyticsTab.Controls.Add(this.Graph);
 			this.AnalyticsTab.Location = new System.Drawing.Point(4, 25);
 			this.AnalyticsTab.Name = "AnalyticsTab";
-			this.AnalyticsTab.Padding = new System.Windows.Forms.Padding(10);
-			this.AnalyticsTab.Size = new System.Drawing.Size(764, 172);
+			this.AnalyticsTab.Padding = new System.Windows.Forms.Padding(3);
+			this.AnalyticsTab.Size = new System.Drawing.Size(855, 992);
 			this.AnalyticsTab.TabIndex = 0;
 			this.AnalyticsTab.Text = "Analytics";
+			// 
+			// AnalyticsFlowLayout
+			// 
+			this.AnalyticsFlowLayout.AutoScroll = true;
+			this.AnalyticsFlowLayout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(75)))));
+			this.AnalyticsFlowLayout.Controls.Add(this.IndVarPanel);
+			this.AnalyticsFlowLayout.Controls.Add(this.panel1);
+			this.AnalyticsFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.AnalyticsFlowLayout.Location = new System.Drawing.Point(3, 3);
+			this.AnalyticsFlowLayout.Name = "AnalyticsFlowLayout";
+			this.AnalyticsFlowLayout.Padding = new System.Windows.Forms.Padding(10);
+			this.AnalyticsFlowLayout.Size = new System.Drawing.Size(849, 556);
+			this.AnalyticsFlowLayout.TabIndex = 43;
+			// 
+			// IndVarPanel
+			// 
+			this.IndVarPanel.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
+			this.IndVarPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.IndVarPanel.Controls.Add(this.AnalysisStartButton);
+			this.IndVarPanel.Controls.Add(this.TightnessChooser);
+			this.IndVarPanel.Controls.Add(this.TimePeriodChooser);
+			this.IndVarPanel.Controls.Add(this.SampPeriodLabel);
+			this.IndVarPanel.Controls.Add(this.IndVarChooser);
+			this.IndVarPanel.Controls.Add(this.TightnessLabel);
+			this.IndVarPanel.Controls.Add(this.IndVarLabel);
+			this.IndVarPanel.Location = new System.Drawing.Point(30, 30);
+			this.IndVarPanel.Margin = new System.Windows.Forms.Padding(20);
+			this.IndVarPanel.Name = "IndVarPanel";
+			this.IndVarPanel.Padding = new System.Windows.Forms.Padding(20);
+			this.IndVarPanel.Size = new System.Drawing.Size(289, 255);
+			this.IndVarPanel.TabIndex = 42;
+			// 
+			// AnalysisStartButton
+			// 
+			this.AnalysisStartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.AnalysisStartButton.Location = new System.Drawing.Point(78, 190);
+			this.AnalysisStartButton.Name = "AnalysisStartButton";
+			this.AnalysisStartButton.Size = new System.Drawing.Size(131, 40);
+			this.AnalysisStartButton.TabIndex = 34;
+			this.AnalysisStartButton.Text = "Start Analysis";
+			this.AnalysisStartButton.UseVisualStyleBackColor = true;
+			this.AnalysisStartButton.Click += new System.EventHandler(this.AnalysisStartButton_Click);
+			// 
+			// TightnessChooser
+			// 
+			this.TightnessChooser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.TightnessChooser.FormattingEnabled = true;
+			this.TightnessChooser.Items.AddRange(new object[] {
+            "1 (tightest)",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "8",
+            "10",
+            "20",
+            "50 (loosest)"});
+			this.TightnessChooser.Location = new System.Drawing.Point(181, 122);
+			this.TightnessChooser.Name = "TightnessChooser";
+			this.TightnessChooser.Size = new System.Drawing.Size(78, 24);
+			this.TightnessChooser.TabIndex = 34;
+			this.TightnessChooser.Visible = false;
+			// 
+			// TimePeriodChooser
+			// 
+			this.TimePeriodChooser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.TimePeriodChooser.FormattingEnabled = true;
+			this.TimePeriodChooser.Items.AddRange(new object[] {
+            "10",
+            "20",
+            "50",
+            "100"});
+			this.TimePeriodChooser.Location = new System.Drawing.Point(23, 122);
+			this.TimePeriodChooser.Name = "TimePeriodChooser";
+			this.TimePeriodChooser.Size = new System.Drawing.Size(112, 24);
+			this.TimePeriodChooser.TabIndex = 33;
+			this.TimePeriodChooser.Visible = false;
+			// 
+			// SampPeriodLabel
+			// 
+			this.SampPeriodLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.SampPeriodLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SampPeriodLabel.Location = new System.Drawing.Point(20, 98);
+			this.SampPeriodLabel.Name = "SampPeriodLabel";
+			this.SampPeriodLabel.Size = new System.Drawing.Size(115, 21);
+			this.SampPeriodLabel.TabIndex = 32;
+			this.SampPeriodLabel.Text = "Sampling Period";
+			this.SampPeriodLabel.Visible = false;
+			// 
+			// IndVarChooser
+			// 
+			this.IndVarChooser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.IndVarChooser.FormattingEnabled = true;
+			this.IndVarChooser.Items.AddRange(new object[] {
+            "Analyze this frame",
+            "Analyze over time"});
+			this.IndVarChooser.Location = new System.Drawing.Point(23, 43);
+			this.IndVarChooser.Name = "IndVarChooser";
+			this.IndVarChooser.Size = new System.Drawing.Size(236, 24);
+			this.IndVarChooser.TabIndex = 31;
+			this.IndVarChooser.SelectedIndexChanged += new System.EventHandler(this.IndVarChooser_SelectedIndexChanged);
+			// 
+			// TightnessLabel
+			// 
+			this.TightnessLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.TightnessLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.TightnessLabel.Location = new System.Drawing.Point(178, 98);
+			this.TightnessLabel.Name = "TightnessLabel";
+			this.TightnessLabel.Size = new System.Drawing.Size(80, 21);
+			this.TightnessLabel.TabIndex = 30;
+			this.TightnessLabel.Text = "Tightness";
+			this.TightnessLabel.Visible = false;
+			// 
+			// IndVarLabel
+			// 
+			this.IndVarLabel.AutoSize = true;
+			this.IndVarLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.IndVarLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.IndVarLabel.Location = new System.Drawing.Point(20, 18);
+			this.IndVarLabel.Name = "IndVarLabel";
+			this.IndVarLabel.Size = new System.Drawing.Size(143, 17);
+			this.IndVarLabel.TabIndex = 28;
+			this.IndVarLabel.Text = "Independent Variable";
+			// 
+			// panel1
+			// 
+			this.panel1.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
+			this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panel1.Controls.Add(this.DepVarChooser);
+			this.panel1.Controls.Add(this.DepVarLabel);
+			this.panel1.Controls.Add(this.MouseLabel);
+			this.panel1.Controls.Add(this.AreaLabel);
+			this.panel1.Controls.Add(this.AvgRadLabel);
+			this.panel1.Controls.Add(this.DensityLabel);
+			this.panel1.Controls.Add(this.PerimeterLabel);
+			this.panel1.Location = new System.Drawing.Point(359, 30);
+			this.panel1.Margin = new System.Windows.Forms.Padding(20);
+			this.panel1.Name = "panel1";
+			this.panel1.Padding = new System.Windows.Forms.Padding(20);
+			this.panel1.Size = new System.Drawing.Size(289, 255);
+			this.panel1.TabIndex = 43;
+			// 
+			// DepVarChooser
+			// 
+			this.DepVarChooser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.DepVarChooser.FormattingEnabled = true;
+			this.DepVarChooser.Items.AddRange(new object[] {
+            "Perimeter",
+            "Area",
+            "Density",
+            "Mean Radius"});
+			this.DepVarChooser.Location = new System.Drawing.Point(26, 216);
+			this.DepVarChooser.Name = "DepVarChooser";
+			this.DepVarChooser.Size = new System.Drawing.Size(236, 24);
+			this.DepVarChooser.TabIndex = 36;
+			this.DepVarChooser.SelectedIndexChanged += new System.EventHandler(this.DepVarChooser_SelectedIndexChanged);
+			// 
+			// DepVarLabel
+			// 
+			this.DepVarLabel.AutoSize = true;
+			this.DepVarLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.DepVarLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.DepVarLabel.Location = new System.Drawing.Point(23, 191);
+			this.DepVarLabel.Name = "DepVarLabel";
+			this.DepVarLabel.Size = new System.Drawing.Size(134, 17);
+			this.DepVarLabel.TabIndex = 35;
+			this.DepVarLabel.Text = "Dependent Variable";
+			// 
+			// MouseLabel
+			// 
+			this.MouseLabel.AutoSize = true;
+			this.MouseLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.MouseLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
+			this.MouseLabel.Location = new System.Drawing.Point(23, 28);
+			this.MouseLabel.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
+			this.MouseLabel.Name = "MouseLabel";
+			this.MouseLabel.Size = new System.Drawing.Size(42, 17);
+			this.MouseLabel.TabIndex = 38;
+			this.MouseLabel.Text = "(0, 0)";
 			// 
 			// AreaLabel
 			// 
 			this.AreaLabel.AutoSize = true;
-			this.AreaLabel.Location = new System.Drawing.Point(244, 31);
+			this.AreaLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
+			this.AreaLabel.Location = new System.Drawing.Point(23, 94);
+			this.AreaLabel.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
 			this.AreaLabel.Name = "AreaLabel";
 			this.AreaLabel.Size = new System.Drawing.Size(42, 17);
 			this.AreaLabel.TabIndex = 35;
 			this.AreaLabel.Text = "Area:";
 			// 
-			// BoxFitNextButton
+			// AvgRadLabel
 			// 
-			this.BoxFitNextButton.Location = new System.Drawing.Point(104, 73);
-			this.BoxFitNextButton.Name = "BoxFitNextButton";
-			this.BoxFitNextButton.Size = new System.Drawing.Size(40, 40);
-			this.BoxFitNextButton.TabIndex = 19;
-			this.BoxFitNextButton.Text = ">";
-			this.BoxFitNextButton.UseVisualStyleBackColor = true;
-			this.BoxFitNextButton.Click += new System.EventHandler(this.BoxFitNextButton_Click);
-			// 
-			// BoxFitSizeValue
-			// 
-			this.BoxFitSizeValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.BoxFitSizeValue.Location = new System.Drawing.Point(13, 83);
-			this.BoxFitSizeValue.Name = "BoxFitSizeValue";
-			this.BoxFitSizeValue.Size = new System.Drawing.Size(42, 23);
-			this.BoxFitSizeValue.TabIndex = 29;
-			this.BoxFitSizeValue.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-			// 
-			// AnalysisStartButton
-			// 
-			this.AnalysisStartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.AnalysisStartButton.Location = new System.Drawing.Point(13, 119);
-			this.AnalysisStartButton.Name = "AnalysisStartButton";
-			this.AnalysisStartButton.Size = new System.Drawing.Size(131, 40);
-			this.AnalysisStartButton.TabIndex = 34;
-			this.AnalysisStartButton.Text = "Start";
-			this.AnalysisStartButton.UseVisualStyleBackColor = true;
-			this.AnalysisStartButton.Click += new System.EventHandler(this.AnalysisStartButton_Click);
-			// 
-			// GraphsTab
-			// 
-			this.GraphsTab.Location = new System.Drawing.Point(4, 25);
-			this.GraphsTab.Name = "GraphsTab";
-			this.GraphsTab.Padding = new System.Windows.Forms.Padding(3);
-			this.GraphsTab.Size = new System.Drawing.Size(764, 201);
-			this.GraphsTab.TabIndex = 1;
-			this.GraphsTab.Text = "Graphs";
-			this.GraphsTab.UseVisualStyleBackColor = true;
-			// 
-			// PerimeterLabel
-			// 
-			this.PerimeterLabel.AutoSize = true;
-			this.PerimeterLabel.Location = new System.Drawing.Point(244, 60);
-			this.PerimeterLabel.Name = "PerimeterLabel";
-			this.PerimeterLabel.Size = new System.Drawing.Size(73, 17);
-			this.PerimeterLabel.TabIndex = 36;
-			this.PerimeterLabel.Text = "Perimeter:";
+			this.AvgRadLabel.AutoSize = true;
+			this.AvgRadLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
+			this.AvgRadLabel.Location = new System.Drawing.Point(23, 160);
+			this.AvgRadLabel.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
+			this.AvgRadLabel.Name = "AvgRadLabel";
+			this.AvgRadLabel.Size = new System.Drawing.Size(84, 17);
+			this.AvgRadLabel.TabIndex = 41;
+			this.AvgRadLabel.Text = "Avg Radius:";
 			// 
 			// DensityLabel
 			// 
 			this.DensityLabel.AutoSize = true;
-			this.DensityLabel.Location = new System.Drawing.Point(244, 90);
+			this.DensityLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
+			this.DensityLabel.Location = new System.Drawing.Point(23, 127);
+			this.DensityLabel.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
 			this.DensityLabel.Name = "DensityLabel";
 			this.DensityLabel.Size = new System.Drawing.Size(59, 17);
 			this.DensityLabel.TabIndex = 37;
 			this.DensityLabel.Text = "Density:";
 			// 
-			// MouseLabel
+			// PerimeterLabel
 			// 
-			this.MouseLabel.AutoSize = true;
-			this.MouseLabel.Location = new System.Drawing.Point(13, 10);
-			this.MouseLabel.Name = "MouseLabel";
-			this.MouseLabel.Size = new System.Drawing.Size(82, 17);
-			this.MouseLabel.TabIndex = 38;
-			this.MouseLabel.Text = "(0.00, 0.00)";
+			this.PerimeterLabel.AutoSize = true;
+			this.PerimeterLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
+			this.PerimeterLabel.Location = new System.Drawing.Point(23, 61);
+			this.PerimeterLabel.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
+			this.PerimeterLabel.Name = "PerimeterLabel";
+			this.PerimeterLabel.Size = new System.Drawing.Size(73, 17);
+			this.PerimeterLabel.TabIndex = 36;
+			this.PerimeterLabel.Text = "Perimeter:";
+			// 
+			// Graph
+			// 
+			this.Graph.BorderlineColor = System.Drawing.Color.Black;
+			this.Graph.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
+			this.Graph.BorderlineWidth = 5;
+			chartArea1.AxisX.Title = "X";
+			chartArea1.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+			chartArea1.AxisY.Title = "Y";
+			chartArea1.AxisY.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			chartArea1.Name = "ChartArea1";
+			this.Graph.ChartAreas.Add(chartArea1);
+			this.Graph.Dock = System.Windows.Forms.DockStyle.Bottom;
+			legend1.Enabled = false;
+			legend1.Name = "Legend1";
+			this.Graph.Legends.Add(legend1);
+			this.Graph.Location = new System.Drawing.Point(3, 559);
+			this.Graph.Name = "Graph";
+			series1.BorderWidth = 5;
+			series1.ChartArea = "ChartArea1";
+			series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+			series1.EmptyPointStyle.AxisLabel = "n";
+			series1.Legend = "Legend1";
+			series1.MarkerColor = System.Drawing.Color.Black;
+			series1.MarkerSize = 8;
+			series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+			series1.Name = "Series1";
+			this.Graph.Series.Add(series1);
+			this.Graph.Size = new System.Drawing.Size(849, 430);
+			this.Graph.TabIndex = 42;
+			this.Graph.Text = "chart1";
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1362, 775);
+			this.ClientSize = new System.Drawing.Size(1904, 1041);
 			this.Controls.Add(this.splitPanel);
 			this.KeyPreview = true;
 			this.Name = "Form1";
@@ -823,19 +1002,20 @@
 			this.splitPanel.Panel1.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.splitPanel)).EndInit();
 			this.splitPanel.ResumeLayout(false);
-			this.ControlsSplitContainer.Panel1.ResumeLayout(false);
-			this.ControlsSplitContainer.Panel2.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.ControlsSplitContainer)).EndInit();
-			this.ControlsSplitContainer.ResumeLayout(false);
-			this.FlowLayout.ResumeLayout(false);
+			this.tabControl1.ResumeLayout(false);
+			this.ParamsTab.ResumeLayout(false);
+			this.ParamsFlowLayout.ResumeLayout(false);
 			this.zoomGroup.ResumeLayout(false);
 			this.zoomGroup.PerformLayout();
 			this.ExportGroup.ResumeLayout(false);
 			this.ExportGroup.PerformLayout();
-			this.tabControl1.ResumeLayout(false);
 			this.AnalyticsTab.ResumeLayout(false);
-			this.AnalyticsTab.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.BoxFitSizeValue)).EndInit();
+			this.AnalyticsFlowLayout.ResumeLayout(false);
+			this.IndVarPanel.ResumeLayout(false);
+			this.IndVarPanel.PerformLayout();
+			this.panel1.ResumeLayout(false);
+			this.panel1.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.Graph)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -861,11 +1041,10 @@
 		private System.Windows.Forms.Panel playGroup;
 		private System.Windows.Forms.Panel probGroup;
 		private System.Windows.Forms.SplitContainer splitPanel;
-		private System.Windows.Forms.FlowLayoutPanel FlowLayout;
+		private System.Windows.Forms.FlowLayoutPanel ParamsFlowLayout;
 		private System.Windows.Forms.Panel zoomGroup;
 		private System.Windows.Forms.TabControl tabControl1;
-		private System.Windows.Forms.TabPage AnalyticsTab;
-		private System.Windows.Forms.TabPage GraphsTab;
+		private System.Windows.Forms.TabPage ParamsTab;
 		private System.Windows.Forms.Button GenerateButton;
 		private System.Windows.Forms.Button skipToEndButton;
 		private System.Windows.Forms.Button skipToBeginningButton;
@@ -888,14 +1067,25 @@
 		private System.Windows.Forms.Button ExportButton;
 		private System.Windows.Forms.ComboBox ResChooser;
 		private System.Windows.Forms.Label ResolutionLabel;
-		private System.Windows.Forms.Button AnalysisStartButton;
-		private System.Windows.Forms.NumericUpDown BoxFitSizeValue;
-		private System.Windows.Forms.Button BoxFitNextButton;
-		private System.Windows.Forms.SplitContainer ControlsSplitContainer;
-		private System.Windows.Forms.Label AreaLabel;
+		private System.Windows.Forms.TabPage AnalyticsTab;
+		private System.Windows.Forms.DataVisualization.Charting.Chart Graph;
+		private System.Windows.Forms.Label AvgRadLabel;
+		private System.Windows.Forms.Label MouseLabel;
 		private System.Windows.Forms.Label DensityLabel;
 		private System.Windows.Forms.Label PerimeterLabel;
-		private System.Windows.Forms.Label MouseLabel;
+		private System.Windows.Forms.Label AreaLabel;
+		private System.Windows.Forms.Button AnalysisStartButton;
+		private System.Windows.Forms.FlowLayoutPanel AnalyticsFlowLayout;
+		private System.Windows.Forms.Panel IndVarPanel;
+		private System.Windows.Forms.ComboBox TimePeriodChooser;
+		private System.Windows.Forms.Label SampPeriodLabel;
+		private System.Windows.Forms.ComboBox IndVarChooser;
+		private System.Windows.Forms.Label TightnessLabel;
+		private System.Windows.Forms.Label IndVarLabel;
+		private System.Windows.Forms.ComboBox TightnessChooser;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.ComboBox DepVarChooser;
+		private System.Windows.Forms.Label DepVarLabel;
 	}
 }
 

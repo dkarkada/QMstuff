@@ -7,52 +7,89 @@ using System.Threading.Tasks;
 
 namespace QMStuff_v2 {
 	public class AnalyticsInfo {
-		public FitBox box;
-		public List<Point> vertices;
 		public double area;
 		public double perim;
+		public double avgRad;
+		public double density;
 
-		public AnalyticsInfo(int size, int[,] mat) {
-			box = new FitBox(size, mat);
+		public AnalyticsInfo(double a, double p, double ar, int total) {
+			area = a;
+			perim = p;
+			avgRad = ar;
+			density = total/area;
+		}
+	}
+	public class AnalysisCalc {
+		public FitBox box;
+		bool[,] latState;
+		public List<Point> vertices;
+		public int bound;
+		public int totalExcited;
+
+		public double[] GetInfo(int size, bool[,] mat, int b, int t) {
+			bound = b;
+			totalExcited = t;
+			latState = mat;
+			box = new FitBox(size, latState);
 			box.CalcVerts();
 			vertices = box.vertices;
-			CalcArea();
-			CalcPerim();
+			double perim = CalcPerim();
+			double area = CalcArea();
+			double density = Math.Min(totalExcited / area, 1);
+			double avgRad = ExpectedRadius();
+			double[] info = { perim, area, density, avgRad };
+			return info;
 		}
-		private void CalcArea() {
-			int sum = 0;
-			for (int i=0; i<vertices.Count; i++) {
-				Point p1 = vertices[i];
-				Point p2 = vertices[i+1==vertices.Count ? 0 : i+1];
-				sum += Determinant(p1.X, p1.Y, p2.X, p2.Y);
-			}
-			area = sum/2.0;
-		}
-		private void CalcPerim() {
+		private double CalcPerim() {
 			double sum = 0;
-			for(int i = 0; i<vertices.Count; i++) {
-				Point p1 = vertices[i];
-				Point p2 = vertices[i+1==vertices.Count ? 0 : i+1];
+			for (int i = 0; i < box.vertices.Count; i++) {
+				Point p1 = box.vertices[i];
+				Point p2 = box.vertices[i + 1 == box.vertices.Count ? 0 : i + 1];
 				sum += Distance(p1.X, p1.Y, p2.X, p2.Y);
 			}
-			perim = sum;
+			return sum;
+		}
+		private double CalcArea() {
+			int sum = 0;
+			for (int i = 0; i < vertices.Count; i++) {
+				Point p1 = vertices[i];
+				Point p2 = vertices[i + 1 == vertices.Count ? 0 : i + 1];
+				sum += Determinant(p1.X, p1.Y, p2.X, p2.Y);
+			}
+			return sum / 2.0;
+		}
+		private double ExpectedRadius() {
+			List<double> radii = new List<double>();
+			double avg = 0;
+			int sz = latState.GetLength(0);
+			for (int r = 0; r < sz; r++)
+				for (int c = 0; c < sz; c++)
+					if (latState[r, c]) {
+						double dist = Math.Sqrt(
+							Math.Pow(sz / 2 - r, 2) +
+							Math.Pow(c - sz / 2, 2));
+						radii.Add(dist);
+						avg += dist;
+					}
+			avg /= (double)(radii.Count);
+			return avg;
 		}
 		private int Determinant(int x1, int y1, int x2, int y2) {
 			return x1 * y2 - x2 * y1;
 		}
 		private double Distance(int x1, int y1, int x2, int y2) {
-			double a = Math.Pow(x1-x2, 2);
-			double b = Math.Pow(y1-y2, 2);
+			double a = Math.Pow(x1 - x2, 2);
+			double b = Math.Pow(y1 - y2, 2);
 			return Math.Sqrt(a + b);
 		}
 	}
 	public class FitBox {
 		public int size, x, y, dir, edge;
-		public int[,] latState;
+		public bool[,] latState;
 		public List<Point> vertices;
 		Point start;
 
-		public FitBox(int s, int[,] mat) {
+		public FitBox(int s, bool[,] mat) {
 			size = s;
 			latState = mat;
 			dir = 3;
@@ -61,7 +98,7 @@ namespace QMStuff_v2 {
 			int r = 0;
 			int c = 0;
 			int mSz = latState.GetLength(0);
-			while ((latState[r, c])==0) {
+			while ((latState[r, c])==false) {
 				c++;
 				if (c >= mSz) {
 					c = 0;
@@ -110,7 +147,7 @@ namespace QMStuff_v2 {
 		private Tuple<int,int> traverseEdge(int edgeNum, int dirNum) {
 			for (int i = 0; i < size; i++) {
 				Tuple<int, int> indexVals = GetIndexVals(edgeNum, dirNum, i);
-				if (latState[indexVals.Item2, indexVals.Item1] == 1)
+				if (latState[indexVals.Item2, indexVals.Item1])
 					return indexVals;
 			}
 			return null;
