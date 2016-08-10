@@ -306,28 +306,47 @@ namespace QMStuff_v2{
 						boxSizes[TightnessChooser.SelectedIndex]);
 					Graph.ChartAreas[0].AxisX.Title = "Time";
 					break;
+				case 2:
+					c.lat.StartManyRunAnalysis();
+					break;
 			}
-			Graph.ChartAreas[0].AxisY.Title = (string) DepVarChooser.Items[DepVarChooser.SelectedIndex];
-			int depVarInd = DepVarChooser.SelectedIndex;
-			Graph.Series[0].Points.Clear();
-			foreach(Tuple<int,double[]> info in c.lat.data) {
-				DataPoint dp = new DataPoint(info.Item1, info.Item2[depVarInd]);
-				Graph.Series[0].Points.Add(dp);
+			if(IndVarChooser.SelectedIndex<2) {
+				Graph.ChartAreas[0].AxisY.Title = (string)DepVarChooser.Items[DepVarChooser.SelectedIndex];
+				int depVarInd = DepVarChooser.SelectedIndex;
+				Graph.Series[0].Points.Clear();
+				foreach(Tuple<int, double[]> info in c.lat.data) {
+					DataPoint dp = new DataPoint(info.Item1, info.Item2[depVarInd]);
+					Graph.Series[0].Points.Add(dp);
+				}
+			}
+			else {
+				Graph.ChartAreas[0].AxisX.Title = "P";
+				Graph.ChartAreas[0].AxisY.Title = "Γ";
 			}
 			Graph.Invalidate();
 		}
 		private void IndVarChooser_SelectedIndexChanged(object sender, EventArgs e) {
-			if (IndVarChooser.SelectedIndex == 0)
-				TimePeriodChooser.Visible = SampPeriodLabel.Visible = TightnessChooser.Visible =
-					TightnessLabel.Visible = false;
-			else
+			if (IndVarChooser.SelectedIndex == 1)
 				TimePeriodChooser.Visible = SampPeriodLabel.Visible = TightnessChooser.Visible =
 					TightnessLabel.Visible = true;
+			else
+				TimePeriodChooser.Visible = SampPeriodLabel.Visible = TightnessChooser.Visible =
+					TightnessLabel.Visible = false;
+			if(IndVarChooser.SelectedIndex == 2) {
+				DepVarChooser.Items.Add("Success Rate");
+				DepVarChooser.SelectedIndex = 4;
+				DepVarChooser.Enabled = false;
+			}
+			else if(DepVarChooser.Items.Count == 5) {
+				DepVarChooser.Items.RemoveAt(4);
+				DepVarChooser.SelectedIndex = 0;
+				DepVarChooser.Enabled = true;
+			}
 		}
 		private void DepVarChooser_SelectedIndexChanged(object sender, EventArgs e) {
-			if (c.lat.data != null) {
+			int depVarInd = DepVarChooser.SelectedIndex;
+			if (c.lat.data != null && depVarInd<2) {
 				Graph.ChartAreas[0].AxisY.Title = (string)DepVarChooser.Items[DepVarChooser.SelectedIndex];
-				int depVarInd = DepVarChooser.SelectedIndex;
 				Graph.Series[0].Points.Clear();
 				foreach (Tuple<int, double[]> info in c.lat.data) {
 					DataPoint dp = new DataPoint(info.Item1, info.Item2[depVarInd]);

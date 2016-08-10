@@ -180,49 +180,6 @@ namespace QMStuff_v2 {
 		public void ClearChanges() {
 			changes = new List<LatticeChange>();
 		}
-		public void StartAnalysis(int boxSz, int ind) {
-			int offset = boxSz*2;
-			bool[,] boxMat = new bool[sz + offset*2, sz + offset*2];
-			Tuple<List<Atom>, int> result = latFrameList.GetNearestFrame(ind);
-			foreach(Atom a in result.Item1) {
-				int r = ConvertY(a.y);
-				int c = ConvertX(a.x);
-				boxMat[r + offset, c + offset] = true;
-			}
-			if(result.Item2 < ind) {
-				for(int i = result.Item2; i < ind; i++) {
-					LatticeChange lc = changes[i];
-					foreach(Atom a in lc.on) {
-						int r = ConvertY(a.y);
-						int c = ConvertX(a.x);
-						boxMat[r + offset, c + offset] = true;
-					}
-					foreach(Atom a in lc.off) {
-						int r = ConvertY(a.y);
-						int c = ConvertX(a.x);
-						boxMat[r + offset, c + offset] = false;
-					}
-				}
-			}
-			else {
-				for(int i = result.Item2; i >= ind; i--) {
-					LatticeChange lc = changes[i];
-					foreach(Atom a in lc.off) {
-						int r = ConvertY(a.y);
-						int c = ConvertX(a.x);
-						boxMat[r + offset, c + offset] = true;
-					}
-					foreach(Atom a in lc.on) {
-						int r = ConvertY(a.y);
-						int c = ConvertX(a.x);
-						boxMat[r + offset, c + offset] = false;
-					}
-				}
-			}
-			int bound = changes[ind-1].bound;
-			int total = changes[ind-1].totalExcited;
-			analytics = new AnalysisCalc();
-		}
 		public void StartSpatialAnalysis(int ind) {
 			int offset = 50;
 			bool[,] boxMat = new bool[sz + offset*2, sz + offset*2];
@@ -316,6 +273,9 @@ namespace QMStuff_v2 {
 				data.Add(new Tuple<int, double[]>(ind, analytics.GetInfo(boxSz, boxMat, bound, total)));
 				ind+=period;
 			}
+		}
+		public void StartManyRunAnalysis() {
+
 		}
 		public int ConvertX(int x) { return x + sz/2; }
 		public int ConvertY(int y) { return sz/2 - y; }

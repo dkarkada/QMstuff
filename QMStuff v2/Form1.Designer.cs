@@ -91,10 +91,6 @@
 			this.DepVarChooser = new System.Windows.Forms.ComboBox();
 			this.DepVarLabel = new System.Windows.Forms.Label();
 			this.MouseLabel = new System.Windows.Forms.Label();
-			this.AreaLabel = new System.Windows.Forms.Label();
-			this.AvgRadLabel = new System.Windows.Forms.Label();
-			this.DensityLabel = new System.Windows.Forms.Label();
-			this.PerimeterLabel = new System.Windows.Forms.Label();
 			this.Graph = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
@@ -812,8 +808,9 @@
 			this.IndVarChooser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.IndVarChooser.FormattingEnabled = true;
 			this.IndVarChooser.Items.AddRange(new object[] {
-            "Analyze this frame",
-            "Analyze over time"});
+            "Tightness",
+            "Time",
+            "P and Γ"});
 			this.IndVarChooser.Location = new System.Drawing.Point(23, 43);
 			this.IndVarChooser.Name = "IndVarChooser";
 			this.IndVarChooser.Size = new System.Drawing.Size(236, 24);
@@ -849,10 +846,6 @@
 			this.panel1.Controls.Add(this.DepVarChooser);
 			this.panel1.Controls.Add(this.DepVarLabel);
 			this.panel1.Controls.Add(this.MouseLabel);
-			this.panel1.Controls.Add(this.AreaLabel);
-			this.panel1.Controls.Add(this.AvgRadLabel);
-			this.panel1.Controls.Add(this.DensityLabel);
-			this.panel1.Controls.Add(this.PerimeterLabel);
 			this.panel1.Location = new System.Drawing.Point(359, 30);
 			this.panel1.Margin = new System.Windows.Forms.Padding(20);
 			this.panel1.Name = "panel1";
@@ -868,8 +861,9 @@
             "Perimeter",
             "Area",
             "Density",
-            "Mean Radius"});
-			this.DepVarChooser.Location = new System.Drawing.Point(26, 216);
+            "Mean Radius",
+            "Success Rate"});
+			this.DepVarChooser.Location = new System.Drawing.Point(26, 85);
 			this.DepVarChooser.Name = "DepVarChooser";
 			this.DepVarChooser.Size = new System.Drawing.Size(236, 24);
 			this.DepVarChooser.TabIndex = 36;
@@ -880,7 +874,7 @@
 			this.DepVarLabel.AutoSize = true;
 			this.DepVarLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
 			this.DepVarLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.DepVarLabel.Location = new System.Drawing.Point(23, 191);
+			this.DepVarLabel.Location = new System.Drawing.Point(23, 60);
 			this.DepVarLabel.Name = "DepVarLabel";
 			this.DepVarLabel.Size = new System.Drawing.Size(134, 17);
 			this.DepVarLabel.TabIndex = 35;
@@ -898,55 +892,14 @@
 			this.MouseLabel.TabIndex = 38;
 			this.MouseLabel.Text = "(0, 0)";
 			// 
-			// AreaLabel
-			// 
-			this.AreaLabel.AutoSize = true;
-			this.AreaLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
-			this.AreaLabel.Location = new System.Drawing.Point(23, 94);
-			this.AreaLabel.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
-			this.AreaLabel.Name = "AreaLabel";
-			this.AreaLabel.Size = new System.Drawing.Size(42, 17);
-			this.AreaLabel.TabIndex = 35;
-			this.AreaLabel.Text = "Area:";
-			// 
-			// AvgRadLabel
-			// 
-			this.AvgRadLabel.AutoSize = true;
-			this.AvgRadLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
-			this.AvgRadLabel.Location = new System.Drawing.Point(23, 160);
-			this.AvgRadLabel.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
-			this.AvgRadLabel.Name = "AvgRadLabel";
-			this.AvgRadLabel.Size = new System.Drawing.Size(84, 17);
-			this.AvgRadLabel.TabIndex = 41;
-			this.AvgRadLabel.Text = "Avg Radius:";
-			// 
-			// DensityLabel
-			// 
-			this.DensityLabel.AutoSize = true;
-			this.DensityLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
-			this.DensityLabel.Location = new System.Drawing.Point(23, 127);
-			this.DensityLabel.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
-			this.DensityLabel.Name = "DensityLabel";
-			this.DensityLabel.Size = new System.Drawing.Size(59, 17);
-			this.DensityLabel.TabIndex = 37;
-			this.DensityLabel.Text = "Density:";
-			// 
-			// PerimeterLabel
-			// 
-			this.PerimeterLabel.AutoSize = true;
-			this.PerimeterLabel.ForeColor = System.Drawing.SystemColors.HighlightText;
-			this.PerimeterLabel.Location = new System.Drawing.Point(23, 61);
-			this.PerimeterLabel.Margin = new System.Windows.Forms.Padding(3, 8, 3, 8);
-			this.PerimeterLabel.Name = "PerimeterLabel";
-			this.PerimeterLabel.Size = new System.Drawing.Size(73, 17);
-			this.PerimeterLabel.TabIndex = 36;
-			this.PerimeterLabel.Text = "Perimeter:";
-			// 
 			// Graph
 			// 
 			this.Graph.BorderlineColor = System.Drawing.Color.Black;
 			this.Graph.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
 			this.Graph.BorderlineWidth = 5;
+			chartArea1.Area3DStyle.Inclination = 0;
+			chartArea1.Area3DStyle.IsRightAngleAxes = false;
+			chartArea1.Area3DStyle.Rotation = 45;
 			chartArea1.AxisX.Title = "X";
 			chartArea1.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
 			chartArea1.AxisY.Title = "Y";
@@ -968,10 +921,12 @@
 			series1.MarkerSize = 8;
 			series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
 			series1.Name = "Series1";
+			series1.YValuesPerPoint = 6;
 			this.Graph.Series.Add(series1);
 			this.Graph.Size = new System.Drawing.Size(849, 430);
 			this.Graph.TabIndex = 42;
 			this.Graph.Text = "chart1";
+			this.Graph.Visible = false;
 			// 
 			// Form1
 			// 
@@ -1069,11 +1024,7 @@
 		private System.Windows.Forms.Label ResolutionLabel;
 		private System.Windows.Forms.TabPage AnalyticsTab;
 		private System.Windows.Forms.DataVisualization.Charting.Chart Graph;
-		private System.Windows.Forms.Label AvgRadLabel;
 		private System.Windows.Forms.Label MouseLabel;
-		private System.Windows.Forms.Label DensityLabel;
-		private System.Windows.Forms.Label PerimeterLabel;
-		private System.Windows.Forms.Label AreaLabel;
 		private System.Windows.Forms.Button AnalysisStartButton;
 		private System.Windows.Forms.FlowLayoutPanel AnalyticsFlowLayout;
 		private System.Windows.Forms.Panel IndVarPanel;
