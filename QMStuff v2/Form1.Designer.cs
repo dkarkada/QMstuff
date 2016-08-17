@@ -31,6 +31,7 @@
 			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
 			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
 			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			this.stepCounter = new System.Windows.Forms.NumericUpDown();
 			this.yProbValue = new System.Windows.Forms.NumericUpDown();
 			this.xProbValue = new System.Windows.Forms.NumericUpDown();
@@ -92,6 +93,27 @@
 			this.DepVarLabel = new System.Windows.Forms.Label();
 			this.MouseLabel = new System.Windows.Forms.Label();
 			this.Graph = new System.Windows.Forms.DataVisualization.Charting.Chart();
+			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.AnalyticsPGFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
+			this.PGParamGroup = new System.Windows.Forms.Panel();
+			this.PGRunNumberValue = new System.Windows.Forms.NumericUpDown();
+			this.PGRunNumberLabel = new System.Windows.Forms.Label();
+			this.PGLatticeSizeValue = new System.Windows.Forms.NumericUpDown();
+			this.PGLatticeSizeLabel = new System.Windows.Forms.Label();
+			this.PGSamplingValue = new System.Windows.Forms.NumericUpDown();
+			this.PGGammaValue = new System.Windows.Forms.NumericUpDown();
+			this.PGSetGammaLabel = new System.Windows.Forms.Label();
+			this.PGSampleLabel = new System.Windows.Forms.Label();
+			this.PGAnalysisButton = new System.Windows.Forms.Button();
+			this.PGDomainResetButton = new System.Windows.Forms.Button();
+			this.PGDataGroup = new System.Windows.Forms.Panel();
+			this.PGTimeSlider = new System.Windows.Forms.TrackBar();
+			this.PGTimeSliderLabel = new System.Windows.Forms.Label();
+			this.PGSuccessValueLabel = new System.Windows.Forms.Label();
+			this.PGRatioValueLabel = new System.Windows.Forms.Label();
+			this.PGProbValueLabel = new System.Windows.Forms.Label();
+			this.panel2 = new System.Windows.Forms.Panel();
+			this.PGDataResetButton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -116,6 +138,16 @@
 			this.IndVarPanel.SuspendLayout();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Graph)).BeginInit();
+			this.tabPage1.SuspendLayout();
+			this.AnalyticsPGFlowLayout.SuspendLayout();
+			this.PGParamGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.PGRunNumberValue)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.PGLatticeSizeValue)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.PGSamplingValue)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.PGGammaValue)).BeginInit();
+			this.PGDataGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.PGTimeSlider)).BeginInit();
+			this.panel2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -493,6 +525,7 @@
 			// 
 			this.tabControl1.Controls.Add(this.ParamsTab);
 			this.tabControl1.Controls.Add(this.AnalyticsTab);
+			this.tabControl1.Controls.Add(this.tabPage1);
 			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
 			this.tabControl1.Location = new System.Drawing.Point(10, 10);
@@ -724,7 +757,7 @@
 			this.AnalyticsFlowLayout.Location = new System.Drawing.Point(3, 3);
 			this.AnalyticsFlowLayout.Name = "AnalyticsFlowLayout";
 			this.AnalyticsFlowLayout.Padding = new System.Windows.Forms.Padding(10);
-			this.AnalyticsFlowLayout.Size = new System.Drawing.Size(849, 556);
+			this.AnalyticsFlowLayout.Size = new System.Drawing.Size(849, 537);
 			this.AnalyticsFlowLayout.TabIndex = 43;
 			// 
 			// IndVarPanel
@@ -900,8 +933,12 @@
 			chartArea1.Area3DStyle.Inclination = 0;
 			chartArea1.Area3DStyle.IsRightAngleAxes = false;
 			chartArea1.Area3DStyle.Rotation = 45;
+			chartArea1.AxisX.IsMarginVisible = false;
+			chartArea1.AxisX.MajorGrid.Enabled = false;
+			chartArea1.AxisX.Minimum = 0D;
 			chartArea1.AxisX.Title = "X";
 			chartArea1.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+			chartArea1.AxisY.MajorGrid.Enabled = false;
 			chartArea1.AxisY.Title = "Y";
 			chartArea1.AxisY.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			chartArea1.Name = "ChartArea1";
@@ -910,23 +947,294 @@
 			legend1.Enabled = false;
 			legend1.Name = "Legend1";
 			this.Graph.Legends.Add(legend1);
-			this.Graph.Location = new System.Drawing.Point(3, 559);
+			this.Graph.Location = new System.Drawing.Point(3, 540);
 			this.Graph.Name = "Graph";
 			series1.BorderWidth = 5;
 			series1.ChartArea = "ChartArea1";
 			series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-			series1.EmptyPointStyle.AxisLabel = "n";
 			series1.Legend = "Legend1";
 			series1.MarkerColor = System.Drawing.Color.Black;
 			series1.MarkerSize = 8;
 			series1.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
 			series1.Name = "Series1";
-			series1.YValuesPerPoint = 6;
+			series2.ChartArea = "ChartArea1";
+			series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+			series2.Legend = "Legend1";
+			series2.MarkerSize = 12;
+			series2.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+			series2.Name = "Series2";
 			this.Graph.Series.Add(series1);
-			this.Graph.Size = new System.Drawing.Size(849, 430);
+			this.Graph.Series.Add(series2);
+			this.Graph.Size = new System.Drawing.Size(849, 449);
 			this.Graph.TabIndex = 42;
 			this.Graph.Text = "chart1";
-			this.Graph.Visible = false;
+			// 
+			// tabPage1
+			// 
+			this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
+			this.tabPage1.Controls.Add(this.AnalyticsPGFlowLayout);
+			this.tabPage1.Location = new System.Drawing.Point(4, 25);
+			this.tabPage1.Name = "tabPage1";
+			this.tabPage1.Size = new System.Drawing.Size(855, 992);
+			this.tabPage1.TabIndex = 2;
+			this.tabPage1.Text = "Prob/Gamma Analysis";
+			// 
+			// AnalyticsPGFlowLayout
+			// 
+			this.AnalyticsPGFlowLayout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(75)))));
+			this.AnalyticsPGFlowLayout.Controls.Add(this.PGParamGroup);
+			this.AnalyticsPGFlowLayout.Controls.Add(this.PGDataGroup);
+			this.AnalyticsPGFlowLayout.Controls.Add(this.panel2);
+			this.AnalyticsPGFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.AnalyticsPGFlowLayout.Location = new System.Drawing.Point(0, 0);
+			this.AnalyticsPGFlowLayout.Name = "AnalyticsPGFlowLayout";
+			this.AnalyticsPGFlowLayout.Padding = new System.Windows.Forms.Padding(10);
+			this.AnalyticsPGFlowLayout.Size = new System.Drawing.Size(855, 992);
+			this.AnalyticsPGFlowLayout.TabIndex = 0;
+			// 
+			// PGParamGroup
+			// 
+			this.PGParamGroup.Controls.Add(this.PGRunNumberValue);
+			this.PGParamGroup.Controls.Add(this.PGRunNumberLabel);
+			this.PGParamGroup.Controls.Add(this.PGLatticeSizeValue);
+			this.PGParamGroup.Controls.Add(this.PGLatticeSizeLabel);
+			this.PGParamGroup.Controls.Add(this.PGSamplingValue);
+			this.PGParamGroup.Controls.Add(this.PGGammaValue);
+			this.PGParamGroup.Controls.Add(this.PGSetGammaLabel);
+			this.PGParamGroup.Controls.Add(this.PGSampleLabel);
+			this.PGParamGroup.Controls.Add(this.PGAnalysisButton);
+			this.PGParamGroup.Controls.Add(this.PGDomainResetButton);
+			this.PGParamGroup.Location = new System.Drawing.Point(30, 30);
+			this.PGParamGroup.Margin = new System.Windows.Forms.Padding(20);
+			this.PGParamGroup.Name = "PGParamGroup";
+			this.PGParamGroup.Padding = new System.Windows.Forms.Padding(10);
+			this.PGParamGroup.Size = new System.Drawing.Size(298, 231);
+			this.PGParamGroup.TabIndex = 0;
+			// 
+			// PGRunNumberValue
+			// 
+			this.PGRunNumberValue.Location = new System.Drawing.Point(232, 117);
+			this.PGRunNumberValue.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.PGRunNumberValue.Name = "PGRunNumberValue";
+			this.PGRunNumberValue.Size = new System.Drawing.Size(53, 23);
+			this.PGRunNumberValue.TabIndex = 9;
+			this.PGRunNumberValue.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+			// 
+			// PGRunNumberLabel
+			// 
+			this.PGRunNumberLabel.AutoSize = true;
+			this.PGRunNumberLabel.ForeColor = System.Drawing.Color.White;
+			this.PGRunNumberLabel.Location = new System.Drawing.Point(18, 117);
+			this.PGRunNumberLabel.Margin = new System.Windows.Forms.Padding(8);
+			this.PGRunNumberLabel.Name = "PGRunNumberLabel";
+			this.PGRunNumberLabel.Size = new System.Drawing.Size(187, 17);
+			this.PGRunNumberLabel.TabIndex = 8;
+			this.PGRunNumberLabel.Text = "Number of Runs per Sample";
+			// 
+			// PGLatticeSizeValue
+			// 
+			this.PGLatticeSizeValue.Location = new System.Drawing.Point(232, 51);
+			this.PGLatticeSizeValue.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+			this.PGLatticeSizeValue.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+			this.PGLatticeSizeValue.Name = "PGLatticeSizeValue";
+			this.PGLatticeSizeValue.Size = new System.Drawing.Size(53, 23);
+			this.PGLatticeSizeValue.TabIndex = 7;
+			this.PGLatticeSizeValue.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+			// 
+			// PGLatticeSizeLabel
+			// 
+			this.PGLatticeSizeLabel.AutoSize = true;
+			this.PGLatticeSizeLabel.ForeColor = System.Drawing.Color.White;
+			this.PGLatticeSizeLabel.Location = new System.Drawing.Point(18, 51);
+			this.PGLatticeSizeLabel.Margin = new System.Windows.Forms.Padding(8);
+			this.PGLatticeSizeLabel.Name = "PGLatticeSizeLabel";
+			this.PGLatticeSizeLabel.Size = new System.Drawing.Size(81, 17);
+			this.PGLatticeSizeLabel.TabIndex = 6;
+			this.PGLatticeSizeLabel.Text = "Lattice Size";
+			// 
+			// PGSamplingValue
+			// 
+			this.PGSamplingValue.Location = new System.Drawing.Point(232, 82);
+			this.PGSamplingValue.Maximum = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+			this.PGSamplingValue.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+			this.PGSamplingValue.Name = "PGSamplingValue";
+			this.PGSamplingValue.Size = new System.Drawing.Size(53, 23);
+			this.PGSamplingValue.TabIndex = 5;
+			this.PGSamplingValue.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+			// 
+			// PGGammaValue
+			// 
+			this.PGGammaValue.Location = new System.Drawing.Point(232, 16);
+			this.PGGammaValue.Name = "PGGammaValue";
+			this.PGGammaValue.Size = new System.Drawing.Size(53, 23);
+			this.PGGammaValue.TabIndex = 4;
+			this.PGGammaValue.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+			// 
+			// PGSetGammaLabel
+			// 
+			this.PGSetGammaLabel.AutoSize = true;
+			this.PGSetGammaLabel.ForeColor = System.Drawing.Color.White;
+			this.PGSetGammaLabel.Location = new System.Drawing.Point(18, 18);
+			this.PGSetGammaLabel.Margin = new System.Windows.Forms.Padding(8);
+			this.PGSetGammaLabel.Name = "PGSetGammaLabel";
+			this.PGSetGammaLabel.Size = new System.Drawing.Size(95, 17);
+			this.PGSetGammaLabel.TabIndex = 3;
+			this.PGSetGammaLabel.Text = "Gamma value";
+			// 
+			// PGSampleLabel
+			// 
+			this.PGSampleLabel.AutoSize = true;
+			this.PGSampleLabel.ForeColor = System.Drawing.Color.White;
+			this.PGSampleLabel.Location = new System.Drawing.Point(18, 84);
+			this.PGSampleLabel.Margin = new System.Windows.Forms.Padding(8);
+			this.PGSampleLabel.Name = "PGSampleLabel";
+			this.PGSampleLabel.Size = new System.Drawing.Size(132, 17);
+			this.PGSampleLabel.TabIndex = 2;
+			this.PGSampleLabel.Text = "Number of Samples";
+			// 
+			// PGAnalysisButton
+			// 
+			this.PGAnalysisButton.Location = new System.Drawing.Point(164, 178);
+			this.PGAnalysisButton.Name = "PGAnalysisButton";
+			this.PGAnalysisButton.Size = new System.Drawing.Size(121, 40);
+			this.PGAnalysisButton.TabIndex = 1;
+			this.PGAnalysisButton.Text = "Graph";
+			this.PGAnalysisButton.UseVisualStyleBackColor = true;
+			this.PGAnalysisButton.Click += new System.EventHandler(this.PGAnalysisButton_Click);
+			// 
+			// PGDomainResetButton
+			// 
+			this.PGDomainResetButton.Location = new System.Drawing.Point(13, 178);
+			this.PGDomainResetButton.Name = "PGDomainResetButton";
+			this.PGDomainResetButton.Size = new System.Drawing.Size(121, 40);
+			this.PGDomainResetButton.TabIndex = 0;
+			this.PGDomainResetButton.Text = "Reset Domain";
+			this.PGDomainResetButton.UseVisualStyleBackColor = true;
+			this.PGDomainResetButton.Click += new System.EventHandler(this.PGDomainResetButton_Click);
+			// 
+			// PGDataGroup
+			// 
+			this.PGDataGroup.Controls.Add(this.PGTimeSlider);
+			this.PGDataGroup.Controls.Add(this.PGTimeSliderLabel);
+			this.PGDataGroup.Controls.Add(this.PGSuccessValueLabel);
+			this.PGDataGroup.Controls.Add(this.PGRatioValueLabel);
+			this.PGDataGroup.Controls.Add(this.PGProbValueLabel);
+			this.PGDataGroup.Location = new System.Drawing.Point(368, 30);
+			this.PGDataGroup.Margin = new System.Windows.Forms.Padding(20);
+			this.PGDataGroup.Name = "PGDataGroup";
+			this.PGDataGroup.Padding = new System.Windows.Forms.Padding(10);
+			this.PGDataGroup.Size = new System.Drawing.Size(298, 231);
+			this.PGDataGroup.TabIndex = 3;
+			// 
+			// PGTimeSlider
+			// 
+			this.PGTimeSlider.Location = new System.Drawing.Point(13, 173);
+			this.PGTimeSlider.Maximum = 20;
+			this.PGTimeSlider.Name = "PGTimeSlider";
+			this.PGTimeSlider.Size = new System.Drawing.Size(272, 45);
+			this.PGTimeSlider.TabIndex = 6;
+			this.PGTimeSlider.TickFrequency = 5;
+			this.PGTimeSlider.Value = 20;
+			// 
+			// PGTimeSliderLabel
+			// 
+			this.PGTimeSliderLabel.AutoSize = true;
+			this.PGTimeSliderLabel.ForeColor = System.Drawing.Color.White;
+			this.PGTimeSliderLabel.Location = new System.Drawing.Point(110, 145);
+			this.PGTimeSliderLabel.Margin = new System.Windows.Forms.Padding(8);
+			this.PGTimeSliderLabel.Name = "PGTimeSliderLabel";
+			this.PGTimeSliderLabel.Size = new System.Drawing.Size(79, 17);
+			this.PGTimeSliderLabel.TabIndex = 5;
+			this.PGTimeSliderLabel.Text = "Time Slider";
+			// 
+			// PGSuccessValueLabel
+			// 
+			this.PGSuccessValueLabel.AutoSize = true;
+			this.PGSuccessValueLabel.ForeColor = System.Drawing.Color.White;
+			this.PGSuccessValueLabel.Location = new System.Drawing.Point(18, 51);
+			this.PGSuccessValueLabel.Margin = new System.Windows.Forms.Padding(8);
+			this.PGSuccessValueLabel.Name = "PGSuccessValueLabel";
+			this.PGSuccessValueLabel.Size = new System.Drawing.Size(85, 17);
+			this.PGSuccessValueLabel.TabIndex = 4;
+			this.PGSuccessValueLabel.Text = "% Growth = ";
+			// 
+			// PGRatioValueLabel
+			// 
+			this.PGRatioValueLabel.AutoSize = true;
+			this.PGRatioValueLabel.ForeColor = System.Drawing.Color.White;
+			this.PGRatioValueLabel.Location = new System.Drawing.Point(18, 84);
+			this.PGRatioValueLabel.Margin = new System.Windows.Forms.Padding(8);
+			this.PGRatioValueLabel.Name = "PGRatioValueLabel";
+			this.PGRatioValueLabel.Size = new System.Drawing.Size(45, 17);
+			this.PGRatioValueLabel.TabIndex = 3;
+			this.PGRatioValueLabel.Text = "P/Γ = ";
+			// 
+			// PGProbValueLabel
+			// 
+			this.PGProbValueLabel.AutoSize = true;
+			this.PGProbValueLabel.ForeColor = System.Drawing.Color.White;
+			this.PGProbValueLabel.Location = new System.Drawing.Point(18, 18);
+			this.PGProbValueLabel.Margin = new System.Windows.Forms.Padding(8);
+			this.PGProbValueLabel.Name = "PGProbValueLabel";
+			this.PGProbValueLabel.Size = new System.Drawing.Size(33, 17);
+			this.PGProbValueLabel.TabIndex = 2;
+			this.PGProbValueLabel.Text = "P = ";
+			// 
+			// panel2
+			// 
+			this.panel2.Controls.Add(this.PGDataResetButton);
+			this.panel2.Location = new System.Drawing.Point(30, 301);
+			this.panel2.Margin = new System.Windows.Forms.Padding(20);
+			this.panel2.Name = "panel2";
+			this.panel2.Padding = new System.Windows.Forms.Padding(10);
+			this.panel2.Size = new System.Drawing.Size(298, 71);
+			this.panel2.TabIndex = 10;
+			// 
+			// PGDataResetButton
+			// 
+			this.PGDataResetButton.Location = new System.Drawing.Point(13, 13);
+			this.PGDataResetButton.Name = "PGDataResetButton";
+			this.PGDataResetButton.Size = new System.Drawing.Size(272, 45);
+			this.PGDataResetButton.TabIndex = 0;
+			this.PGDataResetButton.Text = "Reset Data";
+			this.PGDataResetButton.UseVisualStyleBackColor = true;
+			this.PGDataResetButton.Click += new System.EventHandler(this.PGDataResetButton_Click);
 			// 
 			// Form1
 			// 
@@ -971,6 +1279,18 @@
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Graph)).EndInit();
+			this.tabPage1.ResumeLayout(false);
+			this.AnalyticsPGFlowLayout.ResumeLayout(false);
+			this.PGParamGroup.ResumeLayout(false);
+			this.PGParamGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.PGRunNumberValue)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.PGLatticeSizeValue)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.PGSamplingValue)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.PGGammaValue)).EndInit();
+			this.PGDataGroup.ResumeLayout(false);
+			this.PGDataGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.PGTimeSlider)).EndInit();
+			this.panel2.ResumeLayout(false);
 			this.ResumeLayout(false);
 
         }
@@ -1037,6 +1357,27 @@
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.ComboBox DepVarChooser;
 		private System.Windows.Forms.Label DepVarLabel;
+		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.FlowLayoutPanel AnalyticsPGFlowLayout;
+		private System.Windows.Forms.Panel PGParamGroup;
+		private System.Windows.Forms.Label PGSampleLabel;
+		private System.Windows.Forms.Button PGAnalysisButton;
+		private System.Windows.Forms.Button PGDomainResetButton;
+		private System.Windows.Forms.Panel PGDataGroup;
+		private System.Windows.Forms.Label PGProbValueLabel;
+		private System.Windows.Forms.Label PGSetGammaLabel;
+		private System.Windows.Forms.Label PGSuccessValueLabel;
+		private System.Windows.Forms.Label PGRatioValueLabel;
+		private System.Windows.Forms.NumericUpDown PGLatticeSizeValue;
+		private System.Windows.Forms.Label PGLatticeSizeLabel;
+		private System.Windows.Forms.NumericUpDown PGSamplingValue;
+		private System.Windows.Forms.NumericUpDown PGGammaValue;
+		private System.Windows.Forms.TrackBar PGTimeSlider;
+		private System.Windows.Forms.Label PGTimeSliderLabel;
+		private System.Windows.Forms.NumericUpDown PGRunNumberValue;
+		private System.Windows.Forms.Label PGRunNumberLabel;
+		private System.Windows.Forms.Panel panel2;
+		private System.Windows.Forms.Button PGDataResetButton;
 	}
 }
 

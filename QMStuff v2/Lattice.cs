@@ -48,8 +48,8 @@ namespace QMStuff_v2 {
 			List<Atom> seeds = new List<Atom>();
 			LatticeChange init = new LatticeChange();
 			int o = sz/2;
-			int[] colVals = { o };//, o+20 };
-			int[] rowVals = { o };//, o+13 };
+			int[] colVals = { o };
+			int[] rowVals = { o };
 			for (int i = 0; i<rowVals.Count(); i++) {
 				int c = colVals[i];
 				int r = rowVals[i];
@@ -103,7 +103,7 @@ namespace QMStuff_v2 {
 					}
 				}
 				foreach (AtomNode node in nextAtomsX) {
-					if (rnd.NextDouble() < Px && rnd.NextDouble() > gamma) {
+					if (rnd.NextDouble() < Px) {// && rnd.NextDouble() > gamma) {
 						nextAtomsX.Remove(node);
 						//no need to say node isnext is false since node is discarded and replaced	
 						node.atom.excited = true;
@@ -126,7 +126,7 @@ namespace QMStuff_v2 {
 					}
 				}
 				foreach (AtomNode node in nextAtomsY) {
-					if (rnd.NextDouble() < Py && rnd.NextDouble() > gamma) {
+					if (rnd.NextDouble() < Py) {// && rnd.NextDouble() > gamma) {
 						nextAtomsY.Remove(node);
 						node.atom.excited = true;
 						allExcited.Add(node.atom);
@@ -174,7 +174,8 @@ namespace QMStuff_v2 {
 				changes.Add(lc);
 				if (changes.Count-1 % 50 == 0 || done || changes.Count == maxstep)
 					latFrameList.Add(mat, changes.Count-1);
-				worker.ReportProgress((int) (100 * Math.Pow((double)bound/(sz/2), 2)));
+				if(worker!=null)
+					worker.ReportProgress((int) (100 * Math.Pow((double)bound/(sz/2), 2)));
 			}
 		}
 		public void ClearChanges() {
@@ -273,9 +274,6 @@ namespace QMStuff_v2 {
 				data.Add(new Tuple<int, double[]>(ind, analytics.GetInfo(boxSz, boxMat, bound, total)));
 				ind+=period;
 			}
-		}
-		public void StartManyRunAnalysis() {
-
 		}
 		public int ConvertX(int x) { return x + sz/2; }
 		public int ConvertY(int y) { return sz/2 - y; }

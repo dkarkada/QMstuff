@@ -12,6 +12,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 namespace QMStuff_v2{
 	public partial class Form1 : Form {
 		Canvas c;
+		PGGraph pgGraph;
 		ProgressForm pf;
 		System.Timers.Timer clock;
 		System.Diagnostics.Stopwatch stopwatch;
@@ -36,6 +37,10 @@ namespace QMStuff_v2{
 			c.Dock = DockStyle.Fill;
 			splitPanel.Panel2.Controls.Add(c);
 			splitPanel.Panel2.BackColor = c.gs.bgBrush.Color;
+			pgGraph = new PGGraph(tabControl1.Width, (int)(tabControl1.Height * 3.0/5));
+			pgGraph.Draw();
+			tabControl1.TabPages[2].Controls.Add(pgGraph);
+			Graph.Series[0].Points.AddXY(0,0);
 
 			FpsChooser.SelectedIndex = 0;
 			ResChooser.SelectedIndex = 0;
@@ -77,6 +82,212 @@ namespace QMStuff_v2{
 			MouseLabel.Text = String.Format("({0}, {1})", xs, ys);
 			MouseLabel.Invalidate();
 		}
+		private void StartManyRunAnalysis(BackgroundWorker worker) {
+			String path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\ resources\\";
+			Directory.CreateDirectory(path);
+			double margin = 0.4;
+			double subdivs = 5;
+			double dist = 50;
+			int lsize = 50;
+			int numRuns = 50;
+			Dictionary<CPoint, CPoint> vals = new Dictionary<CPoint, CPoint>();
+			HashSet<CPoint> currentPts = new HashSet<CPoint>();
+			currentPts.Add(new CPoint(50, 50, f(50, 50, vals, lsize, numRuns)));
+			for(int i=0; i<subdivs; i++) {
+				double newdist = dist/2;
+				double max = 0;
+				HashSet<CPoint> addPts = new HashSet<CPoint>();
+				HashSet<CPoint> removePts = new HashSet<CPoint>();
+				foreach (CPoint p in currentPts) {
+					p.segments[0] = p.y + dist <= 100 ? 
+						(f(p.x, p.y + dist, vals, lsize, numRuns) - p.val) : 0;
+					p.segments[1] = p.x + dist <= 100 ?
+						(f(p.x + dist, p.y, vals, lsize, numRuns) - p.val) : 0;
+					p.segments[2] = p.y - dist >= 0 ?
+						(f(p.x, p.y - dist, vals, lsize, numRuns) - p.val) : 0;
+					p.segments[3] = p.x - dist >= 0 ?
+						(f(p.x - dist, p.y, vals, lsize, numRuns) - p.val) : 0;
+					max = Math.Max(max,
+						Math.Max(Math.Abs(p.segments[0]), 
+						Math.Max(Math.Abs(p.segments[1]),
+						Math.Max(Math.Abs(p.segments[2]), Math.Abs(p.segments[3])))));
+				}
+				if (max>0) {
+					double cnt = 0;
+					foreach (CPoint p in currentPts) {
+						bool kill = true;
+						for (int j = 0; j<4; j++) {
+							if (Math.Abs(p.segments[j]) > margin*max) {
+								kill=false;
+								double val;
+								switch (j) {
+									case 0:
+										val = f(p.x + newdist, p.y + newdist, vals, lsize, numRuns);
+										addPts.Add(new CPoint(p.x + newdist, p.y + newdist, val));
+										val = f(p.x - newdist, p.y + newdist, vals, lsize, numRuns);
+										addPts.Add(new CPoint(p.x - newdist, p.y + newdist, val));
+										val = p.segments[j] + p.val;
+										addPts.Add(new CPoint(p.x, p.y + dist, val));
+										break;
+									case 2:
+										val = f(p.x + newdist, p.y - newdist, vals, lsize, numRuns);
+										addPts.Add(new CPoint(p.x + newdist, p.y - newdist, val));
+										val = f(p.x - newdist, p.y - newdist, vals, lsize, numRuns);
+										addPts.Add(new CPoint(p.x - newdist, p.y - newdist, val));
+										val = p.segments[j] + p.val;
+										addPts.Add(new CPoint(p.x, p.y - dist, val));
+										break;
+									case 1:
+										val = f(p.x + newdist, p.y + newdist, vals, lsize, numRuns);
+										addPts.Add(new CPoint(p.x + newdist, p.y + newdist, val));
+										val = f(p.x + newdist, p.y - newdist, vals, lsize, numRuns);
+										addPts.Add(new CPoint(p.x + newdist, p.y - newdist, val));
+										val = p.segments[j] + p.val;
+										addPts.Add(new CPoint(p.x + dist, p.y, val));
+										break;
+									case 3:
+										val = f(p.x - newdist, p.y + newdist, vals, lsize, numRuns);
+										addPts.Add(new CPoint(p.x - newdist, p.y + newdist, val));
+										val = f(p.x - newdist, p.y - newdist, vals, lsize, numRuns);
+										addPts.Add(new CPoint(p.x - newdist, p.y - newdist, val));
+										val = p.segments[j] + p.val;
+										addPts.Add(new CPoint(p.x - dist, p.y, val));
+										break;
+								}
+							}
+						}
+						if (kill)
+							removePts.Add(p);
+						cnt++;
+						worker.ReportProgress((int)(100 * (i/subdivs + (cnt/currentPts.Count)/subdivs)));
+					}
+				}
+				foreach (CPoint p in addPts)
+					currentPts.Add(p);
+				foreach (CPoint p in removePts) {
+					currentPts.Remove(p);
+				}
+				dist = newdist;
+			}
+			List<CPoint> emptyPts = new List<CPoint>();
+			for(double x=0; x<=100; x+=dist) {
+				double start = x%(2*dist)==0 ? 0 : dist;
+				for(double y=start; y<=100; y+=2*dist) {
+					CPoint t = new CPoint(x, y);
+					if (!vals.ContainsKey(t))
+						emptyPts.Add(t);
+				}
+			}
+			for (int threshold = 4; threshold>0; threshold--) {
+				for(int k=0; k<emptyPts.Count; k++) {
+					int before = emptyPts.Count;
+					FillSpace(emptyPts[k], threshold, emptyPts, vals, dist);
+					k-= before - emptyPts.Count;
+					if (k<0) k=0;
+				}
+			}
+			foreach (CPoint p in vals.Values) {
+				DataPoint dp = new DataPoint(p.x, p.y);
+				double val = p.val;
+				dp.MarkerColor = Color.FromArgb(0, (int)(val*191), (int)(val*255));
+				Action ac = delegate { Graph.Series[1].Points.Add(dp); };
+				BeginInvoke(ac);
+			}
+		}
+		private double f(double prob, double gamma, Dictionary<CPoint, CPoint> vals, int lsize, int numRuns) {
+			CPoint temp = new CPoint(prob, gamma);
+			if (vals.ContainsKey(temp)){
+				return vals[temp].val;
+			}
+			else {
+				string writeStr = prob + "\t" + gamma + "\t\t";
+				double sum = 0;
+				for (int i = 0; i<numRuns; i++) {
+					Lattice tLat = new Lattice(lsize);
+					tLat.GenerateChanges(null, 250, prob/100, prob/100, gamma/100);
+					int finalNum = tLat.changes[tLat.changes.Count-1].totalExcited;
+					writeStr += finalNum + " ";
+					double val = finalNum>0 ? 1 : 0;
+					sum+=val;
+				}
+				double result = sum/numRuns;
+				temp.val = result;
+				vals.Add(temp, temp);
+				String path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\ resources\\data.txt";
+				using (System.IO.StreamWriter file = new System.IO.StreamWriter(@path, true)) {
+					file.WriteLine(writeStr);
+				}
+				return result;
+			}
+		}
+		private List<double> GetAvgGrowth(double prob, double gamma, int lsize, int numRuns) {
+			double sum = 0;
+			for (int i = 0; i<numRuns; i++) {
+				Lattice tLat = new Lattice(lsize);
+				tLat.GenerateChanges(null, 250, prob, prob, gamma);
+				int finalNum = tLat.changes[tLat.changes.Count-1].totalExcited;
+				double val = finalNum>0 ? 1 : 0;
+				sum+=val;
+			}
+			double result = sum/numRuns;
+			return result;
+		}
+		private void FillSpace(CPoint p, int threshold, List<CPoint> emptyPts, Dictionary<CPoint, CPoint> vals, double dist) {
+			if (!vals.ContainsKey(p)) {
+				List<CPoint> neighbors = new List<CPoint>(4);
+				if (p.x - dist >= 0) {
+					if (p.y - dist >= 0)
+						neighbors.Add(new CPoint(p.x-dist, p.y-dist));
+					if (p.y + dist <= 100)
+						neighbors.Add(new CPoint(p.x-dist, p.y+dist));
+				}
+				if (p.x + dist <= 100) {
+					if (p.y - dist >= 0)
+						neighbors.Add(new CPoint(p.x+dist, p.y-dist));
+					if (p.y + dist <= 100)
+						neighbors.Add(new CPoint(p.x+dist, p.y+dist));
+				}
+				List<CPoint> on = new List<CPoint>(4);
+				List<CPoint> off = new List<CPoint>(4);
+				foreach (CPoint n in neighbors) {
+					if (vals.ContainsKey(n))
+						on.Add(vals[n]);
+					else
+						off.Add(n);
+				}
+				if (on.Count >= threshold) {
+					double avg = 0;
+					foreach (CPoint n in on)
+						avg += n.val / on.Count;
+					p.val = avg;
+					vals.Add(p, p);
+					emptyPts.Remove(p);
+					if (threshold<3)
+						foreach (CPoint n in off)
+							FillSpace(n, threshold, emptyPts, vals, dist);
+				}
+			}
+		}
+		private void GraphToPlot() {
+			Graph.Series[0].Enabled = false;
+			Graph.Series[1].Enabled = true;
+			Graph.ChartAreas[0].Axes[0].Maximum = 100;
+			Graph.ChartAreas[0].Axes[1].Maximum = 100;
+		}
+		private void PlotToGraph() {
+			Graph.Series[0].Enabled = true;
+			Graph.Series[1].Enabled = false;
+		}
+		private void StartPGAnalysis(BackgroundWorker worker) {
+			double gamma = (double)PGGammaValue.Value / 100;
+			int lsize = (int)PGLatticeSizeValue.Value;
+			int sampleNum = (int)PGSamplingValue.Value;
+			int numRuns = (int)PGRunNumberValue.Value;
+			double interval = (pgGraph.start-pgGraph.end)/sampleNum;
+			for (double prob=pgGraph.start; prob<pgGraph.end + 0.01; prob+= interval) {
+
+			}
+		}
 
 		private void GenerateButton_Click(object sender, EventArgs e) {
 			c.lat = new Lattice((int)(LatSizeValue.Value));
@@ -84,24 +295,24 @@ namespace QMStuff_v2{
 
 			BackgroundWorker worker = new BackgroundWorker();
 			worker.WorkerReportsProgress = true;
-			worker.DoWork += Worker_DoWork;
-			worker.ProgressChanged += Worker_ProgressChanged;
-			worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+			worker.DoWork += Worker_DoWork1;
+			worker.ProgressChanged += Worker_ProgressChanged1;
+			worker.RunWorkerCompleted += Worker_RunWorkerCompleted1;
 			pf = new ProgressForm();
 			pf.Show();
 			double[] args = { (double)(xProbBar.Value)/100, (double)(yProbBar.Value)/100, (double)(gammaBar.Value)/100 };
 			worker.RunWorkerAsync(args);
 		}
-		private void Worker_DoWork(object sender, DoWorkEventArgs e) {
+		private void Worker_DoWork1(object sender, DoWorkEventArgs e) {
 			BackgroundWorker worker = sender as BackgroundWorker;
-			double[] args = (double[]) e.Argument;
-			c.lat.GenerateChanges(worker, (int) stepCounter.Maximum,
+			double[] args = (double[])e.Argument;
+			c.lat.GenerateChanges(worker, (int)stepCounter.Maximum,
 				args[0], args[1], args[2]);
 		}
-		private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e) {
+		private void Worker_ProgressChanged1(object sender, ProgressChangedEventArgs e) {
 			pf.SetValue(e.ProgressPercentage);
 		}
-		private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+		private void Worker_RunWorkerCompleted1(object sender, RunWorkerCompletedEventArgs e) {
 			pf.Close();
 			c.ReRender();
 			playGroup.Enabled = true;
@@ -109,6 +320,23 @@ namespace QMStuff_v2{
 			probGroup.Enabled = false;
 			AnalyticsTab.Enabled = true;
 		}
+		private void Worker_DoWork2(object sender, DoWorkEventArgs e) {
+			BackgroundWorker worker = sender as BackgroundWorker;
+			StartManyRunAnalysis(worker);
+		}
+		private void Worker_RunWorkerCompleted2(object sender, RunWorkerCompletedEventArgs e) {
+			pf.Close();
+			Graph.Invalidate();
+		}
+		private void Worker_DoWork3(object sender, DoWorkEventArgs e) {
+			BackgroundWorker worker = sender as BackgroundWorker;
+			StartPGAnalysis(worker);
+		}
+		private void Worker_RunWorkerCompleted3(object sender, RunWorkerCompletedEventArgs e) {
+			pf.Close();
+			pgGraph.Draw();
+		}
+
 		private void Form1_KeyDown(object sender, KeyEventArgs e) {
 			if(e.KeyCode == Keys.ControlKey)
 				c.ctrlPressed = true;
@@ -296,21 +524,36 @@ namespace QMStuff_v2{
 		private void AnalysisStartButton_Click(object sender, EventArgs e) {
 			switch (IndVarChooser.SelectedIndex) {
 				case 0:
-					c.lat.StartSpatialAnalysis((int)(stepCounter.Value));
+					PlotToGraph();
+					if (c.lat.changes.Count > 1)
+						c.lat.StartSpatialAnalysis((int)(stepCounter.Value));
 					Graph.ChartAreas[0].AxisX.Title = "Tightness";
 					break;
 				case 1:
+					PlotToGraph();
 					int[] periods = { 10, 20, 50, 100 };
 					int[] boxSizes = { 1, 2, 3, 4, 5, 6, 8, 10, 20, 50 };
-					c.lat.StartTemporalAnalysis(periods[TimePeriodChooser.SelectedIndex],
-						boxSizes[TightnessChooser.SelectedIndex]);
+					if (c.lat.changes.Count > 1)
+						c.lat.StartTemporalAnalysis(periods[TimePeriodChooser.SelectedIndex],
+							boxSizes[TightnessChooser.SelectedIndex]);
 					Graph.ChartAreas[0].AxisX.Title = "Time";
 					break;
 				case 2:
-					c.lat.StartManyRunAnalysis();
+					GraphToPlot();
+					Graph.Series[1].Points.Clear();
+					Graph.ChartAreas[0].AxisX.Title = "P";
+					Graph.ChartAreas[0].AxisY.Title = "Γ";
+					BackgroundWorker worker = new BackgroundWorker();
+					worker.WorkerReportsProgress = true;
+					worker.DoWork += Worker_DoWork2;
+					worker.ProgressChanged += Worker_ProgressChanged1;
+					worker.RunWorkerCompleted += Worker_RunWorkerCompleted2;
+					pf = new ProgressForm();
+					pf.Show();
+					worker.RunWorkerAsync();
 					break;
 			}
-			if(IndVarChooser.SelectedIndex<2) {
+			if(IndVarChooser.SelectedIndex<2 && c.lat.changes.Count > 1) {
 				Graph.ChartAreas[0].AxisY.Title = (string)DepVarChooser.Items[DepVarChooser.SelectedIndex];
 				int depVarInd = DepVarChooser.SelectedIndex;
 				Graph.Series[0].Points.Clear();
@@ -318,10 +561,7 @@ namespace QMStuff_v2{
 					DataPoint dp = new DataPoint(info.Item1, info.Item2[depVarInd]);
 					Graph.Series[0].Points.Add(dp);
 				}
-			}
-			else {
-				Graph.ChartAreas[0].AxisX.Title = "P";
-				Graph.ChartAreas[0].AxisY.Title = "Γ";
+				Graph.ChartAreas[0].RecalculateAxesScale();
 			}
 			Graph.Invalidate();
 		}
@@ -345,7 +585,7 @@ namespace QMStuff_v2{
 		}
 		private void DepVarChooser_SelectedIndexChanged(object sender, EventArgs e) {
 			int depVarInd = DepVarChooser.SelectedIndex;
-			if (c.lat.data != null && depVarInd<2) {
+			if (c.lat.data != null && depVarInd<4) {
 				Graph.ChartAreas[0].AxisY.Title = (string)DepVarChooser.Items[DepVarChooser.SelectedIndex];
 				Graph.Series[0].Points.Clear();
 				foreach (Tuple<int, double[]> info in c.lat.data) {
@@ -355,6 +595,25 @@ namespace QMStuff_v2{
 				Graph.Invalidate();
 			}
 		}
+
+		private void PGDomainResetButton_Click(object sender, EventArgs e) {
+			pgGraph.ResetDomain();
+		}
+		private void PGAnalysisButton_Click(object sender, EventArgs e) {
+			PGGammaValue.Enabled = false;
+			BackgroundWorker worker = new BackgroundWorker();
+			worker.WorkerReportsProgress = true;
+			worker.DoWork += Worker_DoWork3;
+			worker.ProgressChanged += Worker_ProgressChanged1;
+			worker.RunWorkerCompleted += Worker_RunWorkerCompleted3;
+			pf = new ProgressForm();
+			pf.Show();
+			worker.RunWorkerAsync();
+		}
+		private void PGDataResetButton_Click(object sender, EventArgs e) {
+			PGGammaValue.Enabled = true;
+		}
+
 	}
 	public class Canvas : Panel {
 		private Form1 form;
@@ -394,8 +653,8 @@ namespace QMStuff_v2{
 					SolidBrush br = gs.fgBrush;
 					foreach (Atom a in lc.on) {
 						g.FillRectangle(br,
-							(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
-							(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
+							(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
+							(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
 							(int)lat.aSize, (int)lat.aSize);
 					}
 					br = gs.bgBrush;
@@ -431,82 +690,71 @@ namespace QMStuff_v2{
 				if(gs.axes) {
 					int w = bmp.Width;
 					int h = bmp.Height;
-					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
-					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
+					g.DrawLine(gs.axisPen, w/2, 0, w/2, h);
+					g.DrawLine(gs.axisPen, 0, h/2, w, h/2);
 				}
 			}
 			Invalidate();
 		}
 		public void ReRender() {
-			using(var g = Graphics.FromImage(bmp)) {
-				g.Clear(Color.Transparent);
-				if(gs.axes) {
-					int w = bmp.Width;
-					int h = bmp.Height;
-					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
-					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
-				}
-				SolidBrush br = gs.fgBrush;
-				Tuple<List<Atom>, int> result = lat.latFrameList.GetNearestFrame(ind);
-				foreach (Atom a in result.Item1) {
-					g.FillRectangle(br,
-						(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
-						(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
-						(int)lat.aSize, (int)lat.aSize);
-				}
-				if (result.Item2 < ind) {
-					for (int i = result.Item2; i <= ind; i++) {
-						LatticeChange lc = lat.changes[i];
-						br = gs.fgBrush;
-						foreach (Atom a in lc.on) {
-							g.FillRectangle(br,
-								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
-								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
-								(int)lat.aSize, (int)lat.aSize);
+			if (lat.changes.Count > 1) {
+				using (var g = Graphics.FromImage(bmp)) {
+					g.Clear(Color.Transparent);
+					if (gs.axes) {
+						int w = bmp.Width;
+						int h = bmp.Height;
+						g.DrawLine(gs.axisPen, w/2, 0, w/2, h);
+						g.DrawLine(gs.axisPen, 0, h/2, w, h/2);
+					}
+					SolidBrush br = gs.fgBrush;
+					Tuple<List<Atom>, int> result = lat.latFrameList.GetNearestFrame(ind);
+					foreach (Atom a in result.Item1) {
+						g.FillRectangle(br,
+							(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
+							(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
+							(int)lat.aSize, (int)lat.aSize);
+					}
+					if (result.Item2 < ind) {
+						for (int i = result.Item2; i <= ind; i++) {
+							LatticeChange lc = lat.changes[i];
+							br = gs.fgBrush;
+							foreach (Atom a in lc.on) {
+								g.FillRectangle(br,
+									(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
+									(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
+									(int)lat.aSize, (int)lat.aSize);
+							}
+							br = gs.bgBrush;
+							foreach (Atom a in lc.off) {
+								g.FillRectangle(br,
+									(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
+									(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
+									(int)lat.aSize, (int)lat.aSize);
+							}
 						}
-						br = gs.bgBrush;
-						foreach (Atom a in lc.off) {
-							g.FillRectangle(br,
-								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
-								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
-								(int)lat.aSize, (int)lat.aSize);
+					}
+					else {
+						for (int i = result.Item2; i > ind; i--) {
+							LatticeChange lc = lat.changes[i];
+							br = gs.fgBrush;
+							foreach (Atom a in lc.off) {
+								g.FillRectangle(br,
+									(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
+									(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
+									(int)lat.aSize, (int)lat.aSize);
+							}
+							br = gs.bgBrush;
+							foreach (Atom a in lc.on) {
+								g.FillRectangle(br,
+									(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
+									(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
+									(int)lat.aSize, (int)lat.aSize);
+							}
 						}
 					}
 				}
-				else {
-					for (int i = result.Item2; i > ind; i--) {
-						LatticeChange lc = lat.changes[i];
-						br = gs.fgBrush;
-						foreach (Atom a in lc.off) {
-							g.FillRectangle(br,
-								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
-								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
-								(int)lat.aSize, (int)lat.aSize);
-						}
-						br = gs.bgBrush;
-						foreach (Atom a in lc.on) {
-							g.FillRectangle(br,
-								(float)(bmp.Width / 2 + lat.aSize * (a.x - .5)),
-								(float)(bmp.Height / 2 - lat.aSize * (a.y + .5)),
-								(int)lat.aSize, (int)lat.aSize);
-						}
-					}
-				}
+				Invalidate();
 			}
-			Invalidate();
-		}
-		public void RenderPerim() {
-			//Pen perimPen = new Pen(Color.Red, (float)lat.aSize / 2);
-			//using (Graphics g = Graphics.FromImage(bmp)) {
-			//	Point[] points = new Point[lat.analytics.vertices.Count];
-			//	for (int i = 0; i < points.GetLength(0); i++) {
-			//		Point p = lat.analytics.vertices[i];
-			//		points[i] = new Point((int)(bmp.Width / 2 + lat.aSize * (p.X)),
-			//				(int)(bmp.Height / 2 - lat.aSize * (p.Y)));
-			//	}
-			//	g.DrawPolygon(perimPen, points);
-			//}
-			//Invalidate();
 		}
 		public void Restart() {
 			ind = 0;
@@ -556,8 +804,8 @@ namespace QMStuff_v2{
 				if(gs.axes) {
 					int w = VBmp.Width;
 					int h = VBmp.Height;
-					g.DrawLine(gs.axisPen, w / 2, 0, w / 2, h);
-					g.DrawLine(gs.axisPen, 0, h / 2, w, h / 2);
+					g.DrawLine(gs.axisPen, w/2, 0, w/2, h);
+					g.DrawLine(gs.axisPen, 0, h/2, w, h/2);
 				}
 
 				SolidBrush br = gs.fgBrush;
@@ -567,8 +815,8 @@ namespace QMStuff_v2{
 					br = gs.fgBrush;
 					foreach(Atom a in lc.on) {
 						g.FillRectangle(br,
-							(float)(VBmp.Width / 2 + lat.aSize * (a.x - .5)),
-							(float)(VBmp.Height / 2 - lat.aSize * (a.y + .5)),
+							(float)(VBmp.Width/2 + lat.aSize * (a.x - .5)),
+							(float)(VBmp.Height/2 - lat.aSize * (a.y + .5)),
 							(int)lat.aSize, (int)lat.aSize);
 					}
 					br = gs.bgBrush;
@@ -616,9 +864,61 @@ namespace QMStuff_v2{
 			}
 		}
 		private void Canvas_MouseMove(object sender, MouseEventArgs e) {
-			double x = (e.X - bmp.Width/2) / lat.aSize;
-			double y = (bmp.Height/2 - e.Y) / lat.aSize;
+			double x = (e.X - bmp.Width/2)/lat.aSize;
+			double y = (bmp.Height/2 - e.Y)/lat.aSize;
 			form.UpdateMousePos(x, y);
+		}
+	}
+	public class PGGraph : Panel {
+		public Bitmap bmp { get; set; }
+		public Dictionary<double, List<double>> data;
+		public double start { get; set; }
+		public double end { get; set; }
+
+		public PGGraph(int w, int h) {
+			bmp = new Bitmap(w, h);
+			Height = h;
+			data = new Dictionary<double, List<double>>();
+			start = 0;
+			end = 100;
+			Dock = DockStyle.Bottom;
+		}
+		public void AddPt(double prob, double successRate) {
+			data[prob].Add(successRate);
+		}
+		protected override void OnPaint(PaintEventArgs e) {
+			Graphics g = e.Graphics;
+			g.DrawImage(bmp, 0, 0);
+		}
+		public void Draw() {
+			int h = bmp.Height-100;
+			int w = bmp.Width-200;
+			int Ox = 100;
+			int Oy = bmp.Height-50;
+			Pen axesPen = new Pen(Color.Black, 3);
+			SolidBrush br = new SolidBrush(Color.Blue);
+			SolidBrush textBr = new SolidBrush(Color.Black);
+			Font textFont = new Font("Arial", 16);
+			using (Graphics g = Graphics.FromImage(bmp)) {
+				g.Clear(Color.White);
+				g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+				g.DrawLine(axesPen, Ox-8, Oy, Ox+w, Oy);
+				g.DrawLine(axesPen, Ox, Oy+8, Ox, Oy-h);
+				g.DrawString("P", textFont, textBr, Ox+w+30, Oy-10);
+				g.DrawString("% Growth", textFont, textBr, Ox-50, Oy-h-40);
+				g.DrawString(end+"", textFont, textBr, Ox+w-10, Oy+15);
+				g.DrawLine(axesPen, Ox+w, Oy-8, Ox+w, Oy+8);
+				g.DrawString(start+"", textFont, textBr, Ox-10, Oy+15);
+				g.DrawString("100", textFont, textBr, Ox-60, Oy-h-10);
+				g.DrawLine(axesPen, Ox-8, Oy-h, Ox+8, Oy-h);
+				g.DrawString("0", textFont, textBr, Ox-35, Oy-10);
+			}
+			Invalidate();
+		}
+		public void ResetDomain() {
+			start = 0;
+			end = 100;
+			Draw();
 		}
 	}
 	public class GraphicsSettings
@@ -638,4 +938,31 @@ namespace QMStuff_v2{
 			zoom = 1;
         }
     }
+	public class CPoint {
+		public double[] segments;
+		public double x { get; }
+		public double y { get; }
+		public double val;
+
+		public CPoint(double xv, double yv, double v) {
+			x=xv;
+			y=yv;
+			val = v;
+			segments = new double[4];
+		}
+		public CPoint(double xv, double yv) {
+			x = xv;
+			y = yv;
+			segments = new double[4];
+		}
+		public override bool Equals(object obj) {
+			return obj is CPoint && ((CPoint)obj).x == x && ((CPoint)obj).y == y;
+		}
+		public override int GetHashCode() {
+			double hash = 13;
+			hash += x;
+			hash = 7*hash + y;
+			return (int) (hash*100);
+		}
+	}
 }

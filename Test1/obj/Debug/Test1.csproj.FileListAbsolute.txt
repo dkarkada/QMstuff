@@ -7,3 +7,12 @@ C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Te
 C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Test1.pdb
 C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Test1.csprojResolveAssemblyReference.cache
 C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Test1.Form1.resources
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\Test1\bin\Debug\Test1.exe.config
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Test1.exe
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Test1.pdb
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\Test1\bin\Debug\Test1.exe
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\Test1\bin\Debug\Test1.pdb
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Test1.csprojResolveAssemblyReference.cache
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Test1.Form1.resources
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Test1.Properties.Resources.resources
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\Test1\obj\Debug\Test1.csproj.GenerateResource.Cache
