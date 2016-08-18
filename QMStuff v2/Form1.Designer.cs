@@ -1014,6 +1014,11 @@
 			// PGRunNumberValue
 			// 
 			this.PGRunNumberValue.Location = new System.Drawing.Point(232, 117);
+			this.PGRunNumberValue.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
 			this.PGRunNumberValue.Minimum = new decimal(new int[] {
             1,
             0,
@@ -1171,6 +1176,7 @@
 			this.PGTimeSlider.TabIndex = 6;
 			this.PGTimeSlider.TickFrequency = 5;
 			this.PGTimeSlider.Value = 20;
+			this.PGTimeSlider.Scroll += new System.EventHandler(this.PGTimeSlider_Scroll);
 			// 
 			// PGTimeSliderLabel
 			// 

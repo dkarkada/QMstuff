@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -304,13 +305,14 @@ namespace QMStuff_v2{
 			int sampleNum = (int)PGSamplingValue.Value;
 			int numRuns = (int)PGRunNumberValue.Value;
 			double interval = (pgGraph.end-pgGraph.start)/sampleNum;
-			for (double prob=pgGraph.start; prob<pgGraph.end + 0.01; prob+= interval) {
-				List<double> result = GetAvgGrowth(prob/100, gamma, lsize, numRuns);
-				if (pgGraph.data.ContainsKey(prob/100))
-					pgGraph.data.Remove(prob/100);
-				pgGraph.data.Add(prob/100, result);
+			for (double prob=pgGraph.start; prob<pgGraph.end + 0.0001; prob+= interval) {
+				List<double> result = GetAvgGrowth(prob, gamma, lsize, numRuns);
+				if (pgGraph.data.ContainsKey(prob))
+					pgGraph.data.Remove(prob);
+				pgGraph.data.Add(prob, result);
 				worker.ReportProgress((int)(100 * (prob-pgGraph.start)/(pgGraph.end - pgGraph.start)));
 			}
+			pgGraph.sort();
 			pgGraph.timeInd = PGTimeSlider.Maximum;
 			pgGraph.Draw();
 		}
@@ -642,7 +644,10 @@ namespace QMStuff_v2{
 			pgGraph.timeInd = 0;
 			pgGraph.Draw();
 		}
-
+		private void PGTimeSlider_Scroll(object sender, EventArgs e) {
+			pgGraph.timeInd = PGTimeSlider.Value;
+			pgGraph.Draw();
+		}
 	}
 	public class Canvas : Panel {
 		private Form1 form;
@@ -920,7 +925,7 @@ namespace QMStuff_v2{
 			this.Height = height;
 			data = new Dictionary<double, List<double>>();
 			start = 0;
-			end = 100;
+			end = 1;
 			timeInd = 0;
 			Dock = DockStyle.Bottom;
 			DoubleBuffered = true;
@@ -933,9 +938,11 @@ namespace QMStuff_v2{
 		private void PGGraph_MouseUp(object sender, MouseEventArgs e) {
 			int x1 = Math.Min(MouseDownX, e.X);
 			int x2 = Math.Max(MouseDownX, e.X);
-			if(x2-x1 > 5) {
-				start = ConvertToDP(new PointF(x1, 0)).X * 100;
-				end = ConvertToDP(new PointF(x2, 0)).X * 100;
+			double st = Math.Round(ConvertToDP(new PointF(x1, 0)).X, 4);
+			double en = Math.Round(ConvertToDP(new PointF(x2, 0)).X, 4);
+			if(en-st > .0002) {
+				start = st;
+				end = en;
 			}
 			Draw();
 		}
@@ -952,12 +959,12 @@ namespace QMStuff_v2{
 					if (e.Button == MouseButtons.Left) {
 						SolidBrush br = new SolidBrush(Color.FromArgb(50, Color.CornflowerBlue));
 						int rw = e.X - MouseDownX;
-						int start = MouseDownX;
+						int s = MouseDownX;
 						if (rw<0) {
 							rw*=-1;
-							start = e.X;
+							s = e.X;
 						}
-						g.FillRectangle(br, start, Oy-h, rw, h);
+						g.FillRectangle(br, s, Oy-h, rw, h);
 					}
 				}
 				else {
@@ -992,7 +999,7 @@ namespace QMStuff_v2{
 				g.DrawString("0", textFont, textBr, Ox-35, Oy-10);
 				List<PointF> dataptsList = new List<PointF>();
 				foreach (double prob in data.Keys) {
-					if (prob*100>=start && prob*100<=end) {
+					if (prob>=start && prob<=end) {
 						PointF pf = ConvertToPix(new PointF((float)prob, (float)data[prob][timeInd]));
 						g.FillEllipse(br, pf.X-4, pf.Y-4, 8, 8);
 						dataptsList.Add(pf);
@@ -1004,15 +1011,15 @@ namespace QMStuff_v2{
 			Invalidate();
 		}
 		private PointF ConvertToPix(PointF dp) {
-			float x = (float) ((dp.X*100-start)/(end-start) * w + Ox);
+			float x = (float) ((dp.X-start)/(end-start) * w + Ox);
 			float y = Oy - dp.Y * h;
 			return new PointF(x, y);
 		}
 		private PointF ConvertToNearestDP(PointF pix) {
 			if (data.Count==0)
 				return new PointF(0, 0);
-			double x = (pix.X - Ox) / w;
-			double mindist = 100;
+			double x = ((pix.X - Ox) / w)*(end-start) + start;
+			double mindist = 1;
 			double nearestProb = 0;
 			foreach(double prob in data.Keys) {
 				double dist = Math.Abs(prob-x);
@@ -1024,18 +1031,24 @@ namespace QMStuff_v2{
 			return new PointF((float)nearestProb, (float)data[nearestProb][timeInd]);
 		}
 		private PointF ConvertToDP(PointF pix) {
-			float x = (pix.X - Ox) / w;
+			float x = (float)(((pix.X - Ox) / w)*(end-start) + start);
 			float y = (Oy - pix.Y) / h;
 			return new PointF(x, y);
 		}
 		public void sort() {
-
+			List<double> l = data.Keys.ToList();
+			l.Sort();
+			Dictionary<double, List<double>> temp = new Dictionary<double, List<double>>();
+			foreach(double d in l) {
+				temp.Add(d, data[d]);
+			}
+			data = temp;
 		}
 		public void ResetDomain() {
 			start = 0;
-			end = 100;
+			end = 1;
 			Draw();
-		}
+		}		
 	}
 	public class GraphicsSettings
     {
