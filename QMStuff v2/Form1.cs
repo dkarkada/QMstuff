@@ -37,7 +37,7 @@ namespace QMStuff_v2{
 			c.Dock = DockStyle.Fill;
 			splitPanel.Panel2.Controls.Add(c);
 			splitPanel.Panel2.BackColor = c.gs.bgBrush.Color;
-			pgGraph = new PGGraph(tabControl1.Width, (int)(tabControl1.Height * 3.0/5));
+			pgGraph = new PGGraph(tabControl1.Width, (int)(tabControl1.Height * 3.0/5), this);
 			pgGraph.Draw();
 			tabControl1.TabPages[2].Controls.Add(pgGraph);
 			Graph.Series[0].Points.AddXY(0,0);
@@ -81,6 +81,11 @@ namespace QMStuff_v2{
 			String ys = y.ToString("F0");
 			MouseLabel.Text = String.Format("({0}, {1})", xs, ys);
 			MouseLabel.Invalidate();
+		}
+		public void UpdatePGVals(PointF p) {
+			PGProbValueLabel.Text = "P = " + p.X;
+			PGSuccessValueLabel.Text = "% Success = " + p.Y;
+			PGRatioValueLabel.Text = "P/Γ = " + p.X / ((float)PGGammaValue.Value/100);
 		}
 		private void StartManyRunAnalysis(BackgroundWorker worker) {
 			String path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\ resources\\";
@@ -221,15 +226,30 @@ namespace QMStuff_v2{
 			}
 		}
 		private List<double> GetAvgGrowth(double prob, double gamma, int lsize, int numRuns) {
-			double sum = 0;
+			int maxTime = 500;
+			int numTimeSamples = PGTimeSlider.Maximum + 1;
+			int timeInterval = maxTime / PGTimeSlider.Maximum;
+			double[,] mat = new double[numRuns, numTimeSamples];
 			for (int i = 0; i<numRuns; i++) {
 				Lattice tLat = new Lattice(lsize);
-				tLat.GenerateChanges(null, 250, prob, prob, gamma);
-				int finalNum = tLat.changes[tLat.changes.Count-1].totalExcited;
-				double val = finalNum>0 ? 1 : 0;
-				sum+=val;
+				tLat.GenerateChanges(null, 500, prob, prob, gamma);
+				for(int j=0; j<numTimeSamples; j++) {
+					int ind = j*timeInterval+1 < tLat.changes.Count ? j*timeInterval+1 : tLat.changes.Count-1;
+					int numExcited = tLat.changes[ind].totalExcited;
+					double val = numExcited>0 ? 1 : 0;
+					mat[i, j] = val;
+				}
 			}
-			double result = sum/numRuns;
+			List<double> result = new List<double>();
+			for (int j = 0; j<numTimeSamples; j++) {
+				double avg = 0;
+				for (int i = 0; i<numRuns; i++) {
+					avg += mat[i, j] / numRuns;
+					if (j==numTimeSamples-1)
+						;
+				}
+				result.Add(avg);
+			}
 			return result;
 		}
 		private void FillSpace(CPoint p, int threshold, List<CPoint> emptyPts, Dictionary<CPoint, CPoint> vals, double dist) {
@@ -283,10 +303,16 @@ namespace QMStuff_v2{
 			int lsize = (int)PGLatticeSizeValue.Value;
 			int sampleNum = (int)PGSamplingValue.Value;
 			int numRuns = (int)PGRunNumberValue.Value;
-			double interval = (pgGraph.start-pgGraph.end)/sampleNum;
+			double interval = (pgGraph.end-pgGraph.start)/sampleNum;
 			for (double prob=pgGraph.start; prob<pgGraph.end + 0.01; prob+= interval) {
-
+				List<double> result = GetAvgGrowth(prob/100, gamma, lsize, numRuns);
+				if (pgGraph.data.ContainsKey(prob/100))
+					pgGraph.data.Remove(prob/100);
+				pgGraph.data.Add(prob/100, result);
+				worker.ReportProgress((int)(100 * (prob-pgGraph.start)/(pgGraph.end - pgGraph.start)));
 			}
+			pgGraph.timeInd = PGTimeSlider.Maximum;
+			pgGraph.Draw();
 		}
 
 		private void GenerateButton_Click(object sender, EventArgs e) {
@@ -612,6 +638,9 @@ namespace QMStuff_v2{
 		}
 		private void PGDataResetButton_Click(object sender, EventArgs e) {
 			PGGammaValue.Enabled = true;
+			pgGraph.data.Clear();
+			pgGraph.timeInd = 0;
+			pgGraph.Draw();
 		}
 
 	}
@@ -871,30 +900,79 @@ namespace QMStuff_v2{
 	}
 	public class PGGraph : Panel {
 		public Bitmap bmp { get; set; }
+		public Bitmap bmpMouse { get; set; }
 		public Dictionary<double, List<double>> data;
 		public double start { get; set; }
 		public double end { get; set; }
+		public int timeInd;
+		Form1 form;
+		int MouseDownX;
+		int h, w, Ox, Oy;
 
-		public PGGraph(int w, int h) {
-			bmp = new Bitmap(w, h);
-			Height = h;
+		public PGGraph(int width, int height, Form1 f) {
+			form = f;
+			h = height-100;
+			w = width-200;
+			Ox = 100;
+			Oy = height-50;
+			bmp = new Bitmap(width, height);
+			bmpMouse = new Bitmap(width, height);
+			this.Height = height;
 			data = new Dictionary<double, List<double>>();
 			start = 0;
 			end = 100;
+			timeInd = 0;
 			Dock = DockStyle.Bottom;
+			DoubleBuffered = true;
+			MouseMove += PGGraph_MouseMove;
+			MouseDown += PGGraph_MouseDown;
+			MouseUp += PGGraph_MouseUp;
+			Draw();
 		}
-		public void AddPt(double prob, double successRate) {
-			data[prob].Add(successRate);
+
+		private void PGGraph_MouseUp(object sender, MouseEventArgs e) {
+			int x1 = Math.Min(MouseDownX, e.X);
+			int x2 = Math.Max(MouseDownX, e.X);
+			if(x2-x1 > 5) {
+				start = ConvertToDP(new PointF(x1, 0)).X * 100;
+				end = ConvertToDP(new PointF(x2, 0)).X * 100;
+			}
+			Draw();
 		}
+		private void PGGraph_MouseDown(object sender, MouseEventArgs e) {
+			MouseDownX = e.X;
+		}
+		private void PGGraph_MouseMove(object sender, MouseEventArgs e) {
+			using (Graphics g = Graphics.FromImage(bmpMouse)) {
+				if (e.X>Ox && e.X<Ox+w) {
+					PointF data = ConvertToNearestDP(e.Location);
+					form.UpdatePGVals(data);
+					g.Clear(Color.Transparent);
+					g.DrawLine(Pens.Red, e.X, Oy, e.X, Oy-h);
+					if (e.Button == MouseButtons.Left) {
+						SolidBrush br = new SolidBrush(Color.FromArgb(50, Color.CornflowerBlue));
+						int rw = e.X - MouseDownX;
+						int start = MouseDownX;
+						if (rw<0) {
+							rw*=-1;
+							start = e.X;
+						}
+						g.FillRectangle(br, start, Oy-h, rw, h);
+					}
+				}
+				else {
+					g.Clear(Color.Transparent);
+				}
+			}
+			Invalidate();
+		}
+
 		protected override void OnPaint(PaintEventArgs e) {
 			Graphics g = e.Graphics;
 			g.DrawImage(bmp, 0, 0);
+			g.DrawImage(bmpMouse, 0, 0);
 		}
 		public void Draw() {
-			int h = bmp.Height-100;
-			int w = bmp.Width-200;
-			int Ox = 100;
-			int Oy = bmp.Height-50;
 			Pen axesPen = new Pen(Color.Black, 3);
 			SolidBrush br = new SolidBrush(Color.Blue);
 			SolidBrush textBr = new SolidBrush(Color.Black);
@@ -912,8 +990,46 @@ namespace QMStuff_v2{
 				g.DrawString("100", textFont, textBr, Ox-60, Oy-h-10);
 				g.DrawLine(axesPen, Ox-8, Oy-h, Ox+8, Oy-h);
 				g.DrawString("0", textFont, textBr, Ox-35, Oy-10);
+				List<PointF> dataptsList = new List<PointF>();
+				foreach (double prob in data.Keys) {
+					if (prob*100>=start && prob*100<=end) {
+						PointF pf = ConvertToPix(new PointF((float)prob, (float)data[prob][timeInd]));
+						g.FillEllipse(br, pf.X-4, pf.Y-4, 8, 8);
+						dataptsList.Add(pf);
+					}
+				}
+				if(dataptsList.Count>1)
+					g.DrawLines(axesPen, dataptsList.ToArray());
 			}
 			Invalidate();
+		}
+		private PointF ConvertToPix(PointF dp) {
+			float x = (float) ((dp.X*100-start)/(end-start) * w + Ox);
+			float y = Oy - dp.Y * h;
+			return new PointF(x, y);
+		}
+		private PointF ConvertToNearestDP(PointF pix) {
+			if (data.Count==0)
+				return new PointF(0, 0);
+			double x = (pix.X - Ox) / w;
+			double mindist = 100;
+			double nearestProb = 0;
+			foreach(double prob in data.Keys) {
+				double dist = Math.Abs(prob-x);
+				if (dist<mindist){
+					mindist = dist;
+					nearestProb = prob;
+				}
+			}
+			return new PointF((float)nearestProb, (float)data[nearestProb][timeInd]);
+		}
+		private PointF ConvertToDP(PointF pix) {
+			float x = (pix.X - Ox) / w;
+			float y = (Oy - pix.Y) / h;
+			return new PointF(x, y);
+		}
+		public void sort() {
+
 		}
 		public void ResetDomain() {
 			start = 0;
