@@ -27,6 +27,8 @@
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.probGroup = new System.Windows.Forms.Panel();
+			this.thresholdValue = new System.Windows.Forms.NumericUpDown();
+			this.RoundThresholdLabel = new System.Windows.Forms.Label();
 			this.MaxTimeLabel = new System.Windows.Forms.Label();
 			this.LatSizeValue = new System.Windows.Forms.NumericUpDown();
 			this.initTitle = new System.Windows.Forms.Label();
@@ -53,14 +55,13 @@
 			this.playButton = new System.Windows.Forms.Button();
 			this.backButton = new System.Windows.Forms.Button();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
-			this.RoundThresholdLabel = new System.Windows.Forms.Label();
-			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
 			((System.ComponentModel.ISupportInitialize)(this.splitPanel)).BeginInit();
 			this.splitPanel.Panel1.SuspendLayout();
 			this.splitPanel.SuspendLayout();
 			this.tabControl1.SuspendLayout();
 			this.tabPage1.SuspendLayout();
 			this.probGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.thresholdValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.LatSizeValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.gammaValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.gammaBar)).BeginInit();
@@ -70,7 +71,6 @@
 			this.playGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.speedBar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// splitPanel
@@ -119,7 +119,7 @@
 			// 
 			this.probGroup.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
 			this.probGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.probGroup.Controls.Add(this.numericUpDown1);
+			this.probGroup.Controls.Add(this.thresholdValue);
 			this.probGroup.Controls.Add(this.RoundThresholdLabel);
 			this.probGroup.Controls.Add(this.MaxTimeLabel);
 			this.probGroup.Controls.Add(this.LatSizeValue);
@@ -137,6 +137,37 @@
 			this.probGroup.Padding = new System.Windows.Forms.Padding(20);
 			this.probGroup.Size = new System.Drawing.Size(643, 214);
 			this.probGroup.TabIndex = 32;
+			// 
+			// thresholdValue
+			// 
+			this.thresholdValue.DecimalPlaces = 1;
+			this.thresholdValue.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.thresholdValue.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+			this.thresholdValue.Location = new System.Drawing.Point(532, 169);
+			this.thresholdValue.Name = "thresholdValue";
+			this.thresholdValue.Size = new System.Drawing.Size(61, 23);
+			this.thresholdValue.TabIndex = 32;
+			this.thresholdValue.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			// 
+			// RoundThresholdLabel
+			// 
+			this.RoundThresholdLabel.BackColor = System.Drawing.Color.Transparent;
+			this.RoundThresholdLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.RoundThresholdLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.RoundThresholdLabel.Location = new System.Drawing.Point(338, 170);
+			this.RoundThresholdLabel.Name = "RoundThresholdLabel";
+			this.RoundThresholdLabel.Size = new System.Drawing.Size(176, 22);
+			this.RoundThresholdLabel.TabIndex = 31;
+			this.RoundThresholdLabel.Text = "Round down threshold (%)";
+			this.RoundThresholdLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// MaxTimeLabel
 			// 
@@ -207,6 +238,7 @@
 			this.gammaValue.Name = "gammaValue";
 			this.gammaValue.Size = new System.Drawing.Size(49, 23);
 			this.gammaValue.TabIndex = 15;
+			this.gammaValue.ValueChanged += new System.EventHandler(this.gammaValue_ValueChanged);
 			// 
 			// gammaBar
 			// 
@@ -216,6 +248,7 @@
 			this.gammaBar.Size = new System.Drawing.Size(197, 45);
 			this.gammaBar.TabIndex = 14;
 			this.gammaBar.TickFrequency = 10;
+			this.gammaBar.Scroll += new System.EventHandler(this.gammaBar_Scroll);
 			// 
 			// GenerateButton
 			// 
@@ -226,6 +259,7 @@
 			this.GenerateButton.TabIndex = 13;
 			this.GenerateButton.Text = "Generate";
 			this.GenerateButton.UseVisualStyleBackColor = true;
+			this.GenerateButton.Click += new System.EventHandler(this.GenerateButton_Click);
 			// 
 			// ProbBar
 			// 
@@ -236,6 +270,7 @@
 			this.ProbBar.TabIndex = 8;
 			this.ProbBar.TickFrequency = 10;
 			this.ProbBar.Value = 100;
+			this.ProbBar.Scroll += new System.EventHandler(this.ProbBar_Scroll);
 			// 
 			// ProbValue
 			// 
@@ -249,6 +284,7 @@
             0,
             0,
             0});
+			this.ProbValue.ValueChanged += new System.EventHandler(this.ProbValue_ValueChanged);
 			// 
 			// ProbLabel
 			// 
@@ -301,6 +337,7 @@
 			this.zoomButton4.Text = "1.0";
 			this.zoomButton4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.zoomButton4.UseVisualStyleBackColor = true;
+			this.zoomButton4.CheckedChanged += new System.EventHandler(this.zoomButton4_CheckedChanged);
 			// 
 			// zoomButton3
 			// 
@@ -315,6 +352,7 @@
 			this.zoomButton3.Text = "0.5";
 			this.zoomButton3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.zoomButton3.UseVisualStyleBackColor = true;
+			this.zoomButton3.CheckedChanged += new System.EventHandler(this.zoomButton3_CheckedChanged);
 			// 
 			// zoomButton2
 			// 
@@ -329,6 +367,7 @@
 			this.zoomButton2.Text = "0.25";
 			this.zoomButton2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.zoomButton2.UseVisualStyleBackColor = true;
+			this.zoomButton2.CheckedChanged += new System.EventHandler(this.zoomButton2_CheckedChanged);
 			// 
 			// zoomButton1
 			// 
@@ -343,6 +382,7 @@
 			this.zoomButton1.Text = "0.125";
 			this.zoomButton1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			this.zoomButton1.UseVisualStyleBackColor = true;
+			this.zoomButton1.CheckedChanged += new System.EventHandler(this.zoomButton1_CheckedChanged);
 			// 
 			// playGroup
 			// 
@@ -371,6 +411,7 @@
 			this.skipToEndButton.TabIndex = 16;
 			this.skipToEndButton.Text = ">>";
 			this.skipToEndButton.UseVisualStyleBackColor = true;
+			this.skipToEndButton.Click += new System.EventHandler(this.skipToEndButton_Click);
 			// 
 			// skipToBeginningButton
 			// 
@@ -380,6 +421,7 @@
 			this.skipToBeginningButton.TabIndex = 15;
 			this.skipToBeginningButton.Text = "<<";
 			this.skipToBeginningButton.UseVisualStyleBackColor = true;
+			this.skipToBeginningButton.Click += new System.EventHandler(this.skipToBeginningButton_Click);
 			// 
 			// speedBar
 			// 
@@ -392,13 +434,14 @@
 			this.speedBar.TickFrequency = 10;
 			this.speedBar.Value = 50;
 			this.speedBar.Visible = false;
+			this.speedBar.Scroll += new System.EventHandler(this.speedBar_Scroll);
 			// 
 			// stepCounter
 			// 
 			this.stepCounter.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
 			this.stepCounter.Location = new System.Drawing.Point(223, 19);
 			this.stepCounter.Maximum = new decimal(new int[] {
-            2000,
+            1000,
             0,
             0,
             0});
@@ -415,6 +458,7 @@
             0,
             0,
             0});
+			this.stepCounter.ValueChanged += new System.EventHandler(this.stepCounter_ValueChanged);
 			// 
 			// fwdButton
 			// 
@@ -424,6 +468,7 @@
 			this.fwdButton.TabIndex = 2;
 			this.fwdButton.Text = ">";
 			this.fwdButton.UseVisualStyleBackColor = true;
+			this.fwdButton.Click += new System.EventHandler(this.fwdButton_Click);
 			// 
 			// restartButton
 			// 
@@ -434,6 +479,7 @@
 			this.restartButton.TabIndex = 7;
 			this.restartButton.Text = "Restart";
 			this.restartButton.UseVisualStyleBackColor = true;
+			this.restartButton.Click += new System.EventHandler(this.restartButton_Click);
 			// 
 			// playButton
 			// 
@@ -444,6 +490,7 @@
 			this.playButton.TabIndex = 1;
 			this.playButton.Text = "Play";
 			this.playButton.UseVisualStyleBackColor = true;
+			this.playButton.Click += new System.EventHandler(this.playButton_Click);
 			// 
 			// backButton
 			// 
@@ -453,6 +500,7 @@
 			this.backButton.TabIndex = 0;
 			this.backButton.Text = "<";
 			this.backButton.UseVisualStyleBackColor = true;
+			this.backButton.Click += new System.EventHandler(this.backButton_Click);
 			// 
 			// tabPage2
 			// 
@@ -463,37 +511,6 @@
 			this.tabPage2.Size = new System.Drawing.Size(855, 992);
 			this.tabPage2.TabIndex = 1;
 			this.tabPage2.Text = "tabPage2";
-			// 
-			// RoundThresholdLabel
-			// 
-			this.RoundThresholdLabel.BackColor = System.Drawing.Color.Transparent;
-			this.RoundThresholdLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.RoundThresholdLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.RoundThresholdLabel.Location = new System.Drawing.Point(338, 170);
-			this.RoundThresholdLabel.Name = "RoundThresholdLabel";
-			this.RoundThresholdLabel.Size = new System.Drawing.Size(176, 22);
-			this.RoundThresholdLabel.TabIndex = 31;
-			this.RoundThresholdLabel.Text = "Round down threshold (%)";
-			this.RoundThresholdLabel.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
-			// 
-			// numericUpDown1
-			// 
-			this.numericUpDown1.DecimalPlaces = 1;
-			this.numericUpDown1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.numericUpDown1.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-			this.numericUpDown1.Location = new System.Drawing.Point(532, 169);
-			this.numericUpDown1.Name = "numericUpDown1";
-			this.numericUpDown1.Size = new System.Drawing.Size(61, 23);
-			this.numericUpDown1.TabIndex = 32;
-			this.numericUpDown1.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
 			// 
 			// Form
 			// 
@@ -512,6 +529,7 @@
 			this.tabPage1.ResumeLayout(false);
 			this.probGroup.ResumeLayout(false);
 			this.probGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.thresholdValue)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.LatSizeValue)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.gammaValue)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.gammaBar)).EndInit();
@@ -523,7 +541,6 @@
 			this.playGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.speedBar)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -560,7 +577,7 @@
 		private System.Windows.Forms.Button restartButton;
 		private System.Windows.Forms.Button playButton;
 		private System.Windows.Forms.Button backButton;
-		private System.Windows.Forms.NumericUpDown numericUpDown1;
+		private System.Windows.Forms.NumericUpDown thresholdValue;
 		private System.Windows.Forms.Label RoundThresholdLabel;
 	}
 }

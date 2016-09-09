@@ -1,0 +1,17 @@
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\RydbergAvgs.exe.config
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\RydbergAvgs.exe
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\RydbergAvgs.pdb
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\QMStuff v2.exe
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\DotImaging.IO.dll
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\DotImaging.GenericImage.dll
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\DotImaging.Primitives2D.dll
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\QMStuff v2.pdb
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\DotImaging.IO.xml
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\DotImaging.GenericImage.xml
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\DotImaging.Primitives2D.xml
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.csprojResolveAssemblyReference.cache
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.Form.resources
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.Properties.Resources.resources
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.csproj.GenerateResource.Cache
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.exe
+C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.pdb

@@ -14,7 +14,183 @@ namespace RydbergAvgs {
 
 		public Form() {
 			InitializeComponent();
+			SetSizeAndControls();
+
+			clock = new System.Timers.Timer(100);
+			clock.Elapsed += new System.Timers.ElapsedEventHandler(PlayStep);
+
+			stopwatch = new System.Diagnostics.Stopwatch();
+
+			DoubleBuffered = true;
+			c.ReRender();
 		}
+		private void SetSizeAndControls() {
+			Size = Screen.FromControl(this).WorkingArea.Size;
+			splitPanel.SplitterDistance = ClientSize.Width - splitPanel.Panel2.Height - splitPanel.SplitterWidth;
+
+			c = new Canvas(this, new Size(splitPanel.Panel2.Width, splitPanel.Panel2.Height));
+			c.Dock = DockStyle.Fill;
+			splitPanel.Panel2.Controls.Add(c);
+			splitPanel.Panel2.BackColor = c.gs.bgBrush.Color;
+
+			Resize += FrameResizing;
+			splitPanel.SplitterMoved += SplitPanelResized;
+		}
+		private void FrameResizing(object sender, EventArgs e) {
+			if (WindowState!=FormWindowState.Minimized)
+				splitPanel.SplitterDistance = Math.Max(0, ClientSize.Width - splitPanel.Panel2.Height - splitPanel.SplitterWidth);
+			c.SetSize(new Size(splitPanel.Panel2.Width, splitPanel.Panel2.Height));
+			c.ReRender();
+		}
+		private void SplitPanelResized(object sender, SplitterEventArgs e) {
+			c.SetSize(new Size(splitPanel.Panel2.Width, splitPanel.Panel2.Height));
+			c.ReRender();
+		}
+
+		private void GenerateButton_Click(object sender, EventArgs e) {
+			c.lat = new Lattice((int)(LatSizeValue.Value), (int)stepCounter.Maximum);
+			c.lat.aSize = 10 * c.gs.zoom;
+
+			BackgroundWorker worker = new BackgroundWorker();
+			worker.WorkerReportsProgress = true;
+			worker.DoWork += Worker_DoWork1;
+			worker.ProgressChanged += Worker_ProgressChanged1;
+			worker.RunWorkerCompleted += Worker_RunWorkerCompleted1;
+			pf = new QMStuff_v2.ProgressForm();
+			pf.Show();
+			double[] args = { (double)(ProbBar.Value)/100, (double)(gammaBar.Value)/100, (double)(thresholdValue.Value)/100 };
+			worker.RunWorkerAsync(args);
+		}
+		private void Worker_DoWork1(object sender, DoWorkEventArgs e) {
+			BackgroundWorker worker = sender as BackgroundWorker;
+			double[] args = (double[])e.Argument;
+			c.lat.GenerateChanges(worker, (int)stepCounter.Maximum,
+				args[0], args[1], args[2]);
+		}
+		private void Worker_ProgressChanged1(object sender, ProgressChangedEventArgs e) {
+			pf.SetValue(e.ProgressPercentage);
+		}
+		private void Worker_RunWorkerCompleted1(object sender, RunWorkerCompletedEventArgs e) {
+			pf.Close();
+			c.ReRender();
+			playGroup.Enabled = true;
+			probGroup.Enabled = false;
+		}
+
+		private void PlayStep(object source, System.Timers.ElapsedEventArgs e) {
+			Action a = delegate () {
+				stopwatch.Start();
+				if (stepCounter.Value!= stepCounter.Maximum)
+					stepCounter.Value++;
+				else {
+					clock.Stop();
+					playButton.Text = "Play";
+					speedBar.Visible = false;
+				}
+				stopwatch.Stop();
+			};
+			Action updateSpeedBar = delegate () {
+				speedBar.Value = Math.Max(0, (int)(140 - clock.Interval));
+			};
+
+			BeginInvoke(a);
+			if (stopwatch.ElapsedMilliseconds + 10 > clock.Interval) {
+				clock.Interval += 15;
+				BeginInvoke(updateSpeedBar);
+			}
+			stopwatch.Reset();
+		}
+		private void skipToBeginningButton_Click(object sender, EventArgs e) {
+			stepCounter.Value = 1;
+		}
+		private void backButton_Click(object sender, EventArgs e) {
+			stepCounter.Value = Math.Max(1, stepCounter.Value-1);
+		}
+		private void fwdButton_Click(object sender, EventArgs e) {
+			if (stepCounter.Value!= stepCounter.Maximum)
+				stepCounter.Value++;
+		}
+		private void skipToEndButton_Click(object sender, EventArgs e) {
+			stepCounter.Value = c.lat.mats.GetLength(0);
+		}
+		private void playButton_Click(object sender, EventArgs e) {
+			if (!clock.Enabled) {
+				clock.Start();
+				playButton.Text = "Pause";
+				speedBar.Visible = true;
+			}
+			else {
+				clock.Stop();
+				playButton.Text = "Play";
+				speedBar.Visible = false;
+			}
+		}
+		private void restartButton_Click(object sender, EventArgs e) {
+			clock.Stop();
+			playButton.Text = "Play";
+			speedBar.Visible = false;
+			c.ind = 0;
+			stepCounter.Value = 1;
+			c.ReRender();
+
+			probGroup.Enabled=true;
+			GenerateButton.Focus();
+			playGroup.Enabled=false;
+		}
+		private void ProbBar_Scroll(object sender, EventArgs e) {
+			ProbValue.Value = ProbBar.Value;
+		}
+		private void gammaBar_Scroll(object sender, EventArgs e) {
+			gammaValue.Value = gammaBar.Value;
+		}
+		private void speedBar_Scroll(object sender, EventArgs e) {
+			clock.Interval = 140 - (speedBar.Value * 1);
+		}
+		private void ProbValue_ValueChanged(object sender, EventArgs e) {
+			ProbBar.Value = (int)ProbValue.Value;
+		}
+		private void gammaValue_ValueChanged(object sender, EventArgs e) {
+			gammaBar.Value = (int)gammaValue.Value;
+		}
+		private void stepCounter_ValueChanged(object sender, EventArgs e) {
+			int oldInd = c.ind;
+			stepCounter.Value = Math.Min(
+				(int)stepCounter.Value,
+				c.lat.mats.GetLength(0));
+			c.ind = (int)stepCounter.Value - 1;
+			int diff = c.ind - oldInd;
+			if (diff == 1)
+				c.ind++;
+			else if (diff == -1)
+				c.ind--;
+			else if (diff == 0) {
+				clock.Stop();
+				playButton.Text = "Play";
+				speedBar.Visible = false;
+			}
+			c.ReRender();
+		}
+		private void zoomButton1_CheckedChanged(object sender, EventArgs e) {
+			c.gs.zoom = .125;
+			c.lat.aSize = (int)(10*c.gs.zoom);
+			c.ReRender();
+		}
+		private void zoomButton2_CheckedChanged(object sender, EventArgs e) {
+			c.gs.zoom = .25;
+			c.lat.aSize = (int)(10*c.gs.zoom);
+			c.ReRender();
+		}
+		private void zoomButton3_CheckedChanged(object sender, EventArgs e) {
+			c.gs.zoom = .5;
+			c.lat.aSize = (int)(10*c.gs.zoom);
+			c.ReRender();
+		}
+		private void zoomButton4_CheckedChanged(object sender, EventArgs e) {
+			c.gs.zoom = 1;
+			c.lat.aSize = (int)(10*c.gs.zoom);
+			c.ReRender();
+		}
+
 	}
 	public class Canvas : Panel {
 		private Form form;
@@ -22,20 +198,15 @@ namespace RydbergAvgs {
 		public Lattice lat { get; set; }
 		public QMStuff_v2.GraphicsSettings gs { get; set; }
 		public int ind { get; set; }
-		public bool ctrlPressed { get; set; }
-		SaveFileDialog saver;
 
 		public Canvas(Form f, Size s) {
 			form = f;
-			lat = new Lattice(400);
+			lat = new Lattice(200, 1000);
 			bmp = new Bitmap(s.Width, s.Height);
 			gs = new QMStuff_v2.GraphicsSettings();
 			ind = 0;
 			AutoSize = true;
 			DoubleBuffered = true;
-			
-			this.MouseClick += Canvas_MouseClick;
-			this.MouseMove  += Canvas_MouseMove;
 		}
 
 		public void SetSize(Size s) {
@@ -46,296 +217,82 @@ namespace RydbergAvgs {
 			g.DrawImage(bmp, 0, 0);
 		}
 		public void ReRender() {
-			if (lat.changes.Count > 1) {
-				using (var g = Graphics.FromImage(bmp)) {
-					g.Clear(Color.Transparent);
-					if (gs.axes) {
-						int w = bmp.Width;
-						int h = bmp.Height;
-						g.DrawLine(gs.axisPen, w/2, 0, w/2, h);
-						g.DrawLine(gs.axisPen, 0, h/2, w, h/2);
-					}
-					SolidBrush br = gs.fgBrush;
-					Tuple<List<Atom>, int> result = lat.latFrameList.GetNearestFrame(ind);
-					foreach (Atom a in result.Item1) {
+			using (var g = Graphics.FromImage(bmp)) {
+				Color col = Color.FromArgb(220, 240, 255);
+				SolidBrush br;
+				for(int r=1; r<lat.mats.GetLength(1); r++) {
+					for(int c=1; c<lat.mats.GetLength(1); c++) {
+						double a = lat.mats[ind, r, c];
+						br = new SolidBrush(Color.FromArgb((int)(a*220), (int)(a*240), (int)(a*255)));
 						g.FillRectangle(br,
-							(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
-							(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
+							(float)(bmp.Width/2 + lat.aSize * (c-1)),
+							(float)(bmp.Height/2 - lat.aSize * (r-1)),
+							(int)lat.aSize, (int)lat.aSize);
+						g.FillRectangle(br,
+							(float)(bmp.Width/2 - lat.aSize * (c-1)),
+							(float)(bmp.Height/2 - lat.aSize * (r-1)),
+							(int)lat.aSize, (int)lat.aSize);
+						g.FillRectangle(br,
+							(float)(bmp.Width/2 + lat.aSize * (c-1)),
+							(float)(bmp.Height/2 + lat.aSize * (r-1)),
+							(int)lat.aSize, (int)lat.aSize);
+						g.FillRectangle(br,
+							(float)(bmp.Width/2 - lat.aSize * (c-1)),
+							(float)(bmp.Height/2 + lat.aSize * (r-1)),
 							(int)lat.aSize, (int)lat.aSize);
 					}
-					if (result.Item2 < ind) {
-						for (int i = result.Item2; i <= ind; i++) {
-							LatticeChange lc = lat.changes[i];
-							br = gs.fgBrush;
-							foreach (Atom a in lc.on) {
-								g.FillRectangle(br,
-									(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
-									(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
-									(int)lat.aSize, (int)lat.aSize);
-							}
-							br = gs.bgBrush;
-							foreach (Atom a in lc.off) {
-								g.FillRectangle(br,
-									(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
-									(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
-									(int)lat.aSize, (int)lat.aSize);
-							}
-						}
-					}
-					else {
-						for (int i = result.Item2; i > ind; i--) {
-							LatticeChange lc = lat.changes[i];
-							br = gs.fgBrush;
-							foreach (Atom a in lc.off) {
-								g.FillRectangle(br,
-									(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
-									(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
-									(int)lat.aSize, (int)lat.aSize);
-							}
-							br = gs.bgBrush;
-							foreach (Atom a in lc.on) {
-								g.FillRectangle(br,
-									(float)(bmp.Width/2 + lat.aSize * (a.x - .5)),
-									(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
-									(int)lat.aSize, (int)lat.aSize);
-							}
-						}
-					}
 				}
-				Invalidate();
 			}
+			Invalidate();
 		}
 		public void Restart() {
 			ind = 0;
-			lat.ClearChanges();
 		}		
-		private void Canvas_MouseClick(object sender, EventArgs e) {
-			this.Focus();
-		}
-		private void Canvas_MouseMove(object sender, MouseEventArgs e) {
-			double x = (e.X - bmp.Width/2)/lat.aSize;
-			double y = (bmp.Height/2 - e.Y)/lat.aSize;
-			form.UpdateMousePos(x, y);
-		}
 	}
 	public class Lattice {
-		public Atom[,] mat { get; set; }
-		public LatticeFrameList latFrameList { get; set; }
+		public double[,,] mats { get; set; }
 		public double aSize { get; set; }
 		public int sz { get; set; }
-		public List<LatticeChange> changes { get; set; }
-		AnalysisCalc analytics { get; set; }
-		public List<Tuple<int, double[]>> data { get; set; }
 
-		public Lattice(int s) {
+		public Lattice(int s, int maxtime) {
 			aSize = 10;
 			sz = s;
-			mat = new Atom[sz, sz];
-			latFrameList = new LatticeFrameList();
-			changes = new List<LatticeChange>();
-			analytics = new AnalysisCalc();
-
-			for(int r = 0; r < sz; r++) {
-				for(int c = 0; c < sz; c++) {
-					mat[r, c] = new Atom(c - sz / 2, sz / 2 - r, 0);
-				}
-			}
-			for(int r = 0; r < sz; r++) {
-				for(int c = 0; c < sz; c++) {
-					mat[r, c].SetLocale(
-						c > 0 ? mat[r, c - 1] : null,
-						c < sz - 1 ? mat[r, c + 1] : null,
-						r > 0 ? mat[r - 1, c] : null,
-						r < sz - 1 ? mat[r + 1, c] : null);
-				}
-			}
+			mats = new double[maxtime, sz, sz];
 		}
-		public void GenerateChanges(BackgroundWorker worker, int maxstep, double Px, double Py, double gamma) {
-			AtomsLinkedList nextAtomsX = new AtomsLinkedList();
-			AtomsLinkedList nextAtomsY = new AtomsLinkedList();
-			AtomsLinkedList allExcited = new AtomsLinkedList();
-
-			List<Atom> seeds = new List<Atom>();
-			LatticeChange init = new LatticeChange();
-			int o = sz/2;
-			int[] colVals = { o };
-			int[] rowVals = { o };
-			for(int i = 0; i<rowVals.Count(); i++) {
-				int c = colVals[i];
-				int r = rowVals[i];
-				allExcited.Add(mat[r, c]);
-				mat[r, c].excited = true;
-				if(mat[r, c + 1].node == null) {
-					nextAtomsX.Add(mat[r, c + 1]);
-					mat[r, c + 1].node.isNextX = true;
+		public void GenerateChanges(BackgroundWorker worker, int maxtime, double P, double gamma, double threshold) {
+			bool done = false;
+			mats[0, 1, 1] = 1;
+			int time = 2;
+			int sz = mats.GetLength(1);
+			while (time<maxtime && !done) {
+				int ind = time-1;
+				for(int r=1; r<sz; r++) {
+					for (int c=1; c<sz; c++) {
+						double n1 = r+1<sz-1 ? 1-mats[ind-1, r+1, c] : 1;
+						double n2 = c+1<sz-1 ? 1-mats[ind-1, r, c+1] : 1;
+						double n3 = 1-mats[ind-1, r-1, c];
+						double n4 = 1-mats[ind-1, r, c-1];
+						double N = (1-n1)*n2*n3*n4 + (1-n2)*n1*n3*n4 + (1-n3)*n2*n1*n4 + (1-n4)*n2*n3*n1;
+						double a = mats[ind-1, r, c];
+						mats[ind, r, c] = a - a*gamma +(1-a)*P*N;
+					}
 				}
-				if(mat[r, c - 1].node == null) {
-					nextAtomsX.Add(mat[r, c - 1]);
-					mat[r, c - 1].node.isNextX = true;
-				}
-				if(mat[r + 1, c].node == null) {
-					nextAtomsY.Add(mat[r + 1, c]);
-					mat[r + 1, c].node.isNextY = true;
-				}
-				if(mat[r - 1, c].node == null) {
-					nextAtomsY.Add(mat[r - 1, c]);
-					mat[r - 1, c].node.isNextY = true;
-				}
-				init.AddOn(mat[r, c]);
-			}
-			changes.Add(init);
-
-			latFrameList.Add(mat, 0);
-			Random rnd = new Random();
-			Boolean done = false;
-			int bound = 0;
-			int totalExcited = 1;
-			while(!done && changes.Count < maxstep) {
-				LatticeChange lc = new LatticeChange();
-				HashSet<Atom> maybeNext = new HashSet<Atom>();
-				HashSet<Atom> maybeRemoveXNext = new HashSet<Atom>();
-				HashSet<Atom> maybeRemoveYNext = new HashSet<Atom>();
-				foreach(AtomNode node in allExcited) {
-					if(rnd.NextDouble() < gamma) {
-						allExcited.Remove(node);
-						node.atom.excited = false;
-						lc.AddOff(node.atom);
-						foreach(Atom a in node.atom.locale) {
-							if(a != null && a.node == null) //means that it is not excited and not next; will check neighbor's neighbors later
-								maybeNext.Add(a);
-							if(a != null && !a.Equals(node.atom)) {
-								if(a.IsXNext())
-									maybeRemoveXNext.Add(a);
-								else if(a.IsYNext())
-									maybeRemoveYNext.Add(a);
-							}
+				for (int r = 1; r<sz; r++)
+					mats[ind, r, 0] = mats[ind, r, 2];
+				for (int c = 1; c<sz; c++)
+					mats[ind, 0, c] = mats[ind, 2, c];
+				if (time==200) {
+					for (int r = 0; r<15; r++) {
+						for (int c = 0; c<15; c++) {
+							Console.Write(Math.Round(mats[ind, r, c], 10) + " ");
 						}
+						Console.WriteLine();
 					}
 				}
-				foreach(AtomNode node in nextAtomsX) {
-					if(rnd.NextDouble() < Px) {// && rnd.NextDouble() > gamma) {
-						nextAtomsX.Remove(node);
-						//no need to say node isnext is false since node is discarded and replaced	
-						node.atom.excited = true;
-						allExcited.Add(node.atom);
-						lc.AddOn(node.atom);
-						bound = Math.Max(bound, Math.Abs(node.atom.x));
-						for(int i = 1; i < 5; i++) {
-							Atom neighbor = node.atom.locale[i];
-							if(neighbor != null) {
-								if(neighbor.IsXNext())
-									maybeRemoveXNext.Add(neighbor);
-								else if(neighbor.IsYNext())
-									maybeRemoveYNext.Add(neighbor);
-								else if(neighbor.IsValid())
-									maybeNext.Add(neighbor);
-							}
-							else
-								done = true;
-						}
-					}
-				}
-				foreach(AtomNode node in nextAtomsY) {
-					if(rnd.NextDouble() < Py) {// && rnd.NextDouble() > gamma) {
-						nextAtomsY.Remove(node);
-						node.atom.excited = true;
-						allExcited.Add(node.atom);
-						lc.AddOn(node.atom);
-						bound = Math.Max(bound, Math.Abs(node.atom.y));
-						for(int i = 1; i < 5; i++) {
-							Atom neighbor = node.atom.locale[i];
-							if(neighbor != null) {
-								if(neighbor.IsXNext())
-									maybeRemoveXNext.Add(neighbor);
-								else if(neighbor.IsYNext())
-									maybeRemoveYNext.Add(neighbor);
-								else if(neighbor.IsValid())
-									maybeNext.Add(neighbor);
-							}
-							else
-								done = true;
-						}
-					}
-				}
-				foreach(Atom a in maybeRemoveXNext) {
-					if(!a.excited && !a.IsValid() && a.IsXNext()) {
-						nextAtomsX.Remove(a.node);
-					}
-				}
-				foreach(Atom a in maybeRemoveYNext) {
-					if(!a.excited && !a.IsValid() && a.IsYNext())
-						nextAtomsY.Remove(a.node);
-				}
-				foreach(Atom a in maybeNext) {
-					if(a.IsValid()) {
-						if((a.locale[1] != null && a.locale[1].excited) || (a.locale[2] != null && a.locale[2].excited)) {
-							nextAtomsX.Add(a);
-							a.node.isNextX = true;
-						}
-						else {
-							nextAtomsY.Add(a);
-							a.node.isNextY = true;
-						}
-					}
-				}
-				lc.bound = bound;
-				totalExcited += lc.on.Count - lc.off.Count;
-				lc.totalExcited = totalExcited;
-				changes.Add(lc);
-				if(changes.Count-1 % 50 == 0 || done || changes.Count == maxstep)
-					latFrameList.Add(mat, changes.Count-1);
-				if(worker!=null)
-					worker.ReportProgress((int)(100 * Math.Pow((double)bound/(sz/2), 2)));
+				worker.ReportProgress((int)(100.0 * time/maxtime));
+				time++;
 			}
-		}
-		public void ClearChanges() {
-			changes = new List<LatticeChange>();
-		}
-		public void StartSpatialAnalysis(int ind) {
-			int offset = 50;
-			bool[,] boxMat = new bool[sz + offset*2, sz + offset*2];
-			Tuple<List<Atom>, int> result = latFrameList.GetNearestFrame(ind);
-			foreach(Atom a in result.Item1) {
-				int r = ConvertY(a.y);
-				int c = ConvertX(a.x);
-				boxMat[r + offset, c + offset] = true;
-			}
-			if(result.Item2 < ind) {
-				for(int i = result.Item2; i < ind; i++) {
-					LatticeChange lc = changes[i];
-					foreach(Atom a in lc.on) {
-						int r = ConvertY(a.y);
-						int c = ConvertX(a.x);
-						boxMat[r + offset, c + offset] = true;
-					}
-					foreach(Atom a in lc.off) {
-						int r = ConvertY(a.y);
-						int c = ConvertX(a.x);
-						boxMat[r + offset, c + offset] = false;
-					}
-				}
-			}
-			else {
-				for(int i = result.Item2; i >= ind; i--) {
-					LatticeChange lc = changes[i];
-					foreach(Atom a in lc.off) {
-						int r = ConvertY(a.y);
-						int c = ConvertX(a.x);
-						boxMat[r + offset, c + offset] = true;
-					}
-					foreach(Atom a in lc.on) {
-						int r = ConvertY(a.y);
-						int c = ConvertX(a.x);
-						boxMat[r + offset, c + offset] = false;
-					}
-				}
-			}
-			int bound = changes[ind-1].bound;
-			int total = changes[ind-1].totalExcited;
-			int[] boxSizes = { 1, 2, 3, 4, 5, 6, 8, 10, 20, 50 };
-			data = new List<Tuple<int, double[]>>();
-			foreach(int s in boxSizes)
-				data.Add(new Tuple<int, double[]>(s, analytics.GetInfo(s, boxMat, bound, total)));
+			Console.WriteLine();
 		}
 		public int ConvertX(int x) { return x + sz/2; }
 		public int ConvertY(int y) { return sz/2 - y; }
