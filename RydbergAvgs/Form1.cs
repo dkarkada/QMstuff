@@ -191,6 +191,12 @@ namespace RydbergAvgs {
 			c.ReRender();
 		}
 
+		public double funcRadius(int amp, double theta) {
+			double p = -2 / (((double)ProbValue.Value/100)-1.001);
+			return (amp/Math.Sqrt(2)) * Math.Pow(2/
+				(Math.Pow(Math.Abs(Math.Sin(theta+Math.PI/4)), p) + 
+				Math.Pow(Math.Abs(Math.Cos(theta+Math.PI/4)), p)), 1/p);
+		}
 	}
 	public class Canvas : Panel {
 		private Form form;
@@ -218,8 +224,14 @@ namespace RydbergAvgs {
 		}
 		public void ReRender() {
 			using (var g = Graphics.FromImage(bmp)) {
+				g.Clear(Color.Black);
 				Color col = Color.FromArgb(220, 240, 255);
 				SolidBrush br;
+				int r1 = 1;
+				while(r1<lat.mats.GetLength(1) && lat.mats[ind,r1,1]>.35 * lat.mats[ind,1,1]) {
+					r1++;
+				}
+				int amp = r1-5>0? r1-5 : 1;
 				for(int r=1; r<lat.mats.GetLength(1); r++) {
 					for(int c=1; c<lat.mats.GetLength(1); c++) {
 						double a = lat.mats[ind, r, c];
@@ -242,6 +254,16 @@ namespace RydbergAvgs {
 							(int)lat.aSize, (int)lat.aSize);
 					}
 				}
+				Point[] pts = new Point[360];
+				for(int ang=0; ang<360; ang++) {
+					double theta = 2*Math.PI/360 * (ang);
+					double r = form.funcRadius(amp, theta);
+					double x = r* Math.Sin(theta);
+					double y = r* Math.Cos(theta);
+					pts[ang] = new Point((int)(bmp.Width/2 + lat.aSize*(x+.5)), 
+						(int)(bmp.Height/2 - lat.aSize*(y-.5)));
+				}
+				g.DrawPolygon(new Pen(Color.Red, 3), pts);
 			}
 			Invalidate();
 		}
