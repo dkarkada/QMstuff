@@ -16,6 +16,7 @@ namespace QMStuff_v2 {
 		public List<LatticeChange> changes { get; set; }
 		AnalysisCalc analytics { get; set;}
 		public List<Tuple<int, double[]>> data { get; set; }
+		public SlidingDotData SlideData { get; set; }
 
 		public Lattice(int s) {
 			aSize = 10;
@@ -24,6 +25,7 @@ namespace QMStuff_v2 {
 			latFrameList = new LatticeFrameList();
 			changes = new List<LatticeChange>();
 			analytics = new AnalysisCalc();
+			data = new List<Tuple<int, double[]>>();
 
 			for (int r = 0; r < sz; r++) {
 				for (int c = 0; c < sz; c++) {
@@ -172,10 +174,43 @@ namespace QMStuff_v2 {
 				totalExcited += lc.on.Count - lc.off.Count;
 				lc.totalExcited = totalExcited;
 				changes.Add(lc);
-				if (changes.Count-1 % 50 == 0 || done || changes.Count == maxstep)
+				if(changes.Count>1 && totalExcited == 0)
+					done = true;
+				if((changes.Count-1) % 50 == 0 || done || changes.Count == maxstep) {
 					latFrameList.Add(mat, changes.Count-1);
+					Console.WriteLine(latFrameList.inds);
+				}
 				if(worker!=null)
 					worker.ReportProgress((int) (100 * Math.Pow((double)bound/(sz/2), 2)));
+			}
+		}
+		public void GuaranteeGenChanges(BackgroundWorker worker, int maxstep, double Px, double Py, double gamma) {
+			int count = 0;
+			bool done = false;
+			while(count<1000 && !done) {
+				GenerateChanges(worker, maxstep, Px, Py, gamma);
+				if(changes.Count > Math.Min(sz/2 - 2, 150))
+					done=true;
+				else {
+					latFrameList = new LatticeFrameList();
+					changes = new List<LatticeChange>();
+					mat = new Atom[sz, sz];
+					for(int r = 0; r < sz; r++) {
+						for(int c = 0; c < sz; c++) {
+							mat[r, c] = new Atom(c - sz / 2, sz / 2 - r, 0);
+						}
+					}
+					for(int r = 0; r < sz; r++) {
+						for(int c = 0; c < sz; c++) {
+							mat[r, c].SetLocale(
+								c > 0 ? mat[r, c - 1] : null,
+								c < sz - 1 ? mat[r, c + 1] : null,
+								r > 0 ? mat[r - 1, c] : null,
+								r < sz - 1 ? mat[r + 1, c] : null);
+						}
+					}
+				}
+				count++;
 			}
 		}
 		public void ClearChanges() {
@@ -274,6 +309,51 @@ namespace QMStuff_v2 {
 				data.Add(new Tuple<int, double[]>(ind, analytics.GetInfo(boxSz, boxMat, bound, total)));
 				ind+=period;
 			}
+		}
+		public void StartSlideDot(int ind) {
+			Tuple<List<Atom>, int> result = latFrameList.GetNearestFrame(ind);
+			List<Point> excited = new List<Point>();
+			foreach(Atom a in result.Item1) {
+				excited.Add(new Point(a.x, a.y));
+			}
+			if(result.Item2 < ind) {
+				for(int i = result.Item2; i < ind; i++) {
+					LatticeChange lc = changes[i];
+					foreach(Atom a in lc.on)
+						excited.Add(new Point(a.x, a.y));
+					foreach(Atom a in lc.off) 
+						excited.Remove(new Point(a.x, a.y));
+				}
+			}
+			else {
+				for(int i = result.Item2; i >= ind; i--) {
+					LatticeChange lc = changes[i];
+					foreach(Atom a in lc.off) 
+						excited.Add(new Point(a.x, a.y));
+					foreach(Atom a in lc.on) 
+						excited.Remove(new Point(a.x, a.y));
+				}
+			}
+			//excited is updated to index
+			int maxX = int.MinValue; int minX = int.MaxValue; int maxY = int.MinValue; int minY = int.MaxValue;
+			foreach(Point p in excited) {
+				maxX = Math.Max(maxX, p.X);
+				minX = Math.Min(minX, p.X);
+				maxY = Math.Max(maxY, p.Y);
+				minY = Math.Min(minY, p.Y);
+			}
+			int[,] state = new int[maxY-minY+1, maxX-minX+1];
+			//for(int row = 0; row<state.GetLength(0); row++)  {
+			//	for(int col = 0; col<state.GetLength(1); col++)
+			//		state[row, col] = -1;
+			//}
+			foreach(Point p in excited) {
+				int r = maxY - p.Y;
+				int c = p.X - minX;
+				state[r, c] = 1;
+			}
+
+			SlideData = analytics.SlideDot(state);
 		}
 		public int ConvertX(int x) { return x + sz/2; }
 		public int ConvertY(int y) { return sz/2 - y; }

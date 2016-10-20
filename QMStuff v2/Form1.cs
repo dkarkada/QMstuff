@@ -331,10 +331,30 @@ namespace QMStuff_v2{
 			double[] args = { (double)(xProbBar.Value)/100, (double)(yProbBar.Value)/100, (double)(gammaBar.Value)/100 };
 			worker.RunWorkerAsync(args);
 		}
+		private void GenerateFullButton_Click(object sender, EventArgs e) {
+			c.lat = new Lattice((int)(LatSizeValue.Value));
+			c.lat.aSize = 10 * c.gs.zoom;
+
+			BackgroundWorker worker = new BackgroundWorker();
+			worker.WorkerReportsProgress = true;
+			worker.DoWork += Worker_DoWork4;
+			worker.ProgressChanged += Worker_ProgressChanged1;
+			worker.RunWorkerCompleted += Worker_RunWorkerCompleted1;
+			pf = new ProgressForm();
+			pf.Show();
+			double[] args = { (double)(xProbBar.Value)/100, (double)(yProbBar.Value)/100, (double)(gammaBar.Value)/100 };
+			worker.RunWorkerAsync(args);
+		}
 		private void Worker_DoWork1(object sender, DoWorkEventArgs e) {
 			BackgroundWorker worker = sender as BackgroundWorker;
 			double[] args = (double[])e.Argument;
 			c.lat.GenerateChanges(worker, (int)stepCounter.Maximum,
+				args[0], args[1], args[2]);
+		}
+		private void Worker_DoWork4(object sender, DoWorkEventArgs e) {
+			BackgroundWorker worker = sender as BackgroundWorker;
+			double[] args = (double[])e.Argument;
+			c.lat.GuaranteeGenChanges(worker, (int)stepCounter.Maximum,
 				args[0], args[1], args[2]);
 		}
 		private void Worker_ProgressChanged1(object sender, ProgressChangedEventArgs e) {
@@ -647,6 +667,21 @@ namespace QMStuff_v2{
 		private void PGTimeSlider_Scroll(object sender, EventArgs e) {
 			pgGraph.timeInd = PGTimeSlider.Value;
 			pgGraph.Draw();
+		}
+
+		private void SlidingDotStartButton_Click(object sender, EventArgs e) {
+			if(c.lat.changes.Count > 1) {
+				c.lat.StartSlideDot((int)(stepCounter.Value));
+				CCGraph.ChartAreas[0].AxisX.Title = "r";
+				CCGraph.ChartAreas[0].AxisY.Title = "C";
+				CCGraph.Series[0].Points.Clear();
+				foreach (Point p in c.lat.SlideData.horizontal) {
+					DataPoint dp = new DataPoint(p.X, p.Y);
+					CCGraph.Series[0].Points.Add(dp);
+				}
+				CCGraph.ChartAreas[0].RecalculateAxesScale();
+				CCGraph.Invalidate();
+			}
 		}
 	}
 	public class Canvas : Panel {

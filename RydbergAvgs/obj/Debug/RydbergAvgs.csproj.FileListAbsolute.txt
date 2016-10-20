@@ -15,3 +15,6 @@ C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\
 C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.csproj.GenerateResource.Cache
 C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.exe
 C:\Users\dkarkada\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.pdb
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\bin\Debug\RydbergAvgs.exe.config
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.exe
+C:\Users\Dhruva\Documents\Visual Studio 2015\Projects\QMstuff\RydbergAvgs\obj\Debug\RydbergAvgs.pdb

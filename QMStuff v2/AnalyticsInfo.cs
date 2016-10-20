@@ -6,19 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace QMStuff_v2 {
-	public class AnalyticsInfo {
-		public double area;
-		public double perim;
-		public double avgRad;
-		public double density;
-
-		public AnalyticsInfo(double a, double p, double ar, int total) {
-			area = a;
-			perim = p;
-			avgRad = ar;
-			density = total/area;
-		}
-	}
 	public class AnalysisCalc {
 		public FitBox box;
 		bool[,] latState;
@@ -39,6 +26,24 @@ namespace QMStuff_v2 {
 			double avgRad = ExpectedRadius();
 			double[] info = { perim, area, density, avgRad };
 			return info;
+		}
+		public SlidingDotData SlideDot(int[,] state) {
+			SlidingDotData data = new SlidingDotData();
+			int width = state.GetLength(1);
+			int height = state.GetLength(0);
+			int rshift = 0;
+			while(rshift<=width) {
+				int C = 0;
+				for(int col = 0; col<width; col++) {
+					if(col-rshift >=0 && col-rshift <width) {
+						for(int row = 0; row<state.GetLength(0); row++)
+							C+= state[row, col] * state[row, col-rshift];
+					}
+				}
+				data.horizontal.Add(new Point(rshift, C));
+				rshift++;
+			}
+			return data;
 		}
 		private double CalcPerim() {
 			double sum = 0;
@@ -81,6 +86,15 @@ namespace QMStuff_v2 {
 			double a = Math.Pow(x1 - x2, 2);
 			double b = Math.Pow(y1 - y2, 2);
 			return Math.Sqrt(a + b);
+		}
+	}
+	public class SlidingDotData {
+		public List<Point> horizontal;
+		public List<Point> vertical;
+
+		public SlidingDotData() {
+			horizontal = new List<Point>();
+			vertical = new List<Point>();
 		}
 	}
 	public class FitBox {

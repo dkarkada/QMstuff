@@ -32,6 +32,10 @@
 			System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
 			System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+			System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+			System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+			System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
 			this.stepCounter = new System.Windows.Forms.NumericUpDown();
 			this.yProbValue = new System.Windows.Forms.NumericUpDown();
 			this.xProbValue = new System.Windows.Forms.NumericUpDown();
@@ -50,6 +54,7 @@
 			this.LeftToolStripPanel = new System.Windows.Forms.ToolStripPanel();
 			this.ContentPanel = new System.Windows.Forms.ToolStripContentPanel();
 			this.probGroup = new System.Windows.Forms.Panel();
+			this.GenerateFullButton = new System.Windows.Forms.Button();
 			this.LatSizeLabel = new System.Windows.Forms.Label();
 			this.LatSizeValue = new System.Windows.Forms.NumericUpDown();
 			this.initTitle = new System.Windows.Forms.Label();
@@ -93,7 +98,7 @@
 			this.DepVarLabel = new System.Windows.Forms.Label();
 			this.MouseLabel = new System.Windows.Forms.Label();
 			this.Graph = new System.Windows.Forms.DataVisualization.Charting.Chart();
-			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.PGAnalyticsTab = new System.Windows.Forms.TabPage();
 			this.AnalyticsPGFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
 			this.PGParamGroup = new System.Windows.Forms.Panel();
 			this.PGRunNumberValue = new System.Windows.Forms.NumericUpDown();
@@ -114,6 +119,16 @@
 			this.PGProbValueLabel = new System.Windows.Forms.Label();
 			this.panel2 = new System.Windows.Forms.Panel();
 			this.PGDataResetButton = new System.Windows.Forms.Button();
+			this.CCAnalyticsTab = new System.Windows.Forms.TabPage();
+			this.CCFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
+			this.SlidingDotGroup = new System.Windows.Forms.Panel();
+			this.SlidingDotDirectionLabel = new System.Windows.Forms.Label();
+			this.SlidingDotHorizontalChoice = new System.Windows.Forms.RadioButton();
+			this.SlidingDotVerticalChoice = new System.Windows.Forms.RadioButton();
+			this.SlidingDotStartButton = new System.Windows.Forms.Button();
+			this.SlidingDotLabel = new System.Windows.Forms.Label();
+			this.panel4 = new System.Windows.Forms.Panel();
+			this.CCGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -138,7 +153,7 @@
 			this.IndVarPanel.SuspendLayout();
 			this.panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Graph)).BeginInit();
-			this.tabPage1.SuspendLayout();
+			this.PGAnalyticsTab.SuspendLayout();
 			this.AnalyticsPGFlowLayout.SuspendLayout();
 			this.PGParamGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.PGRunNumberValue)).BeginInit();
@@ -148,6 +163,10 @@
 			this.PGDataGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.PGTimeSlider)).BeginInit();
 			this.panel2.SuspendLayout();
+			this.CCAnalyticsTab.SuspendLayout();
+			this.CCFlowLayoutPanel.SuspendLayout();
+			this.SlidingDotGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -341,6 +360,7 @@
 			// 
 			this.probGroup.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
 			this.probGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.probGroup.Controls.Add(this.GenerateFullButton);
 			this.probGroup.Controls.Add(this.LatSizeLabel);
 			this.probGroup.Controls.Add(this.LatSizeValue);
 			this.probGroup.Controls.Add(this.initTitle);
@@ -361,6 +381,17 @@
 			this.probGroup.Padding = new System.Windows.Forms.Padding(20);
 			this.probGroup.Size = new System.Drawing.Size(643, 214);
 			this.probGroup.TabIndex = 0;
+			// 
+			// GenerateFullButton
+			// 
+			this.GenerateFullButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.GenerateFullButton.Location = new System.Drawing.Point(487, 108);
+			this.GenerateFullButton.Name = "GenerateFullButton";
+			this.GenerateFullButton.Size = new System.Drawing.Size(131, 40);
+			this.GenerateFullButton.TabIndex = 31;
+			this.GenerateFullButton.Text = "Generate Full";
+			this.GenerateFullButton.UseVisualStyleBackColor = true;
+			this.GenerateFullButton.Click += new System.EventHandler(this.GenerateFullButton_Click);
 			// 
 			// LatSizeLabel
 			// 
@@ -416,9 +447,9 @@
 			// 
 			this.HelpButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.HelpButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.HelpButton.Location = new System.Drawing.Point(487, 108);
+			this.HelpButton.Location = new System.Drawing.Point(345, 108);
 			this.HelpButton.Name = "HelpButton";
-			this.HelpButton.Size = new System.Drawing.Size(131, 40);
+			this.HelpButton.Size = new System.Drawing.Size(108, 40);
 			this.HelpButton.TabIndex = 17;
 			this.HelpButton.Text = "Help";
 			this.HelpButton.UseVisualStyleBackColor = true;
@@ -525,7 +556,8 @@
 			// 
 			this.tabControl1.Controls.Add(this.ParamsTab);
 			this.tabControl1.Controls.Add(this.AnalyticsTab);
-			this.tabControl1.Controls.Add(this.tabPage1);
+			this.tabControl1.Controls.Add(this.PGAnalyticsTab);
+			this.tabControl1.Controls.Add(this.CCAnalyticsTab);
 			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabControl1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
 			this.tabControl1.Location = new System.Drawing.Point(10, 10);
@@ -969,15 +1001,15 @@
 			this.Graph.TabIndex = 42;
 			this.Graph.Text = "chart1";
 			// 
-			// tabPage1
+			// PGAnalyticsTab
 			// 
-			this.tabPage1.BackColor = System.Drawing.SystemColors.Control;
-			this.tabPage1.Controls.Add(this.AnalyticsPGFlowLayout);
-			this.tabPage1.Location = new System.Drawing.Point(4, 25);
-			this.tabPage1.Name = "tabPage1";
-			this.tabPage1.Size = new System.Drawing.Size(855, 992);
-			this.tabPage1.TabIndex = 2;
-			this.tabPage1.Text = "Prob/Gamma Analysis";
+			this.PGAnalyticsTab.BackColor = System.Drawing.SystemColors.Control;
+			this.PGAnalyticsTab.Controls.Add(this.AnalyticsPGFlowLayout);
+			this.PGAnalyticsTab.Location = new System.Drawing.Point(4, 25);
+			this.PGAnalyticsTab.Name = "PGAnalyticsTab";
+			this.PGAnalyticsTab.Size = new System.Drawing.Size(855, 992);
+			this.PGAnalyticsTab.TabIndex = 2;
+			this.PGAnalyticsTab.Text = "Prob/Gamma Analysis";
 			// 
 			// AnalyticsPGFlowLayout
 			// 
@@ -1242,6 +1274,159 @@
 			this.PGDataResetButton.UseVisualStyleBackColor = true;
 			this.PGDataResetButton.Click += new System.EventHandler(this.PGDataResetButton_Click);
 			// 
+			// CCAnalyticsTab
+			// 
+			this.CCAnalyticsTab.Controls.Add(this.CCFlowLayoutPanel);
+			this.CCAnalyticsTab.Controls.Add(this.CCGraph);
+			this.CCAnalyticsTab.Location = new System.Drawing.Point(4, 25);
+			this.CCAnalyticsTab.Name = "CCAnalyticsTab";
+			this.CCAnalyticsTab.Size = new System.Drawing.Size(855, 992);
+			this.CCAnalyticsTab.TabIndex = 3;
+			this.CCAnalyticsTab.Text = "Cross Correlation";
+			this.CCAnalyticsTab.UseVisualStyleBackColor = true;
+			// 
+			// CCFlowLayoutPanel
+			// 
+			this.CCFlowLayoutPanel.AutoScroll = true;
+			this.CCFlowLayoutPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(75)))));
+			this.CCFlowLayoutPanel.Controls.Add(this.SlidingDotGroup);
+			this.CCFlowLayoutPanel.Controls.Add(this.panel4);
+			this.CCFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.CCFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
+			this.CCFlowLayoutPanel.Name = "CCFlowLayoutPanel";
+			this.CCFlowLayoutPanel.Padding = new System.Windows.Forms.Padding(10);
+			this.CCFlowLayoutPanel.Size = new System.Drawing.Size(855, 543);
+			this.CCFlowLayoutPanel.TabIndex = 44;
+			// 
+			// SlidingDotGroup
+			// 
+			this.SlidingDotGroup.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
+			this.SlidingDotGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.SlidingDotGroup.Controls.Add(this.SlidingDotDirectionLabel);
+			this.SlidingDotGroup.Controls.Add(this.SlidingDotHorizontalChoice);
+			this.SlidingDotGroup.Controls.Add(this.SlidingDotVerticalChoice);
+			this.SlidingDotGroup.Controls.Add(this.SlidingDotStartButton);
+			this.SlidingDotGroup.Controls.Add(this.SlidingDotLabel);
+			this.SlidingDotGroup.Location = new System.Drawing.Point(30, 30);
+			this.SlidingDotGroup.Margin = new System.Windows.Forms.Padding(20);
+			this.SlidingDotGroup.Name = "SlidingDotGroup";
+			this.SlidingDotGroup.Padding = new System.Windows.Forms.Padding(20);
+			this.SlidingDotGroup.Size = new System.Drawing.Size(289, 255);
+			this.SlidingDotGroup.TabIndex = 42;
+			// 
+			// SlidingDotDirectionLabel
+			// 
+			this.SlidingDotDirectionLabel.AutoSize = true;
+			this.SlidingDotDirectionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SlidingDotDirectionLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SlidingDotDirectionLabel.Location = new System.Drawing.Point(20, 146);
+			this.SlidingDotDirectionLabel.Name = "SlidingDotDirectionLabel";
+			this.SlidingDotDirectionLabel.Size = new System.Drawing.Size(64, 17);
+			this.SlidingDotDirectionLabel.TabIndex = 37;
+			this.SlidingDotDirectionLabel.Text = "Direction";
+			this.SlidingDotDirectionLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// SlidingDotHorizontalChoice
+			// 
+			this.SlidingDotHorizontalChoice.AutoSize = true;
+			this.SlidingDotHorizontalChoice.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SlidingDotHorizontalChoice.Location = new System.Drawing.Point(23, 193);
+			this.SlidingDotHorizontalChoice.Name = "SlidingDotHorizontalChoice";
+			this.SlidingDotHorizontalChoice.Size = new System.Drawing.Size(90, 21);
+			this.SlidingDotHorizontalChoice.TabIndex = 36;
+			this.SlidingDotHorizontalChoice.Text = "Horizontal";
+			this.SlidingDotHorizontalChoice.UseVisualStyleBackColor = true;
+			// 
+			// SlidingDotVerticalChoice
+			// 
+			this.SlidingDotVerticalChoice.AutoSize = true;
+			this.SlidingDotVerticalChoice.Checked = true;
+			this.SlidingDotVerticalChoice.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SlidingDotVerticalChoice.Location = new System.Drawing.Point(23, 166);
+			this.SlidingDotVerticalChoice.Name = "SlidingDotVerticalChoice";
+			this.SlidingDotVerticalChoice.Size = new System.Drawing.Size(73, 21);
+			this.SlidingDotVerticalChoice.TabIndex = 35;
+			this.SlidingDotVerticalChoice.TabStop = true;
+			this.SlidingDotVerticalChoice.Text = "Vertical";
+			this.SlidingDotVerticalChoice.UseVisualStyleBackColor = true;
+			// 
+			// SlidingDotStartButton
+			// 
+			this.SlidingDotStartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SlidingDotStartButton.Location = new System.Drawing.Point(73, 69);
+			this.SlidingDotStartButton.Name = "SlidingDotStartButton";
+			this.SlidingDotStartButton.Size = new System.Drawing.Size(131, 40);
+			this.SlidingDotStartButton.TabIndex = 34;
+			this.SlidingDotStartButton.Text = "Start";
+			this.SlidingDotStartButton.UseVisualStyleBackColor = true;
+			this.SlidingDotStartButton.Click += new System.EventHandler(this.SlidingDotStartButton_Click);
+			// 
+			// SlidingDotLabel
+			// 
+			this.SlidingDotLabel.AutoSize = true;
+			this.SlidingDotLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SlidingDotLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SlidingDotLabel.Location = new System.Drawing.Point(74, 18);
+			this.SlidingDotLabel.Name = "SlidingDotLabel";
+			this.SlidingDotLabel.Size = new System.Drawing.Size(129, 17);
+			this.SlidingDotLabel.TabIndex = 28;
+			this.SlidingDotLabel.Text = "Sliding Dot Product";
+			this.SlidingDotLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// panel4
+			// 
+			this.panel4.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
+			this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panel4.Location = new System.Drawing.Point(359, 30);
+			this.panel4.Margin = new System.Windows.Forms.Padding(20);
+			this.panel4.Name = "panel4";
+			this.panel4.Padding = new System.Windows.Forms.Padding(20);
+			this.panel4.Size = new System.Drawing.Size(289, 255);
+			this.panel4.TabIndex = 43;
+			// 
+			// CCGraph
+			// 
+			this.CCGraph.BorderlineColor = System.Drawing.Color.Black;
+			this.CCGraph.BorderlineDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Solid;
+			this.CCGraph.BorderlineWidth = 5;
+			chartArea2.Area3DStyle.Inclination = 0;
+			chartArea2.Area3DStyle.IsRightAngleAxes = false;
+			chartArea2.Area3DStyle.Rotation = 45;
+			chartArea2.AxisX.IsMarginVisible = false;
+			chartArea2.AxisX.MajorGrid.Enabled = false;
+			chartArea2.AxisX.Title = "X";
+			chartArea2.AxisX.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F);
+			chartArea2.AxisY.MajorGrid.Enabled = false;
+			chartArea2.AxisY.Title = "Y";
+			chartArea2.AxisY.TitleFont = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			chartArea2.Name = "ChartArea1";
+			this.CCGraph.ChartAreas.Add(chartArea2);
+			this.CCGraph.Dock = System.Windows.Forms.DockStyle.Bottom;
+			legend2.Enabled = false;
+			legend2.Name = "Legend1";
+			this.CCGraph.Legends.Add(legend2);
+			this.CCGraph.Location = new System.Drawing.Point(0, 543);
+			this.CCGraph.Name = "CCGraph";
+			series3.BorderWidth = 5;
+			series3.ChartArea = "ChartArea1";
+			series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+			series3.Legend = "Legend1";
+			series3.MarkerColor = System.Drawing.Color.Black;
+			series3.MarkerSize = 8;
+			series3.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+			series3.Name = "Series1";
+			series4.ChartArea = "ChartArea1";
+			series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+			series4.Legend = "Legend1";
+			series4.MarkerSize = 12;
+			series4.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
+			series4.Name = "Series2";
+			this.CCGraph.Series.Add(series3);
+			this.CCGraph.Series.Add(series4);
+			this.CCGraph.Size = new System.Drawing.Size(855, 449);
+			this.CCGraph.TabIndex = 43;
+			this.CCGraph.Text = "chart1";
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1285,7 +1470,7 @@
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.Graph)).EndInit();
-			this.tabPage1.ResumeLayout(false);
+			this.PGAnalyticsTab.ResumeLayout(false);
 			this.AnalyticsPGFlowLayout.ResumeLayout(false);
 			this.PGParamGroup.ResumeLayout(false);
 			this.PGParamGroup.PerformLayout();
@@ -1297,6 +1482,11 @@
 			this.PGDataGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.PGTimeSlider)).EndInit();
 			this.panel2.ResumeLayout(false);
+			this.CCAnalyticsTab.ResumeLayout(false);
+			this.CCFlowLayoutPanel.ResumeLayout(false);
+			this.SlidingDotGroup.ResumeLayout(false);
+			this.SlidingDotGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -1363,7 +1553,7 @@
 		private System.Windows.Forms.Panel panel1;
 		private System.Windows.Forms.ComboBox DepVarChooser;
 		private System.Windows.Forms.Label DepVarLabel;
-		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.TabPage PGAnalyticsTab;
 		private System.Windows.Forms.FlowLayoutPanel AnalyticsPGFlowLayout;
 		private System.Windows.Forms.Panel PGParamGroup;
 		private System.Windows.Forms.Label PGSampleLabel;
@@ -1384,6 +1574,17 @@
 		private System.Windows.Forms.Label PGRunNumberLabel;
 		private System.Windows.Forms.Panel panel2;
 		private System.Windows.Forms.Button PGDataResetButton;
+		private System.Windows.Forms.Button GenerateFullButton;
+		private System.Windows.Forms.TabPage CCAnalyticsTab;
+		private System.Windows.Forms.FlowLayoutPanel CCFlowLayoutPanel;
+		private System.Windows.Forms.Panel SlidingDotGroup;
+		private System.Windows.Forms.Label SlidingDotDirectionLabel;
+		private System.Windows.Forms.RadioButton SlidingDotHorizontalChoice;
+		private System.Windows.Forms.RadioButton SlidingDotVerticalChoice;
+		private System.Windows.Forms.Button SlidingDotStartButton;
+		private System.Windows.Forms.Label SlidingDotLabel;
+		private System.Windows.Forms.Panel panel4;
+		private System.Windows.Forms.DataVisualization.Charting.Chart CCGraph;
 	}
 }
 
