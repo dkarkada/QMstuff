@@ -679,9 +679,16 @@ namespace QMStuff_v2{
 					DataPoint dp = new DataPoint(p.X, p.Y);
 					CCGraph.Series[0].Points.Add(dp);
 				}
+				SDPDomainEndCounter.Value = CCGraph.Series[0].Points.Count;
 				CCGraph.ChartAreas[0].RecalculateAxesScale();
 				CCGraph.Invalidate();
 			}
+		}
+		private void SDPDomainEndCounter_ValueChanged(object sender, EventArgs e) {
+			if (SDPDomainEndCounter.Value < CCGraph.Series[0].Points.Count)
+				CCGraph.ChartAreas[0].AxisX.Maximum = (double) SDPDomainEndCounter.Value;
+			else
+				SDPDomainEndCounter.Value = CCGraph.Series[0].Points.Count;
 		}
 	}
 	public class Canvas : Panel {

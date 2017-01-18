@@ -122,13 +122,12 @@
 			this.CCAnalyticsTab = new System.Windows.Forms.TabPage();
 			this.CCFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
 			this.SlidingDotGroup = new System.Windows.Forms.Panel();
-			this.SlidingDotDirectionLabel = new System.Windows.Forms.Label();
-			this.SlidingDotHorizontalChoice = new System.Windows.Forms.RadioButton();
-			this.SlidingDotVerticalChoice = new System.Windows.Forms.RadioButton();
 			this.SlidingDotStartButton = new System.Windows.Forms.Button();
 			this.SlidingDotLabel = new System.Windows.Forms.Label();
 			this.panel4 = new System.Windows.Forms.Panel();
 			this.CCGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
+			this.SDPDomainEndCounter = new System.Windows.Forms.NumericUpDown();
+			this.SDPDomainEndLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -167,6 +166,7 @@
 			this.CCFlowLayoutPanel.SuspendLayout();
 			this.SlidingDotGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPDomainEndCounter)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -1302,9 +1302,8 @@
 			// 
 			this.SlidingDotGroup.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
 			this.SlidingDotGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.SlidingDotGroup.Controls.Add(this.SlidingDotDirectionLabel);
-			this.SlidingDotGroup.Controls.Add(this.SlidingDotHorizontalChoice);
-			this.SlidingDotGroup.Controls.Add(this.SlidingDotVerticalChoice);
+			this.SlidingDotGroup.Controls.Add(this.SDPDomainEndLabel);
+			this.SlidingDotGroup.Controls.Add(this.SDPDomainEndCounter);
 			this.SlidingDotGroup.Controls.Add(this.SlidingDotStartButton);
 			this.SlidingDotGroup.Controls.Add(this.SlidingDotLabel);
 			this.SlidingDotGroup.Location = new System.Drawing.Point(30, 30);
@@ -1314,46 +1313,10 @@
 			this.SlidingDotGroup.Size = new System.Drawing.Size(289, 255);
 			this.SlidingDotGroup.TabIndex = 42;
 			// 
-			// SlidingDotDirectionLabel
-			// 
-			this.SlidingDotDirectionLabel.AutoSize = true;
-			this.SlidingDotDirectionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.SlidingDotDirectionLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.SlidingDotDirectionLabel.Location = new System.Drawing.Point(20, 146);
-			this.SlidingDotDirectionLabel.Name = "SlidingDotDirectionLabel";
-			this.SlidingDotDirectionLabel.Size = new System.Drawing.Size(64, 17);
-			this.SlidingDotDirectionLabel.TabIndex = 37;
-			this.SlidingDotDirectionLabel.Text = "Direction";
-			this.SlidingDotDirectionLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			// 
-			// SlidingDotHorizontalChoice
-			// 
-			this.SlidingDotHorizontalChoice.AutoSize = true;
-			this.SlidingDotHorizontalChoice.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.SlidingDotHorizontalChoice.Location = new System.Drawing.Point(23, 193);
-			this.SlidingDotHorizontalChoice.Name = "SlidingDotHorizontalChoice";
-			this.SlidingDotHorizontalChoice.Size = new System.Drawing.Size(90, 21);
-			this.SlidingDotHorizontalChoice.TabIndex = 36;
-			this.SlidingDotHorizontalChoice.Text = "Horizontal";
-			this.SlidingDotHorizontalChoice.UseVisualStyleBackColor = true;
-			// 
-			// SlidingDotVerticalChoice
-			// 
-			this.SlidingDotVerticalChoice.AutoSize = true;
-			this.SlidingDotVerticalChoice.Checked = true;
-			this.SlidingDotVerticalChoice.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.SlidingDotVerticalChoice.Location = new System.Drawing.Point(23, 166);
-			this.SlidingDotVerticalChoice.Name = "SlidingDotVerticalChoice";
-			this.SlidingDotVerticalChoice.Size = new System.Drawing.Size(73, 21);
-			this.SlidingDotVerticalChoice.TabIndex = 35;
-			this.SlidingDotVerticalChoice.TabStop = true;
-			this.SlidingDotVerticalChoice.Text = "Vertical";
-			this.SlidingDotVerticalChoice.UseVisualStyleBackColor = true;
-			// 
 			// SlidingDotStartButton
 			// 
 			this.SlidingDotStartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.SlidingDotStartButton.Location = new System.Drawing.Point(73, 69);
+			this.SlidingDotStartButton.Location = new System.Drawing.Point(73, 61);
 			this.SlidingDotStartButton.Name = "SlidingDotStartButton";
 			this.SlidingDotStartButton.Size = new System.Drawing.Size(131, 40);
 			this.SlidingDotStartButton.TabIndex = 34;
@@ -1427,6 +1390,31 @@
 			this.CCGraph.TabIndex = 43;
 			this.CCGraph.Text = "chart1";
 			// 
+			// SDPDomainEndCounter
+			// 
+			this.SDPDomainEndCounter.Location = new System.Drawing.Point(199, 133);
+			this.SDPDomainEndCounter.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.SDPDomainEndCounter.Name = "SDPDomainEndCounter";
+			this.SDPDomainEndCounter.Size = new System.Drawing.Size(65, 23);
+			this.SDPDomainEndCounter.TabIndex = 35;
+			this.SDPDomainEndCounter.ValueChanged += new System.EventHandler(this.SDPDomainEndCounter_ValueChanged);
+			// 
+			// SDPDomainEndLabel
+			// 
+			this.SDPDomainEndLabel.AutoSize = true;
+			this.SDPDomainEndLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPDomainEndLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPDomainEndLabel.Location = new System.Drawing.Point(23, 135);
+			this.SDPDomainEndLabel.Name = "SDPDomainEndLabel";
+			this.SDPDomainEndLabel.Size = new System.Drawing.Size(144, 17);
+			this.SDPDomainEndLabel.TabIndex = 36;
+			this.SDPDomainEndLabel.Text = "Domain Upper Bound";
+			this.SDPDomainEndLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1487,6 +1475,7 @@
 			this.SlidingDotGroup.ResumeLayout(false);
 			this.SlidingDotGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPDomainEndCounter)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -1578,13 +1567,12 @@
 		private System.Windows.Forms.TabPage CCAnalyticsTab;
 		private System.Windows.Forms.FlowLayoutPanel CCFlowLayoutPanel;
 		private System.Windows.Forms.Panel SlidingDotGroup;
-		private System.Windows.Forms.Label SlidingDotDirectionLabel;
-		private System.Windows.Forms.RadioButton SlidingDotHorizontalChoice;
-		private System.Windows.Forms.RadioButton SlidingDotVerticalChoice;
 		private System.Windows.Forms.Button SlidingDotStartButton;
 		private System.Windows.Forms.Label SlidingDotLabel;
 		private System.Windows.Forms.Panel panel4;
 		private System.Windows.Forms.DataVisualization.Charting.Chart CCGraph;
+		private System.Windows.Forms.Label SDPDomainEndLabel;
+		private System.Windows.Forms.NumericUpDown SDPDomainEndCounter;
 	}
 }
 
