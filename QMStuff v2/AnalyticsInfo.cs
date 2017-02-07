@@ -27,20 +27,35 @@ namespace QMStuff_v2 {
 			double[] info = { perim, area, density, avgRad };
 			return info;
 		}
-		public SlidingDotData SlideDot(int[,] state) {
-			SlidingDotData data = new SlidingDotData();
+		public SlidingDotData SlideDot(SlidingDotData data, double[,] state, String type) {
+			List<Point> list;
+			switch(type) {
+				case "horizontal":
+					list = data.horizontal;
+					break;
+				case "vertical":
+					list = data.vertical;
+					break;
+				case "convolvedHoriz":
+					list = data.convolvedHoriz;
+					break;
+				default:
+					list = data.horizontal;
+					break;
+			}
+			list.Clear();
 			int width = state.GetLength(1);
 			int height = state.GetLength(0);
 			int rshift = 0;
 			while(rshift<=width) {
-				int C = 0;
+				double C = 0;
 				for(int col = 0; col<width; col++) {
 					if(col-rshift >=0 && col-rshift <width) {
 						for(int row = 0; row<state.GetLength(0); row++)
 							C+= state[row, col] * state[row, col-rshift];
 					}
 				}
-				data.horizontal.Add(new Point(rshift, C));
+				list.Add(new Point(rshift, (int)C));
 				rshift++;
 			}
 			return data;
@@ -91,10 +106,12 @@ namespace QMStuff_v2 {
 	public class SlidingDotData {
 		public List<Point> horizontal;
 		public List<Point> vertical;
+		public List<Point> convolvedHoriz;
 
 		public SlidingDotData() {
 			horizontal = new List<Point>();
 			vertical = new List<Point>();
+			convolvedHoriz = new List<Point>();
 		}
 	}
 	public class FitBox {

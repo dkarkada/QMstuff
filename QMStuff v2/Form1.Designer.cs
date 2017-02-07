@@ -122,12 +122,22 @@
 			this.CCAnalyticsTab = new System.Windows.Forms.TabPage();
 			this.CCFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
 			this.SlidingDotGroup = new System.Windows.Forms.Panel();
+			this.SDPAutoRangeCheckbox = new System.Windows.Forms.CheckBox();
+			this.SDPDomainStartLabel = new System.Windows.Forms.Label();
+			this.SDPDomainStartCounter = new System.Windows.Forms.NumericUpDown();
+			this.SDPDomainEndLabel = new System.Windows.Forms.Label();
+			this.SDPDomainEndCounter = new System.Windows.Forms.NumericUpDown();
 			this.SlidingDotStartButton = new System.Windows.Forms.Button();
 			this.SlidingDotLabel = new System.Windows.Forms.Label();
-			this.panel4 = new System.Windows.Forms.Panel();
+			this.ConvolutionGroup = new System.Windows.Forms.Panel();
+			this.ConvolveBrightnessLabel = new System.Windows.Forms.Label();
+			this.ConvolveBrightnessBar = new System.Windows.Forms.TrackBar();
+			this.ConvolveButton = new System.Windows.Forms.Button();
+			this.ShowConvolveCheckbox = new System.Windows.Forms.CheckBox();
+			this.StDevValue = new System.Windows.Forms.TrackBar();
+			this.StDevLabel = new System.Windows.Forms.Label();
+			this.ConvolutionLabel = new System.Windows.Forms.Label();
 			this.CCGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
-			this.SDPDomainEndCounter = new System.Windows.Forms.NumericUpDown();
-			this.SDPDomainEndLabel = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.xProbValue)).BeginInit();
@@ -165,8 +175,12 @@
 			this.CCAnalyticsTab.SuspendLayout();
 			this.CCFlowLayoutPanel.SuspendLayout();
 			this.SlidingDotGroup.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPDomainStartCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.SDPDomainEndCounter)).BeginInit();
+			this.ConvolutionGroup.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ConvolveBrightnessBar)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.StDevValue)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// stepCounter
@@ -1290,7 +1304,7 @@
 			this.CCFlowLayoutPanel.AutoScroll = true;
 			this.CCFlowLayoutPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(75)))));
 			this.CCFlowLayoutPanel.Controls.Add(this.SlidingDotGroup);
-			this.CCFlowLayoutPanel.Controls.Add(this.panel4);
+			this.CCFlowLayoutPanel.Controls.Add(this.ConvolutionGroup);
 			this.CCFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.CCFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
 			this.CCFlowLayoutPanel.Name = "CCFlowLayoutPanel";
@@ -1302,6 +1316,9 @@
 			// 
 			this.SlidingDotGroup.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
 			this.SlidingDotGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.SlidingDotGroup.Controls.Add(this.SDPAutoRangeCheckbox);
+			this.SlidingDotGroup.Controls.Add(this.SDPDomainStartLabel);
+			this.SlidingDotGroup.Controls.Add(this.SDPDomainStartCounter);
 			this.SlidingDotGroup.Controls.Add(this.SDPDomainEndLabel);
 			this.SlidingDotGroup.Controls.Add(this.SDPDomainEndCounter);
 			this.SlidingDotGroup.Controls.Add(this.SlidingDotStartButton);
@@ -1313,10 +1330,82 @@
 			this.SlidingDotGroup.Size = new System.Drawing.Size(289, 255);
 			this.SlidingDotGroup.TabIndex = 42;
 			// 
+			// SDPAutoRangeCheckbox
+			// 
+			this.SDPAutoRangeCheckbox.AutoSize = true;
+			this.SDPAutoRangeCheckbox.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPAutoRangeCheckbox.Location = new System.Drawing.Point(26, 199);
+			this.SDPAutoRangeCheckbox.Name = "SDPAutoRangeCheckbox";
+			this.SDPAutoRangeCheckbox.Size = new System.Drawing.Size(140, 21);
+			this.SDPAutoRangeCheckbox.TabIndex = 42;
+			this.SDPAutoRangeCheckbox.Text = "Auto-adjust range";
+			this.SDPAutoRangeCheckbox.UseVisualStyleBackColor = true;
+			this.SDPAutoRangeCheckbox.CheckedChanged += new System.EventHandler(this.SDPAutoRangeCheckbox_CheckedChanged);
+			// 
+			// SDPDomainStartLabel
+			// 
+			this.SDPDomainStartLabel.AutoSize = true;
+			this.SDPDomainStartLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPDomainStartLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPDomainStartLabel.Location = new System.Drawing.Point(23, 119);
+			this.SDPDomainStartLabel.Name = "SDPDomainStartLabel";
+			this.SDPDomainStartLabel.Size = new System.Drawing.Size(143, 17);
+			this.SDPDomainStartLabel.TabIndex = 38;
+			this.SDPDomainStartLabel.Text = "Domain Lower Bound";
+			this.SDPDomainStartLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// SDPDomainStartCounter
+			// 
+			this.SDPDomainStartCounter.Location = new System.Drawing.Point(199, 117);
+			this.SDPDomainStartCounter.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.SDPDomainStartCounter.Name = "SDPDomainStartCounter";
+			this.SDPDomainStartCounter.Size = new System.Drawing.Size(65, 23);
+			this.SDPDomainStartCounter.TabIndex = 37;
+			this.SDPDomainStartCounter.ValueChanged += new System.EventHandler(this.SDPDomainStartCounter_ValueChanged);
+			// 
+			// SDPDomainEndLabel
+			// 
+			this.SDPDomainEndLabel.AutoSize = true;
+			this.SDPDomainEndLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPDomainEndLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPDomainEndLabel.Location = new System.Drawing.Point(23, 156);
+			this.SDPDomainEndLabel.Name = "SDPDomainEndLabel";
+			this.SDPDomainEndLabel.Size = new System.Drawing.Size(144, 17);
+			this.SDPDomainEndLabel.TabIndex = 36;
+			this.SDPDomainEndLabel.Text = "Domain Upper Bound";
+			this.SDPDomainEndLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// SDPDomainEndCounter
+			// 
+			this.SDPDomainEndCounter.Location = new System.Drawing.Point(199, 154);
+			this.SDPDomainEndCounter.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.SDPDomainEndCounter.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.SDPDomainEndCounter.Name = "SDPDomainEndCounter";
+			this.SDPDomainEndCounter.Size = new System.Drawing.Size(65, 23);
+			this.SDPDomainEndCounter.TabIndex = 35;
+			this.SDPDomainEndCounter.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.SDPDomainEndCounter.ValueChanged += new System.EventHandler(this.SDPDomainEndCounter_ValueChanged);
+			// 
 			// SlidingDotStartButton
 			// 
 			this.SlidingDotStartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.SlidingDotStartButton.Location = new System.Drawing.Point(73, 61);
+			this.SlidingDotStartButton.Location = new System.Drawing.Point(76, 62);
 			this.SlidingDotStartButton.Name = "SlidingDotStartButton";
 			this.SlidingDotStartButton.Size = new System.Drawing.Size(131, 40);
 			this.SlidingDotStartButton.TabIndex = 34;
@@ -1326,26 +1415,115 @@
 			// 
 			// SlidingDotLabel
 			// 
-			this.SlidingDotLabel.AutoSize = true;
+			this.SlidingDotLabel.Dock = System.Windows.Forms.DockStyle.Top;
 			this.SlidingDotLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
 			this.SlidingDotLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.SlidingDotLabel.Location = new System.Drawing.Point(74, 18);
+			this.SlidingDotLabel.Location = new System.Drawing.Point(20, 20);
 			this.SlidingDotLabel.Name = "SlidingDotLabel";
-			this.SlidingDotLabel.Size = new System.Drawing.Size(129, 17);
+			this.SlidingDotLabel.Size = new System.Drawing.Size(247, 17);
 			this.SlidingDotLabel.TabIndex = 28;
 			this.SlidingDotLabel.Text = "Sliding Dot Product";
 			this.SlidingDotLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
-			// panel4
+			// ConvolutionGroup
 			// 
-			this.panel4.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
-			this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.panel4.Location = new System.Drawing.Point(359, 30);
-			this.panel4.Margin = new System.Windows.Forms.Padding(20);
-			this.panel4.Name = "panel4";
-			this.panel4.Padding = new System.Windows.Forms.Padding(20);
-			this.panel4.Size = new System.Drawing.Size(289, 255);
-			this.panel4.TabIndex = 43;
+			this.ConvolutionGroup.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
+			this.ConvolutionGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.ConvolutionGroup.Controls.Add(this.ConvolveBrightnessLabel);
+			this.ConvolutionGroup.Controls.Add(this.ConvolveBrightnessBar);
+			this.ConvolutionGroup.Controls.Add(this.ConvolveButton);
+			this.ConvolutionGroup.Controls.Add(this.ShowConvolveCheckbox);
+			this.ConvolutionGroup.Controls.Add(this.StDevValue);
+			this.ConvolutionGroup.Controls.Add(this.StDevLabel);
+			this.ConvolutionGroup.Controls.Add(this.ConvolutionLabel);
+			this.ConvolutionGroup.Location = new System.Drawing.Point(359, 30);
+			this.ConvolutionGroup.Margin = new System.Windows.Forms.Padding(20);
+			this.ConvolutionGroup.Name = "ConvolutionGroup";
+			this.ConvolutionGroup.Padding = new System.Windows.Forms.Padding(20);
+			this.ConvolutionGroup.Size = new System.Drawing.Size(336, 255);
+			this.ConvolutionGroup.TabIndex = 43;
+			// 
+			// ConvolveBrightnessLabel
+			// 
+			this.ConvolveBrightnessLabel.AutoSize = true;
+			this.ConvolveBrightnessLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.ConvolveBrightnessLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.ConvolveBrightnessLabel.Location = new System.Drawing.Point(42, 148);
+			this.ConvolveBrightnessLabel.Name = "ConvolveBrightnessLabel";
+			this.ConvolveBrightnessLabel.Size = new System.Drawing.Size(75, 17);
+			this.ConvolveBrightnessLabel.TabIndex = 41;
+			this.ConvolveBrightnessLabel.Text = "Brightness";
+			this.ConvolveBrightnessLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// ConvolveBrightnessBar
+			// 
+			this.ConvolveBrightnessBar.Location = new System.Drawing.Point(114, 148);
+			this.ConvolveBrightnessBar.Maximum = 50;
+			this.ConvolveBrightnessBar.Minimum = 10;
+			this.ConvolveBrightnessBar.Name = "ConvolveBrightnessBar";
+			this.ConvolveBrightnessBar.Size = new System.Drawing.Size(197, 45);
+			this.ConvolveBrightnessBar.TabIndex = 40;
+			this.ConvolveBrightnessBar.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.ConvolveBrightnessBar.Value = 10;
+			this.ConvolveBrightnessBar.Scroll += new System.EventHandler(this.ConvolveBrightnessBar_Scroll);
+			// 
+			// ConvolveButton
+			// 
+			this.ConvolveButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.ConvolveButton.Location = new System.Drawing.Point(102, 91);
+			this.ConvolveButton.Name = "ConvolveButton";
+			this.ConvolveButton.Size = new System.Drawing.Size(131, 40);
+			this.ConvolveButton.TabIndex = 37;
+			this.ConvolveButton.Text = "Render";
+			this.ConvolveButton.UseVisualStyleBackColor = true;
+			this.ConvolveButton.Click += new System.EventHandler(this.ConvolveButton_Click);
+			// 
+			// ShowConvolveCheckbox
+			// 
+			this.ShowConvolveCheckbox.AutoSize = true;
+			this.ShowConvolveCheckbox.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.ShowConvolveCheckbox.Location = new System.Drawing.Point(45, 199);
+			this.ShowConvolveCheckbox.Name = "ShowConvolveCheckbox";
+			this.ShowConvolveCheckbox.Size = new System.Drawing.Size(177, 21);
+			this.ShowConvolveCheckbox.TabIndex = 39;
+			this.ShowConvolveCheckbox.Text = "Show Convolved Lattice";
+			this.ShowConvolveCheckbox.UseVisualStyleBackColor = true;
+			this.ShowConvolveCheckbox.CheckedChanged += new System.EventHandler(this.ShowConvolveCheckbox_CheckedChanged);
+			// 
+			// StDevValue
+			// 
+			this.StDevValue.Location = new System.Drawing.Point(114, 54);
+			this.StDevValue.Maximum = 100;
+			this.StDevValue.Name = "StDevValue";
+			this.StDevValue.Size = new System.Drawing.Size(197, 45);
+			this.StDevValue.TabIndex = 38;
+			this.StDevValue.TickStyle = System.Windows.Forms.TickStyle.None;
+			this.StDevValue.Value = 20;
+			this.StDevValue.Scroll += new System.EventHandler(this.StDevValue_Scroll);
+			// 
+			// StDevLabel
+			// 
+			this.StDevLabel.AutoSize = true;
+			this.StDevLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.StDevLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.StDevLabel.Location = new System.Drawing.Point(42, 54);
+			this.StDevLabel.Name = "StDevLabel";
+			this.StDevLabel.Size = new System.Drawing.Size(40, 17);
+			this.StDevLabel.TabIndex = 37;
+			this.StDevLabel.Text = "σ = 1";
+			this.StDevLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// ConvolutionLabel
+			// 
+			this.ConvolutionLabel.Dock = System.Windows.Forms.DockStyle.Top;
+			this.ConvolutionLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.ConvolutionLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.ConvolutionLabel.Location = new System.Drawing.Point(20, 20);
+			this.ConvolutionLabel.Name = "ConvolutionLabel";
+			this.ConvolutionLabel.Size = new System.Drawing.Size(294, 17);
+			this.ConvolutionLabel.TabIndex = 37;
+			this.ConvolutionLabel.Text = "Gaussian Convolution";
+			this.ConvolutionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// CCGraph
 			// 
@@ -1370,18 +1548,19 @@
 			this.CCGraph.Legends.Add(legend2);
 			this.CCGraph.Location = new System.Drawing.Point(0, 543);
 			this.CCGraph.Name = "CCGraph";
-			series3.BorderWidth = 5;
+			series3.BorderWidth = 3;
 			series3.ChartArea = "ChartArea1";
 			series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
 			series3.Legend = "Legend1";
 			series3.MarkerColor = System.Drawing.Color.Black;
-			series3.MarkerSize = 8;
+			series3.MarkerSize = 0;
 			series3.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
 			series3.Name = "Series1";
+			series4.BorderWidth = 3;
 			series4.ChartArea = "ChartArea1";
-			series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+			series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
 			series4.Legend = "Legend1";
-			series4.MarkerSize = 12;
+			series4.MarkerSize = 0;
 			series4.MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle;
 			series4.Name = "Series2";
 			this.CCGraph.Series.Add(series3);
@@ -1389,31 +1568,6 @@
 			this.CCGraph.Size = new System.Drawing.Size(855, 449);
 			this.CCGraph.TabIndex = 43;
 			this.CCGraph.Text = "chart1";
-			// 
-			// SDPDomainEndCounter
-			// 
-			this.SDPDomainEndCounter.Location = new System.Drawing.Point(199, 133);
-			this.SDPDomainEndCounter.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-			this.SDPDomainEndCounter.Name = "SDPDomainEndCounter";
-			this.SDPDomainEndCounter.Size = new System.Drawing.Size(65, 23);
-			this.SDPDomainEndCounter.TabIndex = 35;
-			this.SDPDomainEndCounter.ValueChanged += new System.EventHandler(this.SDPDomainEndCounter_ValueChanged);
-			// 
-			// SDPDomainEndLabel
-			// 
-			this.SDPDomainEndLabel.AutoSize = true;
-			this.SDPDomainEndLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.SDPDomainEndLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.SDPDomainEndLabel.Location = new System.Drawing.Point(23, 135);
-			this.SDPDomainEndLabel.Name = "SDPDomainEndLabel";
-			this.SDPDomainEndLabel.Size = new System.Drawing.Size(144, 17);
-			this.SDPDomainEndLabel.TabIndex = 36;
-			this.SDPDomainEndLabel.Text = "Domain Upper Bound";
-			this.SDPDomainEndLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// Form1
 			// 
@@ -1474,8 +1628,13 @@
 			this.CCFlowLayoutPanel.ResumeLayout(false);
 			this.SlidingDotGroup.ResumeLayout(false);
 			this.SlidingDotGroup.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPDomainStartCounter)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.SDPDomainEndCounter)).EndInit();
+			this.ConvolutionGroup.ResumeLayout(false);
+			this.ConvolutionGroup.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.ConvolveBrightnessBar)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.StDevValue)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).EndInit();
 			this.ResumeLayout(false);
 
         }
@@ -1569,10 +1728,20 @@
 		private System.Windows.Forms.Panel SlidingDotGroup;
 		private System.Windows.Forms.Button SlidingDotStartButton;
 		private System.Windows.Forms.Label SlidingDotLabel;
-		private System.Windows.Forms.Panel panel4;
+		private System.Windows.Forms.Panel ConvolutionGroup;
 		private System.Windows.Forms.DataVisualization.Charting.Chart CCGraph;
 		private System.Windows.Forms.Label SDPDomainEndLabel;
 		private System.Windows.Forms.NumericUpDown SDPDomainEndCounter;
+		private System.Windows.Forms.TrackBar StDevValue;
+		private System.Windows.Forms.Label StDevLabel;
+		private System.Windows.Forms.Label ConvolutionLabel;
+		private System.Windows.Forms.Button ConvolveButton;
+		private System.Windows.Forms.CheckBox ShowConvolveCheckbox;
+		private System.Windows.Forms.Label ConvolveBrightnessLabel;
+		private System.Windows.Forms.TrackBar ConvolveBrightnessBar;
+		private System.Windows.Forms.Label SDPDomainStartLabel;
+		private System.Windows.Forms.NumericUpDown SDPDomainStartCounter;
+		private System.Windows.Forms.CheckBox SDPAutoRangeCheckbox;
 	}
 }
 

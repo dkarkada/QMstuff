@@ -17,6 +17,8 @@ namespace QMStuff_v2 {
 		AnalysisCalc analytics { get; set;}
 		public List<Tuple<int, double[]>> data { get; set; }
 		public SlidingDotData SlideData { get; set; }
+		public double[,] convolveMat { get; set; }
+		public double[,] convolveMatPP { get; set; } //post-processing matrix preserves orig data in convolveMat
 
 		public Lattice(int s) {
 			aSize = 10;
@@ -311,6 +313,7 @@ namespace QMStuff_v2 {
 			}
 		}
 		public void StartSlideDot(int ind) {
+			//excited is updated to index
 			Tuple<List<Atom>, int> result = latFrameList.GetNearestFrame(ind);
 			List<Point> excited = new List<Point>();
 			foreach(Atom a in result.Item1) {
@@ -334,7 +337,8 @@ namespace QMStuff_v2 {
 						excited.Remove(new Point(a.x, a.y));
 				}
 			}
-			//excited is updated to index
+
+			//get bounds of aggregate
 			int maxX = int.MinValue; int minX = int.MaxValue; int maxY = int.MinValue; int minY = int.MaxValue;
 			foreach(Point p in excited) {
 				maxX = Math.Max(maxX, p.X);
@@ -342,18 +346,73 @@ namespace QMStuff_v2 {
 				maxY = Math.Max(maxY, p.Y);
 				minY = Math.Min(minY, p.Y);
 			}
-			int[,] state = new int[maxY-minY+1, maxX-minX+1];
-			//for(int row = 0; row<state.GetLength(0); row++)  {
-			//	for(int col = 0; col<state.GetLength(1); col++)
-			//		state[row, col] = -1;
-			//}
+			double[,] state = new double[maxY-minY+1, maxX-minX+1];
 			foreach(Point p in excited) {
 				int r = maxY - p.Y;
 				int c = p.X - minX;
 				state[r, c] = 1;
 			}
+			if(SlideData==null) SlideData = new SlidingDotData();
+			SlideData = analytics.SlideDot(SlideData, state, "horizontal");
+		}
+		public void StartSlideDotConvolved() {
+			SlideData = analytics.SlideDot(SlideData, convolveMatPP, "convolvedHoriz");
+		}
+		public void StartConvolve(double stdev, int ind) {
+			//excited is updated to index
+			Tuple<List<Atom>, int> result = latFrameList.GetNearestFrame(ind);
+			List<Point> excited = new List<Point>();
+			foreach(Atom a in result.Item1) {
+				excited.Add(new Point(a.x, a.y));
+			}
+			if(result.Item2 < ind) {
+				for(int i = result.Item2; i < ind; i++) {
+					LatticeChange lc = changes[i];
+					foreach(Atom a in lc.on)
+						excited.Add(new Point(a.x, a.y));
+					foreach(Atom a in lc.off)
+						excited.Remove(new Point(a.x, a.y));
+				}
+			}
+			else {
+				for(int i = result.Item2; i >= ind; i--) {
+					LatticeChange lc = changes[i];
+					foreach(Atom a in lc.off)
+						excited.Add(new Point(a.x, a.y));
+					foreach(Atom a in lc.on)
+						excited.Remove(new Point(a.x, a.y));
+				}
+			}
 
-			SlideData = analytics.SlideDot(state);
+			convolveMat = new double[sz,sz];
+			convolveMatPP = new double[sz, sz];
+			double[] kernel = new double[(int)Math.Ceiling(6*stdev)+1];
+			for(int i=0; i<kernel.Length; i++) {
+				int x = i - (kernel.Length-1)/2;
+				kernel[i] = 1/Math.Sqrt(2*Math.PI*stdev*stdev) * Math.Exp(-(x*x/(2*stdev*stdev)));
+			}
+			foreach(Point p in excited) {
+				//centerr is row value of excited atom
+				int centerR = ConvertY(p.Y);
+				int centerC = ConvertX(p.X);
+				//i and j are indices along kernel, i vertical j horiz
+				for(int i = 0; i<kernel.Length; i++) {
+					for(int j = 0; j<kernel.Length; j++) {
+						int r = centerR + i - (kernel.Length-1)/2;
+						int c = centerC + j - (kernel.Length-1)/2;
+						if(r>=0 && r<sz && c>=0 && c<sz) {
+							convolveMat[r, c] += kernel[i]*kernel[j];
+							if(convolveMat[r, c]>1) convolveMat[r, c]=1;
+						}
+					}
+				}
+			}
+			//copy into post-processing matrix
+			for(int r = 0; r<sz; r++) {
+				for(int c = 0; c<sz; c++) {
+					convolveMatPP[r, c] = convolveMat[r, c];
+				}
+			}
 		}
 		public int ConvertX(int x) { return x + sz/2; }
 		public int ConvertY(int y) { return sz/2 - y; }

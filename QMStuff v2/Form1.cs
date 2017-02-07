@@ -675,11 +675,20 @@ namespace QMStuff_v2{
 				CCGraph.ChartAreas[0].AxisX.Title = "r";
 				CCGraph.ChartAreas[0].AxisY.Title = "C";
 				CCGraph.Series[0].Points.Clear();
+				CCGraph.Series[1].Points.Clear();
 				foreach (Point p in c.lat.SlideData.horizontal) {
 					DataPoint dp = new DataPoint(p.X, p.Y);
 					CCGraph.Series[0].Points.Add(dp);
 				}
+				if(c.lat.convolveMat!=null) {
+					c.lat.StartSlideDotConvolved();
+					foreach(Point p in c.lat.SlideData.convolvedHoriz) {
+						DataPoint dp = new DataPoint(p.X, p.Y);
+						CCGraph.Series[1].Points.Add(dp);
+					}
+				}
 				SDPDomainEndCounter.Value = CCGraph.Series[0].Points.Count;
+				SDPDomainStartCounter.Value = 0;
 				CCGraph.ChartAreas[0].RecalculateAxesScale();
 				CCGraph.Invalidate();
 			}
@@ -688,7 +697,71 @@ namespace QMStuff_v2{
 			if (SDPDomainEndCounter.Value < CCGraph.Series[0].Points.Count)
 				CCGraph.ChartAreas[0].AxisX.Maximum = (double) SDPDomainEndCounter.Value;
 			else
-				SDPDomainEndCounter.Value = CCGraph.Series[0].Points.Count;
+				SDPDomainEndCounter.Value = CCGraph.Series[0].Points.Count-1;
+			if(SDPAutoRangeCheckbox.Checked) {
+				double maxC = 0;
+				for(int i = (int)CCGraph.ChartAreas[0].AxisX.Minimum; i <= (int)CCGraph.ChartAreas[0].AxisX.Maximum; i++)
+					maxC = Math.Max(maxC, CCGraph.Series[0].Points[i].YValues[0]);
+				int interval = (int)Math.Pow(10, Math.Floor(Math.Log10(maxC))); //greatest 10^n smaller than maxC
+				int rangeMax = (int)Math.Ceiling(maxC/interval)*interval; //least multiple of interval greater than maxC
+				CCGraph.ChartAreas[0].AxisY.Maximum = rangeMax;
+			}			
+		}
+		private void SDPDomainStartCounter_ValueChanged(object sender, EventArgs e) {
+			if(SDPDomainStartCounter.Value < SDPDomainEndCounter.Value)
+				CCGraph.ChartAreas[0].AxisX.Minimum = (double)SDPDomainStartCounter.Value;
+			else
+				SDPDomainStartCounter.Value = SDPDomainEndCounter.Value-1;
+			if(SDPAutoRangeCheckbox.Checked) {
+				double maxC = 0;
+				for(int i = (int)CCGraph.ChartAreas[0].AxisX.Minimum; i <= (int)CCGraph.ChartAreas[0].AxisX.Maximum; i++)
+					maxC = Math.Max(maxC, CCGraph.Series[0].Points[i].YValues[0]);
+				int interval = (int)Math.Pow(10, Math.Floor(Math.Log10(maxC))); //greatest 10^n smaller than maxC
+				int rangeMax = (int)Math.Ceiling(maxC/interval)*interval; //least multiple of interval greater than maxC
+				CCGraph.ChartAreas[0].AxisY.Maximum = rangeMax;
+			}
+		}
+		private void SDPAutoRangeCheckbox_CheckedChanged(object sender, EventArgs e) {
+			if(SDPAutoRangeCheckbox.Checked) {
+				double maxC = 0;
+				for(int i = (int)CCGraph.ChartAreas[0].AxisX.Minimum; i <= (int)CCGraph.ChartAreas[0].AxisX.Maximum; i++)
+					maxC = Math.Max(maxC, CCGraph.Series[0].Points[i].YValues[0]);
+				int interval = (int)Math.Pow(10, Math.Floor(Math.Log10(maxC))); //greatest 10^n smaller than maxC
+				int rangeMax = (int)Math.Ceiling(maxC/interval)*interval; //least multiple of interval greater than maxC
+				CCGraph.ChartAreas[0].AxisY.Maximum = rangeMax;
+			}
+			else
+				CCGraph.ChartAreas[0].AxisY.Maximum = Double.NaN;
+		}
+		private void ConvolveButton_Click(object sender, EventArgs e) {
+			if(c.lat.changes.Count>1 && StDevValue.Value!=0) {
+				double stdev = StDevValue.Value / 20.0;
+				c.lat.StartConvolve(stdev, (int)(stepCounter.Value));
+				ShowConvolveCheckbox.Checked = true;
+				c.RenderConvolve();
+			}
+		}
+		private void StDevValue_Scroll(object sender, EventArgs e) {
+			double stdev = StDevValue.Value / 20.0;
+			StDevLabel.Text = "σ = " + Math.Round(stdev, 4);
+		}
+		private void ShowConvolveCheckbox_CheckedChanged(object sender, EventArgs e) {
+			if(ShowConvolveCheckbox.Checked) {
+				if(c.lat.convolveMat==null) ShowConvolveCheckbox.Checked = false;
+				else c.RenderConvolve();
+			}
+			else c.ReRender();
+		}
+		private void ConvolveBrightnessBar_Scroll(object sender, EventArgs e) {
+			if(c.lat.convolveMat!=null) {
+				double exp = 10.0/ConvolveBrightnessBar.Value; //value from 10 to 50, exp from 1 to 0.2
+				for(int r = 0; r<c.lat.sz; r++) {
+					for(int col = 0; col<c.lat.sz; col++) {
+						c.lat.convolveMatPP[r, col] = Math.Pow(c.lat.convolveMat[r, col], exp);
+					}
+				}
+				c.RenderConvolve();
+			}
 		}
 	}
 	public class Canvas : Panel {
@@ -826,6 +899,33 @@ namespace QMStuff_v2{
 									(float)(bmp.Height/2 - lat.aSize * (a.y + .5)),
 									(int)lat.aSize, (int)lat.aSize);
 							}
+						}
+					}
+				}
+				Invalidate();
+			}
+		}
+		public void RenderConvolve() {
+			if(lat.changes.Count > 1) {
+				using(var g = Graphics.FromImage(bmp)) {
+					g.Clear(Color.Transparent);
+					if(gs.axes) {
+						int w = bmp.Width;
+						int h = bmp.Height;
+						g.DrawLine(gs.axisPen, w/2, 0, w/2, h);
+						g.DrawLine(gs.axisPen, 0, h/2, w, h/2);
+					}
+					SolidBrush br;
+					for(int r = 0; r<lat.sz; r++) {
+						for(int c = 0; c<lat.sz; c++) {
+							double v = lat.convolveMatPP[r, c];
+							br = new SolidBrush(Color.FromArgb((int)(175*v), (int)(238*v), (int)(238*v)));
+							int x = c - lat.sz/2;
+							int y = lat.sz/2 - r;
+							g.FillRectangle(br,
+								(float)(bmp.Width/2 + lat.aSize * (x - .5)),
+								(float)(bmp.Height/2 - lat.aSize * (y + .5)),
+								(int)lat.aSize, (int)lat.aSize);
 						}
 					}
 				}
