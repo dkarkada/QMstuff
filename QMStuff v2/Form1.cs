@@ -321,6 +321,12 @@ namespace QMStuff_v2{
 			c.lat = new Lattice((int)(LatSizeValue.Value));
 			c.lat.aSize = 10 * c.gs.zoom;
 
+			SDPRegionXValue.Minimum = 1 - c.lat.sz / 2;
+			SDPRegionXValue.Maximum = c.lat.sz / 2;
+			SDPRegionYValue.Minimum = 0 - c.lat.sz / 2;
+			SDPRegionYValue.Maximum = c.lat.sz / 2 - 1;
+			SDPOffsetValue.Maximum = c.lat.sz;
+
 			BackgroundWorker worker = new BackgroundWorker();
 			worker.WorkerReportsProgress = true;
 			worker.DoWork += Worker_DoWork1;
@@ -569,6 +575,9 @@ namespace QMStuff_v2{
 			c.ReRender();
 		}
 
+		private void ShowPerimButton_Click(object sender, EventArgs e) {
+			Draw(sender);
+		}
 		private void AnalysisStartButton_Click(object sender, EventArgs e) {
 			switch (IndVarChooser.SelectedIndex) {
 				case 0:
@@ -669,9 +678,65 @@ namespace QMStuff_v2{
 			pgGraph.Draw();
 		}
 
+		private void SDPRegionXValue_ValueChanged(object sender, EventArgs e) {
+			if(SDPRegionXValue.Value + SDPRegionWValue.Value + SDPOffsetValue.Value > c.lat.sz / 2)
+				SDPRegionXValue.Value = c.lat.sz / 2 - SDPRegionWValue.Value - SDPOffsetValue.Value;
+			Draw(sender);
+		}
+		private void SDPRegionYValue_ValueChanged(object sender, EventArgs e) {
+			if(SDPRegionYValue.Value - SDPRegionHValue.Value < 0 - c.lat.sz / 2)
+				SDPRegionYValue.Value =  SDPRegionHValue.Value - c.lat.sz / 2;
+			Draw(sender);
+		}
+		private void SDPRegionWValue_ValueChanged(object sender, EventArgs e) {
+			if(SDPRegionXValue.Value + SDPRegionWValue.Value + SDPOffsetValue.Value > c.lat.sz / 2)
+				SDPRegionWValue.Value = c.lat.sz / 2 - SDPRegionXValue.Value - SDPOffsetValue.Value;
+			Draw(sender);
+		}
+		private void SDPRegionHValue_ValueChanged(object sender, EventArgs e) {
+			if(SDPRegionYValue.Value - SDPRegionHValue.Value < 0 - c.lat.sz / 2)
+				SDPRegionHValue.Value = SDPRegionYValue.Value + c.lat.sz / 2;
+			Draw(sender);
+		}
+		private void SDPOffsetValue_ValueChanged(object sender, EventArgs e) {
+			if(SDPRegionXValue.Value + SDPRegionWValue.Value + SDPOffsetValue.Value > c.lat.sz / 2)
+				SDPOffsetValue.Value = c.lat.sz / 2 - SDPRegionXValue.Value - SDPRegionWValue.Value;
+			Draw(sender);
+		}
+		private void SDPShowRegionCheckbox_CheckedChanged(object sender, EventArgs e) {
+			Draw(sender);
+		}
+		private void Draw(object sender) {
+			if(ShowConvolveCheckbox.Checked) {
+				if(c.lat.convolveMat==null) ShowConvolveCheckbox.Checked = false;
+				else c.RenderConvolve();
+			}
+			else c.ReRender();
+
+			if(SDPShowRegionCheckbox.Checked) {
+				int x = (int)SDPRegionXValue.Value;
+				int y = (int)SDPRegionYValue.Value;
+				int w = (int)SDPRegionWValue.Value;
+				int h = (int)SDPRegionHValue.Value;
+				int o = (int)SDPOffsetValue.Value;
+				c.RenderSDPFrame(x, y, w, h, o);
+			}
+
+			if(sender.Equals(ShowPerimButton)) {
+				int[] boxSizes = { 1, 2, 3, 4, 5, 6, 8, 10, 20, 50 };
+				int boxSz = boxSizes[TightnessChooser.SelectedIndex];
+				List<List<Point>> perims = c.lat.GetPerims((int)(stepCounter.Value), boxSz);
+				c.RenderPerims(perims);
+			}
+		}
 		private void SlidingDotStartButton_Click(object sender, EventArgs e) {
 			if(c.lat.changes.Count > 1) {
-				c.lat.StartSlideDot((int)(stepCounter.Value));
+				int x = (int)SDPRegionXValue.Value;
+				int y = (int)SDPRegionYValue.Value;
+				int w = (int)SDPRegionWValue.Value;
+				int h = (int)SDPRegionHValue.Value;
+				int o = (int)SDPOffsetValue.Value;
+				c.lat.StartSlideDot((int)(stepCounter.Value), x, y, w, h, o);
 				CCGraph.ChartAreas[0].AxisX.Title = "r";
 				CCGraph.ChartAreas[0].AxisY.Title = "C";
 				CCGraph.Series[0].Points.Clear();
@@ -681,7 +746,7 @@ namespace QMStuff_v2{
 					CCGraph.Series[0].Points.Add(dp);
 				}
 				if(c.lat.convolveMat!=null) {
-					c.lat.StartSlideDotConvolved();
+					c.lat.StartSlideDotConvolved(x, y, w, h, o);
 					foreach(Point p in c.lat.SlideData.convolvedHoriz) {
 						DataPoint dp = new DataPoint(p.X, p.Y);
 						CCGraph.Series[1].Points.Add(dp);
@@ -746,11 +811,7 @@ namespace QMStuff_v2{
 			StDevLabel.Text = "σ = " + Math.Round(stdev, 4);
 		}
 		private void ShowConvolveCheckbox_CheckedChanged(object sender, EventArgs e) {
-			if(ShowConvolveCheckbox.Checked) {
-				if(c.lat.convolveMat==null) ShowConvolveCheckbox.Checked = false;
-				else c.RenderConvolve();
-			}
-			else c.ReRender();
+			Draw(sender);
 		}
 		private void ConvolveBrightnessBar_Scroll(object sender, EventArgs e) {
 			if(c.lat.convolveMat!=null) {
@@ -932,6 +993,50 @@ namespace QMStuff_v2{
 				Invalidate();
 			}
 		}
+		public void RenderSDPFrame(int x, int y, int w, int h, int o) {
+			using(var g = Graphics.FromImage(bmp)) {
+				Pen pen = new Pen(Color.Red, 2);
+				SolidBrush br = new SolidBrush(Color.FromArgb(150, Color.Red));
+				g.DrawRectangle(pen,
+					(float)(bmp.Width/2 + lat.aSize * (x - .5)),
+					(float)(bmp.Height/2 - lat.aSize * (y + .5)),
+					(float) (lat.aSize * w), (float) (lat.aSize * h));
+				g.FillRectangle(br,
+					 (float)(bmp.Width/2 + lat.aSize * (x - .5)),
+					 (float)(bmp.Height/2 - lat.aSize * (y + .5)),
+					 (float)(lat.aSize * w), (float)(lat.aSize * h));
+
+				pen = new Pen(Color.Purple, 2);
+				br = new SolidBrush(Color.FromArgb(150, Color.Purple));
+				g.DrawRectangle(pen,
+					(float)(bmp.Width/2 + lat.aSize * (x - .5 + o)),
+					(float)(bmp.Height/2 - lat.aSize * (y + .5)),
+					(float)(lat.aSize * w), (float)(lat.aSize * h));
+				g.FillRectangle(br,
+					(float)(bmp.Width/2 + lat.aSize * (x - .5 + o)),
+					(float)(bmp.Height/2 - lat.aSize * (y + .5)),
+					(float)(lat.aSize * w), (float)(lat.aSize * h));
+			}
+			Invalidate();
+		}
+		public void RenderPerims(List<List<Point>> perims) {
+			using(var g = Graphics.FromImage(bmp)) {
+				Pen pen = new Pen(Color.Red, 3);
+				foreach(List<Point> vertices in perims) {
+					Point[] pts = new Point[vertices.Count];
+					for(int i = 0; i<vertices.Count; i++) {
+						int x = vertices[i].X;
+						int y = vertices[i].Y;
+						pts[i] = new Point((int)(bmp.Width/2 + lat.aSize * (x)),
+							(int)(bmp.Height/2 - lat.aSize * (y)));
+					}
+					if(pts.Length>1)
+						g.DrawPolygon(pen, pts);
+				}
+			}
+			Invalidate();
+		}
+
 		public void Restart() {
 			ind = 0;
 			lat.ClearChanges();

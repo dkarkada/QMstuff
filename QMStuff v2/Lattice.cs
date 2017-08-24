@@ -218,6 +218,49 @@ namespace QMStuff_v2 {
 		public void ClearChanges() {
 			changes = new List<LatticeChange>();
 		}
+		public List<List<Point>> GetPerims(int ind, int boxSz) {
+			int offset = 50;
+			bool[,] boxMat = new bool[sz + offset*2, sz + offset*2];
+			Tuple<List<Atom>, int> result = latFrameList.GetNearestFrame(ind);
+			foreach(Atom a in result.Item1) {
+				int r = ConvertY(a.y);
+				int c = ConvertX(a.x);
+				boxMat[r + offset, c + offset] = true;
+			}
+			if(result.Item2 < ind) {
+				for(int i = result.Item2; i < ind; i++) {
+					LatticeChange lc = changes[i];
+					foreach(Atom a in lc.on) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + offset, c + offset] = true;
+					}
+					foreach(Atom a in lc.off) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + offset, c + offset] = false;
+					}
+				}
+			}
+			else {
+				for(int i = result.Item2; i >= ind; i--) {
+					LatticeChange lc = changes[i];
+					foreach(Atom a in lc.off) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + offset, c + offset] = true;
+					}
+					foreach(Atom a in lc.on) {
+						int r = ConvertY(a.y);
+						int c = ConvertX(a.x);
+						boxMat[r + offset, c + offset] = false;
+					}
+				}
+			}
+			FitBox box = new FitBox(boxSz, boxMat);
+			box.CalcVerts();
+			return box.perimList;
+		}
 		public void StartSpatialAnalysis(int ind) {
 			int offset = 50;
 			bool[,] boxMat = new bool[sz + offset*2, sz + offset*2];
@@ -312,7 +355,7 @@ namespace QMStuff_v2 {
 				ind+=period;
 			}
 		}
-		public void StartSlideDot(int ind) {
+		public void StartSlideDot(int ind, int x, int y, int w, int h, int o) {
 			//excited is updated to index
 			Tuple<List<Atom>, int> result = latFrameList.GetNearestFrame(ind);
 			List<Point> excited = new List<Point>();
@@ -338,25 +381,20 @@ namespace QMStuff_v2 {
 				}
 			}
 
-			//get bounds of aggregate
-			int maxX = int.MinValue; int minX = int.MaxValue; int maxY = int.MinValue; int minY = int.MaxValue;
+			//convert atom lattice to 1/0 lattice
+			double[,] state = new double[sz, sz];
 			foreach(Point p in excited) {
-				maxX = Math.Max(maxX, p.X);
-				minX = Math.Min(minX, p.X);
-				maxY = Math.Max(maxY, p.Y);
-				minY = Math.Min(minY, p.Y);
-			}
-			double[,] state = new double[maxY-minY+1, maxX-minX+1];
-			foreach(Point p in excited) {
-				int r = maxY - p.Y;
-				int c = p.X - minX;
+				int r = sz/2 - p.Y;
+				int c = p.X + sz/2;
 				state[r, c] = 1;
 			}
 			if(SlideData==null) SlideData = new SlidingDotData();
-			SlideData = analytics.SlideDot(SlideData, state, "horizontal");
+			Rectangle frame = new Rectangle(x + sz/2, sz/2 - y, w, h);
+			SlideData = analytics.SlideDot(SlideData, state, "horizontal", frame, o);
 		}
-		public void StartSlideDotConvolved() {
-			SlideData = analytics.SlideDot(SlideData, convolveMatPP, "convolvedHoriz");
+		public void StartSlideDotConvolved(int x, int y, int w, int h, int o) {
+			Rectangle frame = new Rectangle(x + sz/2, sz/2 - y, w, h);
+			SlideData = analytics.SlideDot(SlideData, convolveMatPP, "convolvedHoriz", frame, o);
 		}
 		public void StartConvolve(double stdev, int ind) {
 			//excited is updated to index

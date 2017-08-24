@@ -97,6 +97,7 @@
 			this.DepVarChooser = new System.Windows.Forms.ComboBox();
 			this.DepVarLabel = new System.Windows.Forms.Label();
 			this.MouseLabel = new System.Windows.Forms.Label();
+			this.ShowPerimButton = new System.Windows.Forms.Button();
 			this.Graph = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			this.PGAnalyticsTab = new System.Windows.Forms.TabPage();
 			this.AnalyticsPGFlowLayout = new System.Windows.Forms.FlowLayoutPanel();
@@ -122,11 +123,17 @@
 			this.CCAnalyticsTab = new System.Windows.Forms.TabPage();
 			this.CCFlowLayoutPanel = new System.Windows.Forms.FlowLayoutPanel();
 			this.SlidingDotGroup = new System.Windows.Forms.Panel();
-			this.SDPAutoRangeCheckbox = new System.Windows.Forms.CheckBox();
-			this.SDPDomainStartLabel = new System.Windows.Forms.Label();
-			this.SDPDomainStartCounter = new System.Windows.Forms.NumericUpDown();
-			this.SDPDomainEndLabel = new System.Windows.Forms.Label();
-			this.SDPDomainEndCounter = new System.Windows.Forms.NumericUpDown();
+			this.SDPShowRegionCheckbox = new System.Windows.Forms.CheckBox();
+			this.SDPRegionHLabel = new System.Windows.Forms.Label();
+			this.SDPRegionWLabel = new System.Windows.Forms.Label();
+			this.SDPRegionYLabel = new System.Windows.Forms.Label();
+			this.SDPRegionXLabel = new System.Windows.Forms.Label();
+			this.SDPRegionHValue = new System.Windows.Forms.NumericUpDown();
+			this.SDPRegionWValue = new System.Windows.Forms.NumericUpDown();
+			this.SDPRegionYValue = new System.Windows.Forms.NumericUpDown();
+			this.SDPRegionXValue = new System.Windows.Forms.NumericUpDown();
+			this.SDPOffsetValue = new System.Windows.Forms.NumericUpDown();
+			this.SDPOffsetLabel = new System.Windows.Forms.Label();
 			this.SlidingDotStartButton = new System.Windows.Forms.Button();
 			this.SlidingDotLabel = new System.Windows.Forms.Label();
 			this.ConvolutionGroup = new System.Windows.Forms.Panel();
@@ -137,6 +144,13 @@
 			this.StDevValue = new System.Windows.Forms.TrackBar();
 			this.StDevLabel = new System.Windows.Forms.Label();
 			this.ConvolutionLabel = new System.Windows.Forms.Label();
+			this.panel3 = new System.Windows.Forms.Panel();
+			this.SDPAutoRangeCheckbox = new System.Windows.Forms.CheckBox();
+			this.label3 = new System.Windows.Forms.Label();
+			this.SDPDomainStartLabel = new System.Windows.Forms.Label();
+			this.SDPDomainStartCounter = new System.Windows.Forms.NumericUpDown();
+			this.SDPDomainEndCounter = new System.Windows.Forms.NumericUpDown();
+			this.SDPDomainEndLabel = new System.Windows.Forms.Label();
 			this.CCGraph = new System.Windows.Forms.DataVisualization.Charting.Chart();
 			((System.ComponentModel.ISupportInitialize)(this.stepCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.yProbValue)).BeginInit();
@@ -175,11 +189,17 @@
 			this.CCAnalyticsTab.SuspendLayout();
 			this.CCFlowLayoutPanel.SuspendLayout();
 			this.SlidingDotGroup.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.SDPDomainStartCounter)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.SDPDomainEndCounter)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPRegionHValue)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPRegionWValue)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPRegionYValue)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPRegionXValue)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPOffsetValue)).BeginInit();
 			this.ConvolutionGroup.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ConvolveBrightnessBar)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.StDevValue)).BeginInit();
+			this.panel3.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.SDPDomainStartCounter)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPDomainEndCounter)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -265,7 +285,7 @@
 			this.xProbBar.Size = new System.Drawing.Size(197, 45);
 			this.xProbBar.TabIndex = 8;
 			this.xProbBar.TickFrequency = 10;
-			this.xProbBar.Value = 100;
+			this.xProbBar.Value = 25;
 			this.xProbBar.Scroll += new System.EventHandler(this.xProbBar_Scroll);
 			// 
 			// restartButton
@@ -297,7 +317,7 @@
 			this.yProbBar.Size = new System.Drawing.Size(197, 45);
 			this.yProbBar.TabIndex = 3;
 			this.yProbBar.TickFrequency = 10;
-			this.yProbBar.Value = 100;
+			this.yProbBar.Value = 25;
 			this.yProbBar.Scroll += new System.EventHandler(this.yProbBar_Scroll);
 			// 
 			// playButton
@@ -497,6 +517,7 @@
 			this.gammaBar.Size = new System.Drawing.Size(197, 45);
 			this.gammaBar.TabIndex = 14;
 			this.gammaBar.TickFrequency = 10;
+			this.gammaBar.Value = 50;
 			this.gammaBar.Scroll += new System.EventHandler(this.gammaBar_Scroll);
 			// 
 			// GenerateButton
@@ -799,6 +820,7 @@
 			this.AnalyticsFlowLayout.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(75)))));
 			this.AnalyticsFlowLayout.Controls.Add(this.IndVarPanel);
 			this.AnalyticsFlowLayout.Controls.Add(this.panel1);
+			this.AnalyticsFlowLayout.Controls.Add(this.ShowPerimButton);
 			this.AnalyticsFlowLayout.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.AnalyticsFlowLayout.Location = new System.Drawing.Point(3, 3);
 			this.AnalyticsFlowLayout.Name = "AnalyticsFlowLayout";
@@ -970,6 +992,17 @@
 			this.MouseLabel.Size = new System.Drawing.Size(42, 17);
 			this.MouseLabel.TabIndex = 38;
 			this.MouseLabel.Text = "(0, 0)";
+			// 
+			// ShowPerimButton
+			// 
+			this.ShowPerimButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.ShowPerimButton.Location = new System.Drawing.Point(671, 13);
+			this.ShowPerimButton.Name = "ShowPerimButton";
+			this.ShowPerimButton.Size = new System.Drawing.Size(131, 40);
+			this.ShowPerimButton.TabIndex = 35;
+			this.ShowPerimButton.Text = "Show Perimeter";
+			this.ShowPerimButton.UseVisualStyleBackColor = true;
+			this.ShowPerimButton.Click += new System.EventHandler(this.ShowPerimButton_Click);
 			// 
 			// Graph
 			// 
@@ -1305,6 +1338,7 @@
 			this.CCFlowLayoutPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(60)))), ((int)(((byte)(75)))));
 			this.CCFlowLayoutPanel.Controls.Add(this.SlidingDotGroup);
 			this.CCFlowLayoutPanel.Controls.Add(this.ConvolutionGroup);
+			this.CCFlowLayoutPanel.Controls.Add(this.panel3);
 			this.CCFlowLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.CCFlowLayoutPanel.Location = new System.Drawing.Point(0, 0);
 			this.CCFlowLayoutPanel.Name = "CCFlowLayoutPanel";
@@ -1316,98 +1350,180 @@
 			// 
 			this.SlidingDotGroup.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
 			this.SlidingDotGroup.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			this.SlidingDotGroup.Controls.Add(this.SDPAutoRangeCheckbox);
-			this.SlidingDotGroup.Controls.Add(this.SDPDomainStartLabel);
-			this.SlidingDotGroup.Controls.Add(this.SDPDomainStartCounter);
-			this.SlidingDotGroup.Controls.Add(this.SDPDomainEndLabel);
-			this.SlidingDotGroup.Controls.Add(this.SDPDomainEndCounter);
+			this.SlidingDotGroup.Controls.Add(this.SDPShowRegionCheckbox);
+			this.SlidingDotGroup.Controls.Add(this.SDPRegionHLabel);
+			this.SlidingDotGroup.Controls.Add(this.SDPRegionWLabel);
+			this.SlidingDotGroup.Controls.Add(this.SDPRegionYLabel);
+			this.SlidingDotGroup.Controls.Add(this.SDPRegionXLabel);
+			this.SlidingDotGroup.Controls.Add(this.SDPRegionHValue);
+			this.SlidingDotGroup.Controls.Add(this.SDPRegionWValue);
+			this.SlidingDotGroup.Controls.Add(this.SDPRegionYValue);
+			this.SlidingDotGroup.Controls.Add(this.SDPRegionXValue);
+			this.SlidingDotGroup.Controls.Add(this.SDPOffsetValue);
+			this.SlidingDotGroup.Controls.Add(this.SDPOffsetLabel);
 			this.SlidingDotGroup.Controls.Add(this.SlidingDotStartButton);
 			this.SlidingDotGroup.Controls.Add(this.SlidingDotLabel);
 			this.SlidingDotGroup.Location = new System.Drawing.Point(30, 30);
 			this.SlidingDotGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.SlidingDotGroup.Name = "SlidingDotGroup";
 			this.SlidingDotGroup.Padding = new System.Windows.Forms.Padding(20);
-			this.SlidingDotGroup.Size = new System.Drawing.Size(289, 255);
+			this.SlidingDotGroup.Size = new System.Drawing.Size(336, 255);
 			this.SlidingDotGroup.TabIndex = 42;
 			// 
-			// SDPAutoRangeCheckbox
+			// SDPShowRegionCheckbox
 			// 
-			this.SDPAutoRangeCheckbox.AutoSize = true;
-			this.SDPAutoRangeCheckbox.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.SDPAutoRangeCheckbox.Location = new System.Drawing.Point(26, 199);
-			this.SDPAutoRangeCheckbox.Name = "SDPAutoRangeCheckbox";
-			this.SDPAutoRangeCheckbox.Size = new System.Drawing.Size(140, 21);
-			this.SDPAutoRangeCheckbox.TabIndex = 42;
-			this.SDPAutoRangeCheckbox.Text = "Auto-adjust range";
-			this.SDPAutoRangeCheckbox.UseVisualStyleBackColor = true;
-			this.SDPAutoRangeCheckbox.CheckedChanged += new System.EventHandler(this.SDPAutoRangeCheckbox_CheckedChanged);
+			this.SDPShowRegionCheckbox.AutoSize = true;
+			this.SDPShowRegionCheckbox.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+			this.SDPShowRegionCheckbox.Location = new System.Drawing.Point(185, 123);
+			this.SDPShowRegionCheckbox.Name = "SDPShowRegionCheckbox";
+			this.SDPShowRegionCheckbox.Size = new System.Drawing.Size(105, 21);
+			this.SDPShowRegionCheckbox.TabIndex = 52;
+			this.SDPShowRegionCheckbox.Text = "Show region";
+			this.SDPShowRegionCheckbox.UseVisualStyleBackColor = true;
+			this.SDPShowRegionCheckbox.CheckedChanged += new System.EventHandler(this.SDPShowRegionCheckbox_CheckedChanged);
 			// 
-			// SDPDomainStartLabel
+			// SDPRegionHLabel
 			// 
-			this.SDPDomainStartLabel.AutoSize = true;
-			this.SDPDomainStartLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.SDPDomainStartLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.SDPDomainStartLabel.Location = new System.Drawing.Point(23, 119);
-			this.SDPDomainStartLabel.Name = "SDPDomainStartLabel";
-			this.SDPDomainStartLabel.Size = new System.Drawing.Size(143, 17);
-			this.SDPDomainStartLabel.TabIndex = 38;
-			this.SDPDomainStartLabel.Text = "Domain Lower Bound";
-			this.SDPDomainStartLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			this.SDPRegionHLabel.AutoSize = true;
+			this.SDPRegionHLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPRegionHLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPRegionHLabel.Location = new System.Drawing.Point(182, 94);
+			this.SDPRegionHLabel.Name = "SDPRegionHLabel";
+			this.SDPRegionHLabel.Size = new System.Drawing.Size(16, 17);
+			this.SDPRegionHLabel.TabIndex = 51;
+			this.SDPRegionHLabel.Text = "h";
+			this.SDPRegionHLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
-			// SDPDomainStartCounter
+			// SDPRegionWLabel
 			// 
-			this.SDPDomainStartCounter.Location = new System.Drawing.Point(199, 117);
-			this.SDPDomainStartCounter.Maximum = new decimal(new int[] {
+			this.SDPRegionWLabel.AutoSize = true;
+			this.SDPRegionWLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPRegionWLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPRegionWLabel.Location = new System.Drawing.Point(182, 65);
+			this.SDPRegionWLabel.Name = "SDPRegionWLabel";
+			this.SDPRegionWLabel.Size = new System.Drawing.Size(17, 17);
+			this.SDPRegionWLabel.TabIndex = 50;
+			this.SDPRegionWLabel.Text = "w";
+			this.SDPRegionWLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// SDPRegionYLabel
+			// 
+			this.SDPRegionYLabel.AutoSize = true;
+			this.SDPRegionYLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPRegionYLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPRegionYLabel.Location = new System.Drawing.Point(53, 94);
+			this.SDPRegionYLabel.Name = "SDPRegionYLabel";
+			this.SDPRegionYLabel.Size = new System.Drawing.Size(15, 17);
+			this.SDPRegionYLabel.TabIndex = 49;
+			this.SDPRegionYLabel.Text = "y";
+			this.SDPRegionYLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// SDPRegionXLabel
+			// 
+			this.SDPRegionXLabel.AutoSize = true;
+			this.SDPRegionXLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPRegionXLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPRegionXLabel.Location = new System.Drawing.Point(53, 65);
+			this.SDPRegionXLabel.Name = "SDPRegionXLabel";
+			this.SDPRegionXLabel.Size = new System.Drawing.Size(14, 17);
+			this.SDPRegionXLabel.TabIndex = 48;
+			this.SDPRegionXLabel.Text = "x";
+			this.SDPRegionXLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// SDPRegionHValue
+			// 
+			this.SDPRegionHValue.Location = new System.Drawing.Point(225, 92);
+			this.SDPRegionHValue.Maximum = new decimal(new int[] {
             1000,
             0,
             0,
             0});
-			this.SDPDomainStartCounter.Name = "SDPDomainStartCounter";
-			this.SDPDomainStartCounter.Size = new System.Drawing.Size(65, 23);
-			this.SDPDomainStartCounter.TabIndex = 37;
-			this.SDPDomainStartCounter.ValueChanged += new System.EventHandler(this.SDPDomainStartCounter_ValueChanged);
+			this.SDPRegionHValue.Name = "SDPRegionHValue";
+			this.SDPRegionHValue.Size = new System.Drawing.Size(65, 23);
+			this.SDPRegionHValue.TabIndex = 47;
+			this.SDPRegionHValue.ValueChanged += new System.EventHandler(this.SDPRegionHValue_ValueChanged);
 			// 
-			// SDPDomainEndLabel
+			// SDPRegionWValue
 			// 
-			this.SDPDomainEndLabel.AutoSize = true;
-			this.SDPDomainEndLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.SDPDomainEndLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-			this.SDPDomainEndLabel.Location = new System.Drawing.Point(23, 156);
-			this.SDPDomainEndLabel.Name = "SDPDomainEndLabel";
-			this.SDPDomainEndLabel.Size = new System.Drawing.Size(144, 17);
-			this.SDPDomainEndLabel.TabIndex = 36;
-			this.SDPDomainEndLabel.Text = "Domain Upper Bound";
-			this.SDPDomainEndLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-			// 
-			// SDPDomainEndCounter
-			// 
-			this.SDPDomainEndCounter.Location = new System.Drawing.Point(199, 154);
-			this.SDPDomainEndCounter.Maximum = new decimal(new int[] {
+			this.SDPRegionWValue.Location = new System.Drawing.Point(225, 63);
+			this.SDPRegionWValue.Maximum = new decimal(new int[] {
             1000,
             0,
             0,
             0});
-			this.SDPDomainEndCounter.Minimum = new decimal(new int[] {
-            1,
+			this.SDPRegionWValue.Name = "SDPRegionWValue";
+			this.SDPRegionWValue.Size = new System.Drawing.Size(65, 23);
+			this.SDPRegionWValue.TabIndex = 46;
+			this.SDPRegionWValue.ValueChanged += new System.EventHandler(this.SDPRegionWValue_ValueChanged);
+			// 
+			// SDPRegionYValue
+			// 
+			this.SDPRegionYValue.Location = new System.Drawing.Point(88, 92);
+			this.SDPRegionYValue.Maximum = new decimal(new int[] {
+            400,
             0,
             0,
             0});
-			this.SDPDomainEndCounter.Name = "SDPDomainEndCounter";
-			this.SDPDomainEndCounter.Size = new System.Drawing.Size(65, 23);
-			this.SDPDomainEndCounter.TabIndex = 35;
-			this.SDPDomainEndCounter.Value = new decimal(new int[] {
-            1,
+			this.SDPRegionYValue.Minimum = new decimal(new int[] {
+            400,
+            0,
+            0,
+            -2147483648});
+			this.SDPRegionYValue.Name = "SDPRegionYValue";
+			this.SDPRegionYValue.Size = new System.Drawing.Size(65, 23);
+			this.SDPRegionYValue.TabIndex = 45;
+			this.SDPRegionYValue.ValueChanged += new System.EventHandler(this.SDPRegionYValue_ValueChanged);
+			// 
+			// SDPRegionXValue
+			// 
+			this.SDPRegionXValue.Location = new System.Drawing.Point(88, 63);
+			this.SDPRegionXValue.Maximum = new decimal(new int[] {
+            400,
             0,
             0,
             0});
-			this.SDPDomainEndCounter.ValueChanged += new System.EventHandler(this.SDPDomainEndCounter_ValueChanged);
+			this.SDPRegionXValue.Minimum = new decimal(new int[] {
+            400,
+            0,
+            0,
+            -2147483648});
+			this.SDPRegionXValue.Name = "SDPRegionXValue";
+			this.SDPRegionXValue.Size = new System.Drawing.Size(65, 23);
+			this.SDPRegionXValue.TabIndex = 44;
+			this.SDPRegionXValue.ValueChanged += new System.EventHandler(this.SDPRegionXValue_ValueChanged);
+			// 
+			// SDPOffsetValue
+			// 
+			this.SDPOffsetValue.Location = new System.Drawing.Point(88, 121);
+			this.SDPOffsetValue.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.SDPOffsetValue.Name = "SDPOffsetValue";
+			this.SDPOffsetValue.Size = new System.Drawing.Size(65, 23);
+			this.SDPOffsetValue.TabIndex = 43;
+			this.SDPOffsetValue.ValueChanged += new System.EventHandler(this.SDPOffsetValue_ValueChanged);
+			// 
+			// SDPOffsetLabel
+			// 
+			this.SDPOffsetLabel.AutoSize = true;
+			this.SDPOffsetLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPOffsetLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPOffsetLabel.Location = new System.Drawing.Point(36, 123);
+			this.SDPOffsetLabel.Name = "SDPOffsetLabel";
+			this.SDPOffsetLabel.Size = new System.Drawing.Size(46, 17);
+			this.SDPOffsetLabel.TabIndex = 42;
+			this.SDPOffsetLabel.Text = "Offset";
+			this.SDPOffsetLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// SlidingDotStartButton
 			// 
+			this.SlidingDotStartButton.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.SlidingDotStartButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.SlidingDotStartButton.Location = new System.Drawing.Point(76, 62);
+			this.SlidingDotStartButton.Location = new System.Drawing.Point(20, 193);
 			this.SlidingDotStartButton.Name = "SlidingDotStartButton";
-			this.SlidingDotStartButton.Size = new System.Drawing.Size(131, 40);
+			this.SlidingDotStartButton.Size = new System.Drawing.Size(294, 40);
 			this.SlidingDotStartButton.TabIndex = 34;
 			this.SlidingDotStartButton.Text = "Start";
 			this.SlidingDotStartButton.UseVisualStyleBackColor = true;
@@ -1420,7 +1536,7 @@
 			this.SlidingDotLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
 			this.SlidingDotLabel.Location = new System.Drawing.Point(20, 20);
 			this.SlidingDotLabel.Name = "SlidingDotLabel";
-			this.SlidingDotLabel.Size = new System.Drawing.Size(247, 17);
+			this.SlidingDotLabel.Size = new System.Drawing.Size(294, 17);
 			this.SlidingDotLabel.TabIndex = 28;
 			this.SlidingDotLabel.Text = "Sliding Dot Product";
 			this.SlidingDotLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -1436,7 +1552,7 @@
 			this.ConvolutionGroup.Controls.Add(this.StDevValue);
 			this.ConvolutionGroup.Controls.Add(this.StDevLabel);
 			this.ConvolutionGroup.Controls.Add(this.ConvolutionLabel);
-			this.ConvolutionGroup.Location = new System.Drawing.Point(359, 30);
+			this.ConvolutionGroup.Location = new System.Drawing.Point(406, 30);
 			this.ConvolutionGroup.Margin = new System.Windows.Forms.Padding(20);
 			this.ConvolutionGroup.Name = "ConvolutionGroup";
 			this.ConvolutionGroup.Padding = new System.Windows.Forms.Padding(20);
@@ -1474,7 +1590,7 @@
 			this.ConvolveButton.Name = "ConvolveButton";
 			this.ConvolveButton.Size = new System.Drawing.Size(131, 40);
 			this.ConvolveButton.TabIndex = 37;
-			this.ConvolveButton.Text = "Render";
+			this.ConvolveButton.Text = "Convolve";
 			this.ConvolveButton.UseVisualStyleBackColor = true;
 			this.ConvolveButton.Click += new System.EventHandler(this.ConvolveButton_Click);
 			// 
@@ -1524,6 +1640,107 @@
 			this.ConvolutionLabel.TabIndex = 37;
 			this.ConvolutionLabel.Text = "Gaussian Convolution";
 			this.ConvolutionLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// panel3
+			// 
+			this.panel3.AccessibleRole = System.Windows.Forms.AccessibleRole.Grip;
+			this.panel3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panel3.Controls.Add(this.SDPAutoRangeCheckbox);
+			this.panel3.Controls.Add(this.label3);
+			this.panel3.Controls.Add(this.SDPDomainStartLabel);
+			this.panel3.Controls.Add(this.SDPDomainStartCounter);
+			this.panel3.Controls.Add(this.SDPDomainEndCounter);
+			this.panel3.Controls.Add(this.SDPDomainEndLabel);
+			this.panel3.Location = new System.Drawing.Point(30, 325);
+			this.panel3.Margin = new System.Windows.Forms.Padding(20);
+			this.panel3.Name = "panel3";
+			this.panel3.Padding = new System.Windows.Forms.Padding(20);
+			this.panel3.Size = new System.Drawing.Size(312, 195);
+			this.panel3.TabIndex = 43;
+			// 
+			// SDPAutoRangeCheckbox
+			// 
+			this.SDPAutoRangeCheckbox.AutoSize = true;
+			this.SDPAutoRangeCheckbox.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPAutoRangeCheckbox.Location = new System.Drawing.Point(56, 146);
+			this.SDPAutoRangeCheckbox.Name = "SDPAutoRangeCheckbox";
+			this.SDPAutoRangeCheckbox.Size = new System.Drawing.Size(140, 21);
+			this.SDPAutoRangeCheckbox.TabIndex = 42;
+			this.SDPAutoRangeCheckbox.Text = "Auto-adjust range";
+			this.SDPAutoRangeCheckbox.UseVisualStyleBackColor = true;
+			this.SDPAutoRangeCheckbox.CheckedChanged += new System.EventHandler(this.SDPAutoRangeCheckbox_CheckedChanged);
+			// 
+			// label3
+			// 
+			this.label3.Dock = System.Windows.Forms.DockStyle.Top;
+			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.label3.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.label3.Location = new System.Drawing.Point(20, 20);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(270, 17);
+			this.label3.TabIndex = 28;
+			this.label3.Text = "Graph properties";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// SDPDomainStartLabel
+			// 
+			this.SDPDomainStartLabel.AutoSize = true;
+			this.SDPDomainStartLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPDomainStartLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPDomainStartLabel.Location = new System.Drawing.Point(53, 66);
+			this.SDPDomainStartLabel.Name = "SDPDomainStartLabel";
+			this.SDPDomainStartLabel.Size = new System.Drawing.Size(82, 17);
+			this.SDPDomainStartLabel.TabIndex = 38;
+			this.SDPDomainStartLabel.Text = "Domain Min";
+			this.SDPDomainStartLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+			// 
+			// SDPDomainStartCounter
+			// 
+			this.SDPDomainStartCounter.Location = new System.Drawing.Point(185, 64);
+			this.SDPDomainStartCounter.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.SDPDomainStartCounter.Name = "SDPDomainStartCounter";
+			this.SDPDomainStartCounter.Size = new System.Drawing.Size(65, 23);
+			this.SDPDomainStartCounter.TabIndex = 37;
+			this.SDPDomainStartCounter.ValueChanged += new System.EventHandler(this.SDPDomainStartCounter_ValueChanged);
+			// 
+			// SDPDomainEndCounter
+			// 
+			this.SDPDomainEndCounter.Location = new System.Drawing.Point(185, 101);
+			this.SDPDomainEndCounter.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+			this.SDPDomainEndCounter.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.SDPDomainEndCounter.Name = "SDPDomainEndCounter";
+			this.SDPDomainEndCounter.Size = new System.Drawing.Size(65, 23);
+			this.SDPDomainEndCounter.TabIndex = 35;
+			this.SDPDomainEndCounter.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.SDPDomainEndCounter.ValueChanged += new System.EventHandler(this.SDPDomainEndCounter_ValueChanged);
+			// 
+			// SDPDomainEndLabel
+			// 
+			this.SDPDomainEndLabel.AutoSize = true;
+			this.SDPDomainEndLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.SDPDomainEndLabel.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+			this.SDPDomainEndLabel.Location = new System.Drawing.Point(53, 103);
+			this.SDPDomainEndLabel.Name = "SDPDomainEndLabel";
+			this.SDPDomainEndLabel.Size = new System.Drawing.Size(85, 17);
+			this.SDPDomainEndLabel.TabIndex = 36;
+			this.SDPDomainEndLabel.Text = "Domain Max";
+			this.SDPDomainEndLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
 			// 
 			// CCGraph
 			// 
@@ -1628,12 +1845,19 @@
 			this.CCFlowLayoutPanel.ResumeLayout(false);
 			this.SlidingDotGroup.ResumeLayout(false);
 			this.SlidingDotGroup.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.SDPDomainStartCounter)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.SDPDomainEndCounter)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPRegionHValue)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPRegionWValue)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPRegionYValue)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPRegionXValue)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPOffsetValue)).EndInit();
 			this.ConvolutionGroup.ResumeLayout(false);
 			this.ConvolutionGroup.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.ConvolveBrightnessBar)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.StDevValue)).EndInit();
+			this.panel3.ResumeLayout(false);
+			this.panel3.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.SDPDomainStartCounter)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.SDPDomainEndCounter)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.CCGraph)).EndInit();
 			this.ResumeLayout(false);
 
@@ -1742,6 +1966,20 @@
 		private System.Windows.Forms.Label SDPDomainStartLabel;
 		private System.Windows.Forms.NumericUpDown SDPDomainStartCounter;
 		private System.Windows.Forms.CheckBox SDPAutoRangeCheckbox;
+		private System.Windows.Forms.NumericUpDown SDPOffsetValue;
+		private System.Windows.Forms.Label SDPOffsetLabel;
+		private System.Windows.Forms.Panel panel3;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label SDPRegionHLabel;
+		private System.Windows.Forms.Label SDPRegionWLabel;
+		private System.Windows.Forms.Label SDPRegionYLabel;
+		private System.Windows.Forms.Label SDPRegionXLabel;
+		private System.Windows.Forms.NumericUpDown SDPRegionHValue;
+		private System.Windows.Forms.NumericUpDown SDPRegionWValue;
+		private System.Windows.Forms.NumericUpDown SDPRegionYValue;
+		private System.Windows.Forms.NumericUpDown SDPRegionXValue;
+		private System.Windows.Forms.CheckBox SDPShowRegionCheckbox;
+		private System.Windows.Forms.Button ShowPerimButton;
 	}
 }
 

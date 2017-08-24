@@ -9,7 +9,7 @@ namespace QMStuff_v2 {
 	public class AnalysisCalc {
 		public FitBox box;
 		bool[,] latState;
-		public List<Point> vertices;
+		public List<List<Point>> perims;
 		public int bound;
 		public int totalExcited;
 
@@ -19,7 +19,7 @@ namespace QMStuff_v2 {
 			latState = mat;
 			box = new FitBox(size, latState);
 			box.CalcVerts();
-			vertices = box.vertices;
+			perims = box.perimList;
 			double perim = CalcPerim();
 			double area = CalcArea();
 			double density = Math.Min(totalExcited / area, 1);
@@ -27,7 +27,7 @@ namespace QMStuff_v2 {
 			double[] info = { perim, area, density, avgRad };
 			return info;
 		}
-		public SlidingDotData SlideDot(SlidingDotData data, double[,] state, String type) {
+		public SlidingDotData SlideDot(SlidingDotData data, double[,] state, String type, Rectangle frame, int o) {
 			List<Point> list;
 			switch(type) {
 				case "horizontal":
@@ -44,15 +44,12 @@ namespace QMStuff_v2 {
 					break;
 			}
 			list.Clear();
-			int width = state.GetLength(1);
-			int height = state.GetLength(0);
 			int rshift = 0;
-			while(rshift<=width) {
+			while(rshift<=o) {
 				double C = 0;
-				for(int col = 0; col<width; col++) {
-					if(col-rshift >=0 && col-rshift <width) {
-						for(int row = 0; row<state.GetLength(0); row++)
-							C+= state[row, col] * state[row, col-rshift];
+				for(int col = frame.X; col<frame.Width + frame.X; col++) {
+					for(int row = frame.Y; row<frame.Height + frame.Y; row++) {
+						C+= state[row, col] * state[row, col+rshift];
 					}
 				}
 				list.Add(new Point(rshift, (int)C));
@@ -62,19 +59,23 @@ namespace QMStuff_v2 {
 		}
 		private double CalcPerim() {
 			double sum = 0;
-			for (int i = 0; i < box.vertices.Count; i++) {
-				Point p1 = box.vertices[i];
-				Point p2 = box.vertices[i + 1 == box.vertices.Count ? 0 : i + 1];
-				sum += Distance(p1.X, p1.Y, p2.X, p2.Y);
+			foreach(List<Point> vertices in perims) {
+				for(int i = 0; i < vertices.Count; i++) {
+					Point p1 = vertices[i];
+					Point p2 = vertices[i + 1 == vertices.Count ? 0 : i + 1];
+					sum += Distance(p1.X, p1.Y, p2.X, p2.Y);
+				}
 			}
 			return sum;
 		}
 		private double CalcArea() {
 			int sum = 0;
-			for (int i = 0; i < vertices.Count; i++) {
-				Point p1 = vertices[i];
-				Point p2 = vertices[i + 1 == vertices.Count ? 0 : i + 1];
-				sum += Determinant(p1.X, p1.Y, p2.X, p2.Y);
+			foreach(List<Point> vertices in perims) {
+				for(int i = 0; i < vertices.Count; i++) {
+					Point p1 = vertices[i];
+					Point p2 = vertices[i + 1 == vertices.Count ? 0 : i + 1];
+					sum += Determinant(p1.X, p1.Y, p2.X, p2.Y);
+				}
 			}
 			return sum / 2.0;
 		}
@@ -117,21 +118,25 @@ namespace QMStuff_v2 {
 	public class FitBox {
 		public int size, x, y, dir, edge;
 		public bool[,] latState;
-		public List<Point> vertices;
+		private List<Point> vertices;
+		public List<List<Point>> perimList;
 		Point start;
 
 		public FitBox(int s, bool[,] mat) {
 			size = s;
 			latState = mat;
+			perimList = new List<List<Point>>();
+			init();
+		}
+		private void init() {
 			dir = 3;
 			edge = 2;
-			vertices = new List<Point>();
 			int r = 0;
 			int c = 0;
 			int mSz = latState.GetLength(0);
-			while ((latState[r, c])==false) {
+			while((latState[r, c])==false) {
 				c++;
-				if (c >= mSz) {
+				if(c >= mSz) {
 					c = 0;
 					r++;
 				}
@@ -141,13 +146,37 @@ namespace QMStuff_v2 {
 			start = new Point(x, y);
 		}
 		public void CalcVerts() {
-			do {
-				Next();
-			} while (!(x == start.X && y == start.Y));
-			
-			for(int i=0; i<vertices.Count-1; i++) {
-				while(i<vertices.Count-1 && vertices[i].Equals(vertices[i+1]))
-					vertices.RemoveAt(i+1);
+			bool done = false;
+			int perimCount = 0;
+			while(!done) {
+				init();
+				perimList.Add(new List<Point>());
+				vertices = perimList[perimCount];
+				do {
+					Next();
+				} while(!(x == start.X && y == start.Y));
+
+				for(int i = 0; i<vertices.Count-1; i++) {
+					while(i<vertices.Count-1 && vertices[i].Equals(vertices[i+1]))
+						vertices.RemoveAt(i+1);
+				}
+
+				int unaccounted = 0;
+				for(int r = 0; r<latState.GetLength(0); r++) {
+					for(int c = 0; c<latState.GetLength(1); c++) {
+						int x = ConvertCol(c);
+						int y = ConvertRow(r);
+						if(latState[r, c]) {
+							if(withinPolygon(vertices, x, y))
+								latState[r, c]=false;
+							else {
+								unaccounted++;
+							}
+						}
+					}
+				}
+				done = (unaccounted==0);
+				perimCount++;
 			}
 		}
 		public void Next() {
@@ -216,6 +245,50 @@ namespace QMStuff_v2 {
 		public int ConvertY(int y) { return latState.GetLength(0) / 2 - y; }
 		public int ConvertRow(int r) { return latState.GetLength(0) / 2 - r; }
 		public int ConvertCol(int c) { return c - latState.GetLength(0) / 2; }
-
+		private bool withinPolygon(List<Point> polygon, int px, int py) {
+			double error = 0.1;
+			int max_point = polygon.Count - 1;
+			if(px==polygon[max_point].X && py==polygon[max_point].Y) //if point is a vertex, on perim
+				return true;
+			float total_angle = GetAngle(
+				polygon[max_point].X, polygon[max_point].Y,
+				px, py,
+				polygon[0].X, polygon[0].Y);
+			if(Math.Abs(Math.Abs(total_angle) - Math.PI) < error) //if angle close to 180, on perim
+				return true;
+			for(int i = 0; i < max_point; i++) {
+				if(px==polygon[i].X && py==polygon[i].Y)
+					return true;
+				float angle = GetAngle(
+					polygon[i].X, polygon[i].Y,
+					px, py,
+					polygon[i + 1].X, polygon[i + 1].Y);
+				if(Math.Abs(Math.Abs(angle) - Math.PI) < error)
+					return true;
+				total_angle += angle;
+			}
+			return (Math.Abs(total_angle) > error);
+		}
+		public static float GetAngle(float Ax, float Ay, float Bx, float By, float Cx, float Cy) {
+			float dot_product = DotProduct(Ax, Ay, Bx, By, Cx, Cy);
+			float cross_product = CrossProductLength(Ax, Ay, Bx, By, Cx, Cy);
+			return (float)Math.Atan2(cross_product, dot_product);
+		}
+		private static float DotProduct(float Ax, float Ay,	float Bx, float By, float Cx, float Cy) {
+			float BAx = Ax - Bx;
+			float BAy = Ay - By;
+			float BCx = Cx - Bx;
+			float BCy = Cy - By;
+			
+			return (BAx * BCx + BAy * BCy);
+		}
+		public static float CrossProductLength(float Ax, float Ay, float Bx, float By, float Cx, float Cy) {
+			float BAx = Ax - Bx;
+			float BAy = Ay - By;
+			float BCx = Cx - Bx;
+			float BCy = Cy - By;
+			
+			return (BAx * BCy - BAy * BCx);
+		}
 	}
 }
